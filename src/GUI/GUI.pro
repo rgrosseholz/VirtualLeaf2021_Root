@@ -121,6 +121,7 @@ $${VLEAFLIBDIR}/cellbase.h \
  nodeitem.h \
  nodeset.h \
  OptionFileDialog.h \
+ ${VLEAFLIBDIR}/spring.h \
  $${VLEAFLIBDIR}/output.h \
  $${VLEAFLIBDIR}/parameter.h \
  pardialog.h \
@@ -162,6 +163,7 @@ $${VLEAFLIBDIR}/cellbase.cpp \
  node.cpp \
  nodeitem.cpp \
  nodeset.cpp \
+ $${VLEAFLIBDIR}/spring.cpp \
  $${VLEAFLIBDIR}/output.cpp \
  OptionFileDialog.cpp \
  $${VLEAFLIBDIR}/parameter.cpp \

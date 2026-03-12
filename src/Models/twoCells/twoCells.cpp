@@ -28,32 +28,43 @@
 
 #include "wallbase.h"
 #include "cellbase.h"
-#include "tutorial1A.h"
+#include "twoCells.h"
 
 static const std::string _module_id("$Id$");
 
-QString Tutorial1A::ModelID(void) {
+QString TwoCells::ModelID(void)
+{
   // specify the name of your model here
-  return QString( "1A: Cell growth" );
+  return QString("Two cells");
 }
 
 // return the number of chemicals your model uses
-int Tutorial1A::NChem(void) { return 0; }
+int TwoCells::NChem(void) { return 0; }
 
 // To be executed after cell division
-void Tutorial1A::OnDivide(ParentInfo *parent_info, CellBase *daughter1, CellBase *daughter2) {
+void TwoCells::OnDivide(ParentInfo *parent_info, CellBase *daughter1, CellBase *daughter2)
+{
   // rules to be executed after cell division go here
   // (e.g., cell differentiation rules)
 }
 
-void Tutorial1A::SetCellColor(CellBase *c, QColor *color) { 
+void TwoCells::SetCellColor(CellBase *c, QColor *color)
+{
   // add cell coloring rules here
-
 }
 
-void Tutorial1A::CellHouseKeeping(CellBase *c) {
+void TwoCells::CellHouseKeeping(CellBase *c)
+{
   // add cell behavioral rules here
-  c->EnlargeTargetArea(par->cell_expansion_rate/10);
+  
+  // cellulose spring rules
+  if( lround(c->TargetArea()) % 100 == 0 && c->getSigmaSprings() > 0.05)
+  {
+    c->SetSigmaSprings(c->getSigmaSprings() - 0.01);
+  }
+
+
+  c->EnlargeTargetArea(par->cell_expansion_rate / 2);
 
   double base_element_length = 25;
   c->LoopWallElements([base_element_length](auto wallElementInfo)
@@ -63,15 +74,17 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
         } });
 }
 
-void Tutorial1A::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2) {
+void TwoCells::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2)
+{
   // add biochemical transport rules here
 }
-void Tutorial1A::WallDynamics(Wall *w, double *dw1, double *dw2) {
+void TwoCells::WallDynamics(Wall *w, double *dw1, double *dw2)
+{
   // add biochemical networks for reactions occuring at walls here
 }
-void Tutorial1A::CellDynamics(CellBase *c, double *dchem) { 
+void TwoCells::CellDynamics(CellBase *c, double *dchem)
+{
   // add biochemical networks for intracellular reactions here
 }
 
-
-//Q_EXPORT_PLUGIN2(tutorial1A, Tutorial1A)
+// Q_EXPORT_PLUGIN2(twocells, twoCells)

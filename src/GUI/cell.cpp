@@ -32,7 +32,7 @@
 #include "nodeitem.h"
 #include "qcanvasarrow.h"
 #include "parameter.h"
-
+#include "spring.h"
 
 static const std::string _module_id("$Id$");
 
@@ -2106,8 +2106,29 @@ void Cell::DrawText(QGraphicsScene *c, const QString &text) const {
     
 }
 
+void Cell::DrawSprings(QGraphicsScene *c) const
+{
+  for( auto spring : springs)
+  {
+    Vector from { *spring->getNode1() };
+    Vector to { *spring->getNode2() };
 
-void Cell::DrawAxis(QGraphicsScene *c) const {
+    QGraphicsLineItem *line = new QGraphicsLineItem(0);
+    line->setPen(QPen(QColor(par.arrowcolor), 0.5));
+    line->setZValue(2);
+
+    line->setLine(((offset[0] + from.x) * factor),
+                  ((offset[1] + from.y) * factor),
+                  ((offset[0] + to.x) * factor),
+                  ((offset[1] + to.y) * factor));
+    line->setZValue(10);
+    c->addItem(line);
+    line->show();
+  }
+}
+
+void Cell::DrawAxis(QGraphicsScene *c) const
+{
 
   Vector long_axis;
   double width;

@@ -28,32 +28,36 @@
 
 #include "wallbase.h"
 #include "cellbase.h"
-#include "tutorial1A.h"
+#include "sixCells.h"
 
 static const std::string _module_id("$Id$");
 
-QString Tutorial1A::ModelID(void) {
+QString SixCells::ModelID(void)
+{
   // specify the name of your model here
-  return QString( "1A: Cell growth" );
+  return QString("Six cells");
 }
 
 // return the number of chemicals your model uses
-int Tutorial1A::NChem(void) { return 0; }
+int SixCells::NChem(void) { return 0; }
 
 // To be executed after cell division
-void Tutorial1A::OnDivide(ParentInfo *parent_info, CellBase *daughter1, CellBase *daughter2) {
+void SixCells::OnDivide(ParentInfo *parent_info, CellBase *daughter1, CellBase *daughter2)
+{
   // rules to be executed after cell division go here
   // (e.g., cell differentiation rules)
 }
 
-void Tutorial1A::SetCellColor(CellBase *c, QColor *color) { 
+void SixCells::SetCellColor(CellBase *c, QColor *color)
+{
   // add cell coloring rules here
-
 }
 
-void Tutorial1A::CellHouseKeeping(CellBase *c) {
+void SixCells::CellHouseKeeping(CellBase *c)
+{
   // add cell behavioral rules here
-  c->EnlargeTargetArea(par->cell_expansion_rate/10);
+  c->setAnisotropicGrowth(true);
+  c->EnlargeTargetArea(par->cell_expansion_rate / 10);
 
   double base_element_length = 25;
   c->LoopWallElements([base_element_length](auto wallElementInfo)
@@ -63,15 +67,17 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
         } });
 }
 
-void Tutorial1A::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2) {
+void SixCells::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2)
+{
   // add biochemical transport rules here
 }
-void Tutorial1A::WallDynamics(Wall *w, double *dw1, double *dw2) {
+void SixCells::WallDynamics(Wall *w, double *dw1, double *dw2)
+{
   // add biochemical networks for reactions occuring at walls here
 }
-void Tutorial1A::CellDynamics(CellBase *c, double *dchem) { 
+void SixCells::CellDynamics(CellBase *c, double *dchem)
+{
   // add biochemical networks for intracellular reactions here
 }
 
-
-//Q_EXPORT_PLUGIN2(tutorial1A, Tutorial1A)
+// Q_EXPORT_PLUGIN2(sixcells, sixCells)

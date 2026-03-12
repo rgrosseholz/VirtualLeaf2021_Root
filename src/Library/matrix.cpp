@@ -113,6 +113,47 @@ Vector Matrix::operator*(const Vector &v) const
   return result;
 }
 
+Matrix Matrix::operator*(const Matrix &other) const
+{
+    Matrix result;
+    
+    // Multiply rows of first matrix with columns of second matrix
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            result.mat[i][j] = mat[i][0] * other.mat[0][j] +
+                              mat[i][1] * other.mat[1][j] +
+                              mat[i][2] * other.mat[2][j];
+        }
+    }
+    
+    return result;
+}
+
+Matrix Matrix::operator+(const Matrix &other) const
+{
+    Matrix result;
+    
+    // Multiply rows of first matrix with columns of second matrix
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            result.mat[i][j] = mat[i][j] + other.mat[i][j];
+        }
+      }
+    return result;
+}
+
+Matrix Matrix::operator-(const Matrix &other) const
+{
+    Matrix result;
+    
+    // Multiply rows of first matrix with columns of second matrix
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            result.mat[i][j] = mat[i][j] - other.mat[i][j];
+        }
+      }
+    return result;
+}
 
 bool Matrix::operator==(Matrix &m) const
 {
@@ -161,6 +202,10 @@ void Matrix::Rot2D(double theta)
   mat[0][0] = cos(theta); mat[0][1]=sin(theta);
   mat[1][0] = -sin(theta); mat[1][1]=cos(theta);
   mat[0][2] = mat[1][2] = mat[2][0] = mat[2][1] = mat[2][2] = 0.;
+}
+
+double Matrix::Trace(){
+  return mat[0][0] + mat[1][1] + mat[2][2];
 }
 
 /* finis */

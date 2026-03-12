@@ -51,8 +51,10 @@ class Mesh;
 class Node;
 class CellBase;
 class NodeSet;
+class WallElementInfo;
 class WallElement;
 class NodeBase;
+class Spring;
 class CellWallCurve;
 
 struct ParentInfo {
@@ -96,6 +98,7 @@ class CellBase :  public QObject, public Vector
   friend class WallElement;
   friend class WallElementInfo;
   friend class SimPluginInterface;
+  friend class Spring;
   friend class CellWallCurve;
 
  public:
@@ -207,6 +210,10 @@ class CellBase :  public QObject, public Vector
 
   inline double TargetArea(void) { return target_area; }
 
+  inline void SetStiffness(double stiff) { stiffness = stiff; }
+
+  inline double Stiffness(void) { return stiffness; }
+
   inline double EnlargeTargetArea(double da) { return target_area+=da; }
 
   inline double Area(void) const { return area; }
@@ -244,6 +251,31 @@ class CellBase :  public QObject, public Vector
   virtual void InsertWall( WallBase *w );
   virtual CellBase* getOtherWallElementSide(NodeBase * spikeEnd,NodeBase * over);
   virtual double elastic_limit();
+
+
+  // Here are the functions needed for anisotropic growth
+  inline void SetRefVecSprings(Vector ref_vec) {reference_springs = ref_vec;}
+  inline Vector GetRefVecSprings() {return reference_springs;}
+  inline void PlaceSprings() {place_springs= true;}
+  void SetSigmaSprings(double value) {sigma_springs = value;}
+  void SetSpringDistributionMean( double value ) { spring_distribution_mean = value; }
+  double getSigmaSprings() {return this->sigma_springs;};
+  double getSpringDistributionMean() { return this->spring_distribution_mean; };
+
+  double averageSpringLength();
+  void SetSprings(void);
+  void SetSpringsNormalDistributed(void);
+  void SetSpringOnNodeInsertion(Node* newNode);
+  void AddSpringToCell (CellBase *c, Spring *s);
+  void CheckSprings(void);
+  void sortAndDeleteSprings();
+  void cleanUpSprings();
+  void resetSprings();
+  bool isSpringAtBottomOrTop(Spring* spring);
+  
+  Vector getMinMaxPositionX();
+  Vector getMinMaxPositionY();
+
 
   QList<WallBase *> getWalls(void) {
     QList<WallBase *> wall_list;
@@ -495,6 +527,10 @@ class CellBase :  public QObject, public Vector
   inline void removeWall(Wall * wall) {walls.remove(wall);}
   void attachToCell(CellWallCurve * curve);
 
+
+  bool getAnisotropicGrowth() { return anisotropic_growth; }
+  void setAnisotropicGrowth(bool isAnisotropic)  { anisotropic_growth = isAnisotropic; }
+
  protected:
   // (define a list of Node* iterators)
   typedef list < list<Node *>::iterator > ItList;
@@ -516,6 +552,8 @@ class CellBase :  public QObject, public Vector
   inline double NewChem(int c) const { return new_chem[c]; }
 
   list<Node *> nodes;
+  Spring* getSpring(void) const;
+  Spring *s1;
   void ConstructNeighborList(void);
   long wall_list_index (Wall *elem) const;
 
@@ -529,6 +567,7 @@ class CellBase :  public QObject, public Vector
   list<CellBase *> neighbors;
 
   list<Wall *> walls;
+  list<Spring *> springs;
 
   double *chem;
   double *new_chem;
@@ -540,13 +579,25 @@ class CellBase :  public QObject, public Vector
   double lambda_celllength;
   double wall_stiffness; // Lebovka et al
   bool veto_reconfigurationling; // testing cellular veto
+  double sigma_springs; // sigma for the normal distribution describing spring orientation
+  double spring_distribution_mean;
+
+  
+
+  double stiffness; // stiffness like in Hogeweg (2000)
+
   bool fixed;
   bool pin_fixed;
   bool at_boundary; 
   bool dead; 
   bool flag_for_divide;
+  bool place_springs { false }; // cell property: bool determining if springs are placed or not
+
+  bool anisotropic_growth { false };
 
   Vector *division_axis;
+  Vector reference_springs { Vector {0, 1, 0} }; // cell property: reference vector for spring placement, orthogonal to spring direction!
+
   int cell_type;
 
   // for length constraint

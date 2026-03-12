@@ -30,11 +30,11 @@ class Spring{
     Node* m_n2;  // second node of the spring
     CellBase* m_c;
     //using personalized default initializer should in the end become some par variable
-    Vector m_spring_base_length { 12, TINY, 0 };
+    Vector m_spring_base_length { 7, TINY, 0 };
     double m_spring_stiffness { 20 };
 
 public:
-    Spring(Node* node1, Node* node2, CellBase* cell, Vector s_b_length = Vector {12, TINY, 0} , double s_stiffness = 20)
+    Spring(Node* node1, Node* node2, CellBase* cell, Vector s_b_length = Vector {7, TINY, 0} , double s_stiffness = 20)
         : m_n1 { node1 }, m_n2 { node2 }, m_c { cell },
          m_spring_base_length { s_b_length }, m_spring_stiffness { s_stiffness } 
     {

@@ -18,7 +18,7 @@ Tutorial1B \
 #Tutorial5 \
 twoCells \ 
 threeCells \
-sixCells \
+5x2_Cells \
 nineCells \
 #LateralRoot \
 #MyModel \

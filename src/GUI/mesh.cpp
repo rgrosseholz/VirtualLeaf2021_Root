@@ -1147,10 +1147,10 @@ double Mesh::DisplaceNodes(void)
         //check if wall elements are defined and pick the appropriate length_dh
 
             length_dh +=
-        		elastic_modulus * w1 *
-        		bl_minus_1 *(DSQR(new_l1/bl_minus_1 - 1)-DSQR(old_l1/bl_minus_1 - 1)) +
-                elastic_modulus * w2 *
-				bl_plus_1 *(DSQR(new_l2/bl_plus_1 - 1)-DSQR(old_l2/bl_plus_1 - 1));
+        		  elastic_modulus * w1 *
+        		  bl_minus_1 *(DSQR(new_l1/bl_minus_1 - 1)-DSQR(old_l1/bl_minus_1 - 1)) +
+              elastic_modulus * w2 *
+				      bl_plus_1 *(DSQR(new_l2/bl_plus_1 - 1)-DSQR(old_l2/bl_plus_1 - 1));
             
             /*
             // calculate wallstiffness as vector to allow directional displacement 

@@ -28,36 +28,37 @@
 
 #include "wallbase.h"
 #include "cellbase.h"
-#include "sixCells.h"
+#include "5x2_Cells.h"
 
 static const std::string _module_id("$Id$");
 
-QString SixCells::ModelID(void)
+QString five_x_two_Cells::ModelID(void)
 {
   // specify the name of your model here
-  return QString("Six cells");
+  return QString("5x2_Cells");
 }
 
 // return the number of chemicals your model uses
-int SixCells::NChem(void) { return 0; }
+int five_x_two_Cells::NChem(void) { return 0; }
 
 // To be executed after cell division
-void SixCells::OnDivide(ParentInfo *parent_info, CellBase *daughter1, CellBase *daughter2)
+void five_x_two_Cells::OnDivide(ParentInfo *parent_info, CellBase *daughter1, CellBase *daughter2)
 {
   // rules to be executed after cell division go here
   // (e.g., cell differentiation rules)
 }
 
-void SixCells::SetCellColor(CellBase *c, QColor *color)
+void five_x_two_Cells::SetCellColor(CellBase *c, QColor *color)
 {
   // add cell coloring rules here
 }
 
-void SixCells::CellHouseKeeping(CellBase *c)
+void five_x_two_Cells::CellHouseKeeping(CellBase *c)
 {
   // add cell behavioral rules here
-  c->setAnisotropicGrowth(true);
-  c->EnlargeTargetArea(par->cell_expansion_rate / 10);
+  
+  // cellulose spring rules
+  c->EnlargeTargetArea(par->cell_expansion_rate/5);
 
   double base_element_length = 25;
   c->LoopWallElements([base_element_length](auto wallElementInfo)
@@ -65,19 +66,43 @@ void SixCells::CellHouseKeeping(CellBase *c)
         if(std::isnan(wallElementInfo->getWallElement()->getBaseLength())){
         wallElementInfo->getWallElement()->setBaseLength(base_element_length);
         } });
+
+
+    //cell wall weakening happens here
+    double patho_chem_level = c->Chemical(0) / (0.5);
+    if (patho_chem_level > 1.2) {
+        patho_chem_level = 1.2;
+    }
+    double stiffness_inf = 2.5;
+    if(patho_chem_level>0.1 && c->CellType()!=2){
+        c->SetCellVeto(false);
+        stiffness_inf = 2.5 - (patho_chem_level);
+    c->LoopWallElements([stiffness_inf](auto wallElementInfo){
+        wallElementInfo->getWallElement()->setStiffness(stiffness_inf);
+    });
+    }
+    else{
+        c->LoopWallElements([stiffness_inf](auto wallElementInfo){
+        wallElementInfo->getWallElement()->setStiffness(stiffness_inf);
+        });
+        c->SetCellVeto(true);
+    }
+
+
+
 }
 
-void SixCells::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2)
+void five_x_two_Cells::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2)
 {
   // add biochemical transport rules here
 }
-void SixCells::WallDynamics(Wall *w, double *dw1, double *dw2)
+void five_x_two_Cells::WallDynamics(Wall *w, double *dw1, double *dw2)
 {
   // add biochemical networks for reactions occuring at walls here
 }
-void SixCells::CellDynamics(CellBase *c, double *dchem)
+void five_x_two_Cells::CellDynamics(CellBase *c, double *dchem)
 {
   // add biochemical networks for intracellular reactions here
 }
 
-// Q_EXPORT_PLUGIN2(sixcells, sixCells)
+// Q_EXPORT_PLUGIN2(5x2_Cells, 5x2_Cells)

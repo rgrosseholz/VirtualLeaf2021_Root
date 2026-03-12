@@ -969,13 +969,13 @@ void CellBase::SetSpringOnNodeInsertion(Node* newNode)
        (*j)->connected_to_spring < 2 && newNode->connected_to_spring < 10 )
     {
       if (newNode->index > (*j)->index ){
-        Spring* s = new Spring(*j, newNode, this, Vector {12, TINY, 0});
+        Spring* s = new Spring(*j, newNode, this, Vector {7, TINY, 0});
         AddSpringToCell(this, s);
         (*j)->incrementConnected_to_spring();
         (newNode)->incrementConnected_to_spring();
         continue;
       }else {
-        Spring* s = new Spring(newNode, *j, this, Vector {12, TINY, 0});
+        Spring* s = new Spring(newNode, *j, this, Vector {7, TINY, 0});
         AddSpringToCell(this, s);
         (*j)->incrementConnected_to_spring();
         (newNode)->incrementConnected_to_spring();

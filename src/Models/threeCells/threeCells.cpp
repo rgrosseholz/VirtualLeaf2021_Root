@@ -58,13 +58,8 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   // add cell behavioral rules here
   
   // cellulose spring rules
-  if( lround(c->TargetArea()) % 100 == 0 && c->getSigmaSprings() > 0.05)
-  {
-    c->SetSigmaSprings(c->getSigmaSprings() - 0.01);
-  }
-
-  //if(c->Index() == 1){
-  c->EnlargeTargetArea(par->cell_expansion_rate / 50); // }
+  if(c->Index() == 1){
+  c->EnlargeTargetArea(par->cell_expansion_rate / 5); }
 
   double base_element_length = 25;
   c->LoopWallElements([base_element_length](auto wallElementInfo)

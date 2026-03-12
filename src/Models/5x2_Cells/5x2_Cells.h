@@ -27,10 +27,10 @@
 #include "simplugin.h"
 
 
-class SixCells : public QObject, SimPluginInterface {
+class five_x_two_Cells : public QObject, SimPluginInterface {
 	Q_OBJECT
 	Q_INTERFACES(SimPluginInterface);
-     Q_PLUGIN_METADATA(IID "org.virtualleaf.sixCells")
+     Q_PLUGIN_METADATA(IID "org.virtualleaf.5x2_Cells")
 
 public:
 	virtual QString ModelID(void);
@@ -55,7 +55,7 @@ public:
 	// return number of chemicals
 	virtual int NChem(void);
 	
-	virtual QString DefaultLeafML(void) { return QString("six_rectangular_cells.xml"); }
+	virtual QString DefaultLeafML(void) { return QString("5x2_cells.xml"); }
 	
 };
 

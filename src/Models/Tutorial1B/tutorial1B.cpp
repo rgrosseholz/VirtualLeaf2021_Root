@@ -51,8 +51,39 @@ void Tutorial1B::SetCellColor(CellBase *c, QColor *color) {
 
 void Tutorial1B::CellHouseKeeping(CellBase *c) {
   // add cell behavioral rules here
-	c->EnlargeTargetArea(par->cell_expansion_rate);
-	if (c->Area() > par->rel_cell_div_threshold * c->BaseArea()) {
+	c->EnlargeTargetArea(par->cell_expansion_rate/10);
+	
+  // cellulose spring activation
+  if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k for no
+  {
+      c->PlaceSprings();
+      c->SetSigmaSprings( 0.1 ); 
+      c->SetSpringDistributionMean( 0 );
+      c->SetSpringsNormalDistributed();
+      c->setSpringBaseLength(9);
+      par->bend_lambda = 1;
+      
+  }
+  //cell wall weakening happens here
+  if(par->k[0] == 0){
+
+    c->LoopWallElements([](auto wallElementInfo){
+      Vector from { *(wallElementInfo->getFrom()) };
+      Vector to { *(wallElementInfo->getTo()) };
+      Vector wallVector { to - from };
+      Vector growthDirection { 0, 1};
+      // if angle is between 75 - 105 degree return true
+      if ( 1.3 < wallVector.Angle(growthDirection) &&  1.9 > wallVector.Angle(growthDirection) ) 
+      { 
+        wallElementInfo->getWallElement()->setStiffness(1);
+      } else { 
+        wallElementInfo->getWallElement()->setStiffness(0.8);
+      }
+    });
+  }
+
+  //division
+  if (c->Area() > par->rel_cell_div_threshold * c->BaseArea()) {
 		c->Divide();
 	}
 }

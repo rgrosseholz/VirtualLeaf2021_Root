@@ -25,7 +25,7 @@
 #include <QtGui>
 #include <QString>
 #include "simplugin.h"
-
+#include "cellbase.h"
 
 class five_x_two_Cells : public QObject, SimPluginInterface {
 	Q_OBJECT

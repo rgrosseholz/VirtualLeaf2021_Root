@@ -28,6 +28,7 @@
 
 #include "wallbase.h"
 #include "cellbase.h"
+#include "spring.h"
 #include "5x2_Cells.h"
 
 static const std::string _module_id("$Id$");
@@ -56,8 +57,6 @@ void five_x_two_Cells::SetCellColor(CellBase *c, QColor *color)
 void five_x_two_Cells::CellHouseKeeping(CellBase *c)
 {
   // add cell behavioral rules here
-  
-  // cellulose spring rules
   c->EnlargeTargetArea(par->cell_expansion_rate/5);
 
   double base_element_length = 25;
@@ -67,29 +66,34 @@ void five_x_two_Cells::CellHouseKeeping(CellBase *c)
         wallElementInfo->getWallElement()->setBaseLength(base_element_length);
         } });
 
+  // cellulose spring activation
+  if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k 
+  {
+      c->PlaceSprings();
+      c->SetSigmaSprings( 0.15 ); 
+      c->SetSpringDistributionMean( 0 );
+      c->SetSpringsNormalDistributed();
+      c->setSpringBaseLength(9);
+      par->bend_lambda = 1;
+      
+  }
+  //cell wall weakening happens here
+  if(par->k[0] == 0){
 
-    //cell wall weakening happens here
-    double patho_chem_level = c->Chemical(0) / (0.5);
-    if (patho_chem_level > 1.2) {
-        patho_chem_level = 1.2;
-    }
-    double stiffness_inf = 2.5;
-    if(patho_chem_level>0.1 && c->CellType()!=2){
-        c->SetCellVeto(false);
-        stiffness_inf = 2.5 - (patho_chem_level);
-    c->LoopWallElements([stiffness_inf](auto wallElementInfo){
-        wallElementInfo->getWallElement()->setStiffness(stiffness_inf);
+    c->LoopWallElements([](auto wallElementInfo){
+      Vector from { *(wallElementInfo->getFrom()) };
+      Vector to { *(wallElementInfo->getTo()) };
+      Vector wallVector { to - from };
+      Vector growthDirection { 0, 1};
+      // if angle is between 75 - 105 degree return true
+      if ( 1.3 < wallVector.Angle(growthDirection) &&  1.9 > wallVector.Angle(growthDirection) ) 
+      { 
+        wallElementInfo->getWallElement()->setStiffness(1);
+      } else { 
+        wallElementInfo->getWallElement()->setStiffness(0.8);
+      }
     });
-    }
-    else{
-        c->LoopWallElements([stiffness_inf](auto wallElementInfo){
-        wallElementInfo->getWallElement()->setStiffness(stiffness_inf);
-        });
-        c->SetCellVeto(true);
-    }
-
-
-
+  }
 }
 
 void five_x_two_Cells::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2)

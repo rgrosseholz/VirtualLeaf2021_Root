@@ -54,7 +54,7 @@
       <par val="100" name="lambda_length"/>
       
       
-      <par val="4" name="yielding_threshold"/>
+      <par val="10" name="yielding_threshold"/>
       
       
       <par val="0" name="lambda_celllength"/>
@@ -598,8 +598,8 @@
       <node nr="8" x="207.31342" y="284.15386" sam="false" boundary="true" fixed="false"/>
       <node nr="9" x="207.32142000000002" y="269.26426000000004" sam="false" boundary="true" fixed="false"/>
       <node nr="10" x="188.488662" y="298.00586" sam="false" boundary="true" fixed="false"/>
-      <node nr="11" x="188.452062" y="313.11645999999996" sam="false" boundary="true" fixed="false"/>
-      <node nr="12" x="207.25606000000002" y="313.35025999999993" sam="false" boundary="true" fixed="false"/>
+      <node nr="11" x="188.452062" y="313.11645999999996" sam="false" boundary="true" fixed="true"/>
+      <node nr="12" x="207.25606000000002" y="313.35025999999993" sam="false" boundary="true" fixed="true"/>
       <node nr="13" x="207.26406000000003" y="297.81841999999995" sam="false" boundary="true" fixed="false"/>
    </nodes>
    <cells n="3" magnfication="1" nchem="0" offsetx="0" offsety="0" base_area="547.5064813372734">

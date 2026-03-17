@@ -29,7 +29,7 @@
     <par name="energy_threshold" val="1000"/>
     <par name="bend_lambda" val="0"/>
     <par name="alignment_lambda" val="0"/>
-    <par name="rel_cell_div_threshold" val="2"/>
+    <par name="rel_cell_div_threshold" val="4"/>
     <par name="rel_perimeter_stiffness" val="2"/>
     <par name="collapse_node_threshold" val="0.05"/>
     <par name="morphogen_div_threshold" val="0.2"/>
@@ -112,7 +112,7 @@
     <par name="constituous_expansion_limit" val="16"/>
     <par name="vessel_inh_level" val="1"/>
     <par name="vessel_expansion_rate" val="0.25"/>
-    <par name="d" val="800"/>
+    <par name="d" val="1600"/>
     <par name="e" val="1"/>
     <par name="f" val="0.8"/>
     <par name="c" val="1"/>
@@ -125,7 +125,7 @@
     <par name="eps" val="0"/>
     <par name="k">
       <valarray>
-        <val v="1e6"/>
+        <val v="0"/>
         <val v="0"/>
         <val v="0"/>
         <val v="0"/>

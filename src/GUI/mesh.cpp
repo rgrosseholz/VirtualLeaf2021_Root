@@ -1524,7 +1524,7 @@ void Mesh::InsertNode(Edge &e) {
   if (RandomNumber(1) == 1){ 
     for (auto c : cells)
     {
-      if(c->Index() == -1 || !(c->place_springs)) {continue;}
+       if(c->Index() == -1 || !(c->place_springs)) {continue;}
       //c->cleanUpSprings();
       c->resetSprings();
     }

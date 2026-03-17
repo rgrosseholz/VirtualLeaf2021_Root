@@ -27,18 +27,20 @@
  * 
  * @return returns strain matrix
  */
-Matrix Spring::getCelluloseStrainMatrix(double rx, double ry)
+ /*
+ Matrix Spring::getCelluloseStrainMatrix(double rx, double ry)
 {
     double springX { abs(getSpringVector().x + rx) }; // taking abs bc i want to consider only length not direction
     double springY { abs(getSpringVector().y + ry) };
     Vector baseLength { getSpringBaseLengthVector() };
     return Matrix { Vector { (springX - baseLength.x)/baseLength.Norm(),
-                        0.5 * ( (springX - baseLength.x) + 0 /*(springY - baseLength.y)*/) / baseLength.Norm()  
+                        0.5 * ( (springX - baseLength.x) + 0 /*(springY - baseLength.y)commentout/) / baseLength.Norm()  
                         , 0}, 
-             Vector { 0.5 * ( (springX - baseLength.x) + 0 /*(springY - baseLength.y)*/) / baseLength.Norm() , 
-                    0 /*(springY - baseLength.y)/baseLength.Norm()*/, 0},
+             Vector { 0.5 * ( (springX - baseLength.x) + 0 /*(springY - baseLength.y)commentout/) / baseLength.Norm() , 
+                    0 /*(springY - baseLength.y)/baseLength.Norm()commentout/, 0},
              Vector {0, 0, 0} };
-}
+ }
+*/
 
 /**
  * @brief checks if the spring vector lies within an angle bound relativ to a reference vector

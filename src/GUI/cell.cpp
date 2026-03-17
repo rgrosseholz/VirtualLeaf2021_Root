@@ -1142,11 +1142,14 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
     daughter->SetSpringDistributionMean( getSpringDistributionMean() );
     daughter->setSpringBaseLength( getSpringBaseLength() );
     daughter->SetRefVecSprings( GetRefVecSprings() );
-    daughter->SetSpringsNormalDistributed();
+    while(daughter->springs.size() < 1){
+    daughter->SetSpringsNormalDistributedExcludeTopBottom();
+    }
   };
   //parent cell
-  SetSpringsNormalDistributed();
-
+  while(springs.size() < 1 ){
+  SetSpringsNormalDistributedExcludeTopBottom();
+  }
 
 
   	/**
@@ -1157,7 +1160,7 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
      */
 	bool n1Connected;
 	bool n2Connected;
-  	checkCellLooseWallEnds(wall,n1Connected,n2Connected);
+  checkCellLooseWallEnds(wall,n1Connected,n2Connected);
 	Cell * cellWithOtherWalls = this;
 	Cell * cellWithSingleWalls = daughter;
 	if (walls.size() < daughter->walls.size()) {

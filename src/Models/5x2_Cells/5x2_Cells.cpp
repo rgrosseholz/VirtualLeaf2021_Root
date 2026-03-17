@@ -57,7 +57,7 @@ void five_x_two_Cells::SetCellColor(CellBase *c, QColor *color)
 void five_x_two_Cells::CellHouseKeeping(CellBase *c)
 {
   // add cell behavioral rules here
-  c->EnlargeTargetArea(par->cell_expansion_rate/5);
+  c->EnlargeTargetArea(par->cell_expansion_rate/10);
 
   double base_element_length = 25;
   c->LoopWallElements([base_element_length](auto wallElementInfo)
@@ -72,7 +72,7 @@ void five_x_two_Cells::CellHouseKeeping(CellBase *c)
       c->PlaceSprings();
       c->SetSigmaSprings( 0.15 ); 
       c->SetSpringDistributionMean( 0 );
-      c->SetSpringsNormalDistributed();
+      c->SetSprings();
       c->setSpringBaseLength(9);
       par->bend_lambda = 1;
       
@@ -90,10 +90,15 @@ void five_x_two_Cells::CellHouseKeeping(CellBase *c)
       { 
         wallElementInfo->getWallElement()->setStiffness(1);
       } else { 
-        wallElementInfo->getWallElement()->setStiffness(0.8);
+        wallElementInfo->getWallElement()->setStiffness(0.65);
       }
     });
   }
+
+  //division
+  if (c->Area() > par->rel_cell_div_threshold * c->BaseArea()) {
+		c->Divide();
+	}
 }
 
 void five_x_two_Cells::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2)

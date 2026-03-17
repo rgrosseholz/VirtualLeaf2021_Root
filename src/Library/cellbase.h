@@ -257,21 +257,27 @@ class CellBase :  public QObject, public Vector
   inline void SetRefVecSprings(Vector ref_vec) {reference_springs = ref_vec;}
   inline Vector GetRefVecSprings() {return reference_springs;}
   inline void PlaceSprings() {place_springs= true;}
+  bool isSpringPlaced() {return place_springs;}
   void SetSigmaSprings(double value) {sigma_springs = value;}
   void SetSpringDistributionMean( double value ) { spring_distribution_mean = value; }
   double getSigmaSprings() {return this->sigma_springs;};
   double getSpringDistributionMean() { return this->spring_distribution_mean; };
+  void setSpringBaseLength(double length) { springBaseLength = length; };
+  double getSpringBaseLength() { return springBaseLength; };
+  list<Spring *> getSprings() { return springs; };
 
   double averageSpringLength();
   void SetSprings(void);
+  void SetSpringsNormalDistributedExcludeTopBottom(void);
   void SetSpringsNormalDistributed(void);
   void SetSpringOnNodeInsertion(Node* newNode);
   void AddSpringToCell (CellBase *c, Spring *s);
   void CheckSprings(void);
-  void sortAndDeleteSprings();
-  void cleanUpSprings();
-  void resetSprings();
-  bool isSpringAtBottomOrTop(Spring* spring);
+  void cleanUpSprings(double angle1, double angle2);
+  void removeSprings();
+  void resetSprings(double intervalY = 5);
+  bool isNodeWithinBoundary(Node* node, double intervalX = 5, double intervalY = 5);
+
   
   Vector getMinMaxPositionX();
   Vector getMinMaxPositionY();
@@ -530,6 +536,7 @@ class CellBase :  public QObject, public Vector
 
   bool getAnisotropicGrowth() { return anisotropic_growth; }
   void setAnisotropicGrowth(bool isAnisotropic)  { anisotropic_growth = isAnisotropic; }
+  list<Node *> getNodesList() { return nodes;}
 
  protected:
   // (define a list of Node* iterators)
@@ -599,7 +606,7 @@ class CellBase :  public QObject, public Vector
   Vector reference_springs { Vector {0, 1, 0} }; // cell property: reference vector for spring placement, orthogonal to spring direction!
 
   int cell_type;
-
+  double springBaseLength { 8 };
   // for length constraint
   mutable double intgrl_xx, intgrl_xy, intgrl_yy, intgrl_x, intgrl_y;
 

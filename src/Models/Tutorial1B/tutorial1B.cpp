@@ -51,7 +51,7 @@ void Tutorial1B::SetCellColor(CellBase *c, QColor *color) {
 
 void Tutorial1B::CellHouseKeeping(CellBase *c) {
   // add cell behavioral rules here
-	c->EnlargeTargetArea(par->cell_expansion_rate/10);
+	c->EnlargeTargetArea(par->cell_expansion_rate/5);
 	
   // cellulose spring activation
   if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k for no
@@ -77,7 +77,7 @@ void Tutorial1B::CellHouseKeeping(CellBase *c) {
       { 
         wallElementInfo->getWallElement()->setStiffness(1);
       } else { 
-        wallElementInfo->getWallElement()->setStiffness(0.8);
+        wallElementInfo->getWallElement()->setStiffness(0.65);
       }
     });
   }

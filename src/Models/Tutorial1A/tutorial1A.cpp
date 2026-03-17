@@ -53,7 +53,7 @@ void Tutorial1A::SetCellColor(CellBase *c, QColor *color) {
 
 void Tutorial1A::CellHouseKeeping(CellBase *c) {
   // add cell behavioral rules here
-  c->EnlargeTargetArea(par->cell_expansion_rate/10);
+  c->EnlargeTargetArea(par->cell_expansion_rate/5);
 
   double base_element_length = 25;
   c->LoopWallElements([base_element_length](auto wallElementInfo)
@@ -66,13 +66,12 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
     // cellulose spring activation
   if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k 
   {
-      c->PlaceSprings();
-      c->SetSigmaSprings( 0.1 ); 
-      c->SetSpringDistributionMean( 0 );
-      c->SetSpringsNormalDistributed();
-      c->setSpringBaseLength(9);
-      par->bend_lambda = 1;
-      
+    c->PlaceSprings();
+    c->SetSigmaSprings( 0.1 ); 
+    c->SetSpringDistributionMean( 0 );
+    c->SetSpringsNormalDistributed();
+    c->setSpringBaseLength(9);
+    par->bend_lambda = 1;
   } 
   //cell wall weakening happens here
   if(par->k[0] == 0){
@@ -87,7 +86,7 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
       { 
         wallElementInfo->getWallElement()->setStiffness(1);
       } else { 
-        wallElementInfo->getWallElement()->setStiffness(0.8);
+        wallElementInfo->getWallElement()->setStiffness(0.65);
       }
     });
   }

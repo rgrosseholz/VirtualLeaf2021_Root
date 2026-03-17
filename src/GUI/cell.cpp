@@ -78,8 +78,8 @@ void Cell::DivideOverAxis(Vector axis)
 
   if (dead) return;
 
-  Vector centroid=Centroid();
-  double prev_cross_z=(axis * (centroid - *(nodes.back()) ) ).z ;
+  Vector centroid=Centroid(); // cell center
+  double prev_cross_z=(axis * (centroid - *(nodes.back()) ) ).z ; // irrelevant für mich ist nur z komponente
 
   ItList new_node_locations;
 
@@ -1130,6 +1130,25 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
   ConstructNeighborList();
   daughter->ConstructNeighborList();
 
+  /**
+  * Inherit cellulose spring properties and reset the springs
+  */
+  
+  removeSprings();
+  daughter->removeSprings();
+  if( isSpringPlaced() ) {
+    daughter->PlaceSprings();
+    daughter->SetSigmaSprings( getSigmaSprings() ); 
+    daughter->SetSpringDistributionMean( getSpringDistributionMean() );
+    daughter->setSpringBaseLength( getSpringBaseLength() );
+    daughter->SetRefVecSprings( GetRefVecSprings() );
+    daughter->SetSpringsNormalDistributed();
+  };
+  //parent cell
+  SetSpringsNormalDistributed();
+
+
+
   	/**
      * Here we reconnect the wall elements if they got lose ends, if both ends are lose then
      * the original wall has to be deleted.
@@ -1138,7 +1157,7 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
      */
 	bool n1Connected;
 	bool n2Connected;
-	checkCellLooseWallEnds(wall,n1Connected,n2Connected);
+  	checkCellLooseWallEnds(wall,n1Connected,n2Connected);
 	Cell * cellWithOtherWalls = this;
 	Cell * cellWithSingleWalls = daughter;
 	if (walls.size() < daughter->walls.size()) {
@@ -1168,6 +1187,9 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
 	m->plugin->OnDivide(&parent_info, daughter, this);
 
 	daughter->div_counter=(++div_counter);
+
+
+
 }
 
 void Cell::findBeforeAfter(Node * node, Node ** before, Node**after) {

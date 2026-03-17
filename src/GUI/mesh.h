@@ -235,8 +235,9 @@ class Mesh {
     for (vector<Cell *>::iterator i = current_cells.begin();
     		i != current_cells.end();
     		i ++) {
-    	plugin->CellHouseKeeping(*i);
+    	plugin->CellHouseKeeping(*i); // cellhouse keeping of model
     }
+    //cell wall reconfiguration
     sort(curves.begin(), curves.end(), [](CellWallCurve lhs, CellWallCurve rhs) {return lhs.getThreshold() > rhs.getThreshold();});
     CellWallCurve * array = &(curves[0]);
     double count = curves.size();

@@ -271,7 +271,7 @@ TIMESTEP {
 		mesh.ElasticModulus(par.elastic_modulus);
 		mesh.setElasticLimit(par.elastic_limit);
 		mesh.WallRelaxation();
-    		mesh.InitializeCellSprings();
+    //mesh.InitializeCellSprings();
 
 
 		dh = mesh.DisplaceNodes();

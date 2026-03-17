@@ -1135,62 +1135,26 @@ double Mesh::DisplaceNodes(void)
     double bl_minus_1 = 0.0;
     double bl_plus_1 = 0.0;
 
-          if (activateWallStiffnessHamiltonian())
-          {
+    if (activateWallStiffnessHamiltonian())
+    {
     	calculateWallStiffness(&c, *i, &w_w1, &w_w2, &bl_minus_1, &bl_plus_1);
     }
-          if (bl_minus_1 > 0 && bl_plus_1 > 0)
-          {
+    if (bl_minus_1 > 0 && bl_plus_1 > 0)
+    {
             
-        w1 = cell_w * (w_w1);
-        w2 = cell_w * (w_w2);
-        //check if wall elements are defined and pick the appropriate length_dh
-
-            length_dh +=
-        		  elastic_modulus * w1 *
-        		  bl_minus_1 *(DSQR(new_l1/bl_minus_1 - 1)-DSQR(old_l1/bl_minus_1 - 1)) +
-              elastic_modulus * w2 *
-				      bl_plus_1 *(DSQR(new_l2/bl_plus_1 - 1)-DSQR(old_l2/bl_plus_1 - 1));
-            
-            /*
-            // calculate wallstiffness as vector to allow directional displacement 
-            // wallstiffness scales with angle between growth axis and wall vector
-            // lasse
-            w1 = cell_w * ((w_w1) * (anisotropic_growth_axis*old_vec1.Normalised()).Norm());
-            w2 = cell_w * ((w_w2) * (anisotropic_growth_axis*old_vec2.Normalised()).Norm());
-            //w2 = cell_w * ((w_w2) * (anisotropic_growth_axis.Angle(old_vec2.Normalised())));
-            Vector w1_vector { w1 * old_vec1.Normalised() }; 
-            Vector w2_vector { w2 * old_vec2.Normalised() }; 
-            double w1_old { DSQR(InnerProduct(w1_vector,(delta_p.Normalised()))) };
-            double w2_old { DSQR(InnerProduct(w2_vector,(delta_p.Normalised()))) };
-            if(w1_old < par.f) {w1_old = par.f;};
-            if(w2_old < par.f) {w2_old = par.f;};
-            w1 = cell_w * ((w_w1) * (anisotropic_growth_axis*new_vec1.Normalised()).Norm());
-            w2 = cell_w * ((w_w2) * (anisotropic_growth_axis*new_vec2.Normalised()).Norm());
-            w1_vector = w1 * new_vec1.Normalised() ; 
-            w2_vector = w2 * new_vec2.Normalised() ; 
-            double w1_new { DSQR(InnerProduct(w1_vector,(delta_p.Normalised()))) };
-            double w2_new { DSQR(InnerProduct(w2_vector,(delta_p.Normalised()))) };
-            if(w1_new < par.f) {w1_new = par.f;};
-            if(w2_new < par.f) {w2_new = par.f;};
-            // Here we scale the panality of the cellwall length with cellwall stiffness vector w_vector.
-            // Either use InnerProduct or CrossProduct depending on the wanted direction.
-            // Formula not finalized.
-            // lasse
-            length_dh +=
-                elastic_modulus * bl_minus_1 * 
-                (w1_new * DSQR(new_l1 / bl_minus_1 - 1) - w1_old * DSQR(old_l1 / bl_minus_1 - 1)) +
-                elastic_modulus * bl_plus_1 * 
-                (w2_new * DSQR(new_l2 / bl_plus_1 - 1) - w2_old * DSQR(old_l2 / bl_plus_1 - 1));
-              length_dh += TINY;
-            */
-    }
-          else
-          {
-            length_dh += 2 * Node::target_length * (w1 * (old_l1 - new_l1) + w2 * (old_l2 - new_l2)) +
-        		w1*(DSQR(new_l1) - DSQR(old_l1)) +
-				w2*(DSQR(new_l2) - DSQR(old_l2));
-	}
+      w1 = cell_w * (w_w1);
+      w2 = cell_w * (w_w2);
+      //check if wall elements are defined and pick the appropriate length_dh
+        length_dh +=
+        	elastic_modulus * w1 *
+      	  bl_minus_1 *(DSQR(new_l1/bl_minus_1 - 1)-DSQR(old_l1/bl_minus_1 - 1)) +
+          elastic_modulus * w2 *
+		      bl_plus_1 *(DSQR(new_l2/bl_plus_1 - 1)-DSQR(old_l2/bl_plus_1 - 1));
+    }else
+    {
+      length_dh += 2 * Node::target_length * (w1 * (old_l1 - new_l1) + w2 * (old_l2 - new_l2)) +
+  		w1*(DSQR(new_l1) - DSQR(old_l1)) + w2*(DSQR(new_l2) - DSQR(old_l2));
+	  }
 //    cout << node << "\t" << bl_minus_1 <<  "\t" << bl_plus_1 <<  "\t" << w_w1 <<  "\t" << w_w2 << "\n";
 	}
 
@@ -1198,15 +1162,15 @@ double Mesh::DisplaceNodes(void)
 	// first implementation. Can probably be done more efficiently
 	// calculate osculating circle radius (gives local curvature)
 	// the ideal bending state is flat... (K=0)
-        if (abs(par.bend_lambda) > 0.01)
-        {
+  if (abs(par.bend_lambda) > 0.01)
+  {
 	  // strong bending energy to resist "cleaving" by division planes
 	  double r1, r2;
 
 	  Vector before_a(i_min_1.x,i_min_1.y,0);
 	  Vector before_b(old_p.x, old_p.y,0);
 	  Vector before_c(i_plus_1.x, i_plus_1.y,0);
-	  r1 = osculating_circle_radius(before_a, before_b, before_c);
+  	  r1 = osculating_circle_radius(before_a, before_b, before_c);
 
 	  Vector after_a(i_min_1.x, i_min_1.y,0);
 	  Vector after_b(new_p.x, new_p.y,0);
@@ -1220,90 +1184,85 @@ double Mesh::DisplaceNodes(void)
 	  bending_dh += DSQR(1/r2 - 1/r1);
 	}
 
-        // cellulose spring energy panality
+  // cellulose spring energy panality
 
-        if (c.place_springs)
-        {
+  if (c.isSpringPlaced())
+  {
 
-          double lambda_cellulose { par.d };
-          Matrix cellulose_youngs_modulus {Vector{1.5, 0.05, 0}, Vector{0.05, -0.15, 0}, Vector{0, 0, 0}};
-          for ( auto j = c.springs.begin(); j != c.springs.end();  ){ // loop over the springs
-            
-           if( (*j)->m_n1->index == node.index ) // if moved node is connected to a spring, calculate the energy
-            {
-               
-              //Here I take the connecting spring vector and calculate the energy panality similar to 
-              //the cell wall panality
-              Vector oldSpringVec { (*j)->getSpringVector( -1*delta_p, Vector {0,0,0}) };
-              Vector newSpringVec { (*j)->getSpringVector() };
-              double old_length { (oldSpringVec).Norm() };
-              double new_length { (newSpringVec).Norm() };
-              /* calculate energy with harmonic oszilator for spring length and spring orientation*/
-              cellulose_spring_dh += lambda_cellulose * ( DSQR(new_length / (*j)->getSpringBaseLength() - 1)
-                                                           - DSQR(old_length / (*j)->getSpringBaseLength() - 1)) ;  
-              /* and now we want an angle constrain
-              Vector referenzVector { c.GetRefVecSprings() };
-              double oldAngle { referenzVector.Angle(oldSpringVec)};
-              double newAngle { referenzVector.Angle(newSpringVec)};
-              cellulose_spring_dh += par.e*lambda_cellulose * ( DSQR(newAngle / 1.57 - 1)
-                                                           - DSQR(oldAngle / 1.57 - 1)) ; // 1.57 is pi/2
-              cellulose_spring_dh+=TINY;
-              */
-              /* Now i want to follow the generalized hookean law. old code.
-              Matrix cellulose_strain_tensor_old { (*j)->getCelluloseStrainMatrix(-rx, -ry) };
-              Matrix cellulose_strain_tensor { (*j)->getCelluloseStrainMatrix(0, 0) };
-             
-              cellulose_spring_dh += lambda_cellulose * (((cellulose_youngs_modulus*cellulose_strain_tensor)*cellulose_strain_tensor
-                    - (cellulose_youngs_modulus*cellulose_strain_tensor_old)*cellulose_strain_tensor_old).Trace()); 
-              cellulose_spring_dh += TINY;
-              */
-            } else if( (*j)->m_n2->index == node.index ) // if moved node is connected to a spring, calculate the energy
-            {
+    double lambda_cellulose { par.d };
+    //Matrix cellulose_youngs_modulus {Vector{1.5, 0.05, 0}, Vector{0.05, -0.15, 0}, Vector{0, 0, 0}};
+    for ( auto j = c.springs.begin(); j != c.springs.end();  ){ // loop over the springs
               
-              Vector oldSpringVec { (*j)->getSpringVector( Vector {0,0,0}, -1*delta_p) };
-              Vector newSpringVec { (*j)->getSpringVector() };
-              double old_length { (oldSpringVec).Norm() };
-              double new_length { (newSpringVec).Norm() };
-              cellulose_spring_dh += lambda_cellulose * ( DSQR(new_length / (*j)->getSpringBaseLength() - 1)
-                                                           - DSQR(old_length / (*j)->getSpringBaseLength() - 1)) ;  
-              /* and now we want an angle constrain
-              Vector referenzVector { c.GetRefVecSprings() };
-              double oldAngle { referenzVector.Angle(oldSpringVec)};
-              double newAngle { referenzVector.Angle(newSpringVec)};
-              cellulose_spring_dh += par.e*lambda_cellulose * ( DSQR(newAngle / 1.57 - 1)
-                                                           - DSQR(oldAngle / 1.57 - 1)) ; // 1.57 is pi/2
-              cellulose_spring_dh+=TINY;
-              */
-              /* hier veraltete Springvector komponente
-              Matrix cellulose_strain_tensor_old { (*j)->getCelluloseStrainMatrix(-rx, -ry) };
-              Matrix cellulose_strain_tensor { (*j)->getCelluloseStrainMatrix(0, 0) };
-              
-              cellulose_spring_dh += lambda_cellulose * (((cellulose_youngs_modulus*cellulose_strain_tensor)*cellulose_strain_tensor
-                    - (cellulose_youngs_modulus*cellulose_strain_tensor_old)*cellulose_strain_tensor_old).Trace());
-                               
-              cellulose_spring_dh += TINY;
-              */ 
+      if( (*j)->m_n1->index == node.index ) // if moved node is connected to a spring, calculate the energy
+      {
+                  
+        //Here I take the connecting spring vector and calculate the energy panality similar to 
+                    //the cell wall panality
+        Vector oldSpringVec { (*j)->getSpringVector( -1*delta_p, Vector {0,0,0}) };
+        Vector newSpringVec { (*j)->getSpringVector() };
+        double old_length { (oldSpringVec).Norm() };
+        double new_length { (newSpringVec).Norm() };
+        /* calculate energy with harmonic oszilator for spring length and spring orientation*/
+        cellulose_spring_dh += lambda_cellulose * ( DSQR(new_length / (*j)->getSpringBaseLength() - 1)
+                              - DSQR(old_length / (*j)->getSpringBaseLength() - 1)) ;  
+                  /* and now we want an angle constrain
+                  Vector referenzVector { c.GetRefVecSprings() };
+                  double oldAngle { referenzVector.Angle(oldSpringVec)};
+                  double newAngle { referenzVector.Angle(newSpringVec)};
+                  cellulose_spring_dh += par.e*lambda_cellulose * ( DSQR(newAngle / 1.57 - 1)
+                                                              - DSQR(oldAngle / 1.57 - 1)) ; // 1.57 is pi/2
+                  cellulose_spring_dh+=TINY;
+                  */
+                  /* Now i want to follow the generalized hookean law. old code.
+                  Matrix cellulose_strain_tensor_old { (*j)->getCelluloseStrainMatrix(-rx, -ry) };
+                  Matrix cellulose_strain_tensor { (*j)->getCelluloseStrainMatrix(0, 0) };
+                
+                  cellulose_spring_dh += lambda_cellulose * (((cellulose_youngs_modulus*cellulose_strain_tensor)*cellulose_strain_tensor
+                        - (cellulose_youngs_modulus*cellulose_strain_tensor_old)*cellulose_strain_tensor_old).Trace()); 
+                  cellulose_spring_dh += TINY;
+                  */
+      } else if( (*j)->m_n2->index == node.index ) // if moved node is connected to a spring, calculate the energy
+      {
+                  
+        Vector oldSpringVec { (*j)->getSpringVector( Vector {0,0,0}, -1*delta_p) };
+        Vector newSpringVec { (*j)->getSpringVector() };
+        double old_length { (oldSpringVec).Norm() };
+        double new_length { (newSpringVec).Norm() };
+        cellulose_spring_dh += lambda_cellulose * ( DSQR(new_length / (*j)->getSpringBaseLength() - 1)
+                              - DSQR(old_length / (*j)->getSpringBaseLength() - 1)) ;  
+                  /* and now we want an angle constrain
+                  Vector referenzVector { c.GetRefVecSprings() };
+                  double oldAngle { referenzVector.Angle(oldSpringVec)};
+                  double newAngle { referenzVector.Angle(newSpringVec)};
+                  cellulose_spring_dh += par.e*lambda_cellulose * ( DSQR(newAngle / 1.57 - 1)
+                                                              - DSQR(oldAngle / 1.57 - 1)) ; // 1.57 is pi/2
+                  cellulose_spring_dh+=TINY;
+                  */
+                  /* hier veraltete Springvector komponente
+                  Matrix cellulose_strain_tensor_old { (*j)->getCelluloseStrainMatrix(-rx, -ry) };
+                  Matrix cellulose_strain_tensor { (*j)->getCelluloseStrainMatrix(0, 0) };
+                  
+                  cellulose_spring_dh += lambda_cellulose * (((cellulose_youngs_modulus*cellulose_strain_tensor)*cellulose_strain_tensor
+                        - (cellulose_youngs_modulus*cellulose_strain_tensor_old)*cellulose_strain_tensor_old).Trace());
+                                  
+                  cellulose_spring_dh += TINY;
+                  */ 
+      }if( !((*j)->checkSpringOrientation(par.mu, par.nu)) ){
+        (*j)->m_n1->decrementConnected_to_spring();
+        (*j)->m_n2->decrementConnected_to_spring();
+        j = c.springs.erase(j);
       }
-            if( !((*j)->checkSpringOrientation(par.mu, par.nu)) ){
-              (*j)->m_n1->decrementConnected_to_spring();
-              (*j)->m_n2->decrementConnected_to_spring();
-              j = c.springs.erase(j);
-            }/* else if( c.isSpringAtBottomOrTop(*j) ) {
-              (*j)->m_n1->decrementConnected_to_spring();
-              (*j)->m_n2->decrementConnected_to_spring();
-              j = c.springs.erase(j);
-            } else { ++j; }*/
-             ++j;
-          }
+      ++j;
+    }
         
-        }
+  }
 
-        // make anisotropic energy panality
+  // make anisotropic energy panality
 
-        double alignment_with_axis{DSQR(InnerProduct(anisotropic_growth_axis.Normalised(), old_p.Normalised()))};
+  double alignment_with_axis{DSQR(InnerProduct(anisotropic_growth_axis.Normalised(), old_p.Normalised()))};
 
-         if (c.anisotropic_growth)
-        {
+  if (c.anisotropic_growth)
+  {
 
           // The InnerProduct penalizes if the change of the x and y is not
           // along the direction of the growth axis
@@ -1319,10 +1278,11 @@ double Mesh::DisplaceNodes(void)
                              - sgn(InnerProduct((old_p - c.Centroid()), delta_p))
                              * DSQR(InnerProduct(anisotropic_growth_axis, delta_p)))
                              * anisotropic_penality;
-          */
+          
           Matrix youngs_modulus{Vector{1, 0, 0}, Vector{0, 0, 0}, Vector{0, 0, 0}};                    
           anisotropic_dh += InnerProduct(youngs_modulus * Vector{DSQR(delta_p.x), DSQR(delta_p.y)},
                                         anisotropic_growth_axis) * anisotropic_penality;
+          */
         }
          
       }

@@ -54,7 +54,7 @@
       <par val="100" name="lambda_length"/>
       
       
-      <par val="7" name="yielding_threshold"/>
+      <par val="10" name="yielding_threshold"/>
       
       
       <par val="0" name="lambda_celllength"/>
@@ -424,10 +424,10 @@
       <par val="0" name="c"/>
       
       
-      <par val="1.2" name="mu"/>
+      <par val="1." name="mu"/>
       
       
-      <par val="1.9" name="nu"/>
+      <par val="2.1" name="nu"/>
       
       
       <par val="0" name="rho0"/>

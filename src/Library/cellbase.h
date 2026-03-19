@@ -279,9 +279,10 @@ class CellBase :  public QObject, public Vector
   bool isNodeWithinBoundary(Node* node, double intervalX = 5, double intervalY = 5);
   pair<Node*, Node*> findeOpposedNodes(Node* op_node);
   
+  pair<double,double> findAverageMinMaxY();
   Vector getMinMaxPositionX();
   Vector getMinMaxPositionY();
-
+  void getMinMaxWall();
 
   QList<WallBase *> getWalls(void) {
     QList<WallBase *> wall_list;

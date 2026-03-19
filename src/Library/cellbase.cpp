@@ -753,6 +753,14 @@ Vector CellBase::getMinMaxPositionY()
   
 };
 
+void CellBase::getMinMaxWall()
+{
+  auto minmax { minmax_element(nodes.begin(),nodes.end(), [](const Node* a, const Node*  b){
+                 return a < b;})
+              };
+  WallElementInfo* info;
+  get<0>(minmax) ;
+};
 void CellBase::AddSpringToCell(CellBase *c, Spring *s)
 {
   springs.push_back(s);
@@ -1151,6 +1159,38 @@ pair<Node*, Node*> CellBase::findeOpposedNodes(Node* op_node){
   return pair<Node*, Node*>(upper_node, lower_node);
 }
 
+pair<double,double> CellBase::findAverageMinMaxY(){
+  if (nodes.empty()) {
+    return pair<double,double>(0.0, 0.0);
+  }
+
+  vector<double> yvals;
+  yvals.reserve(nodes.size());
+  for (Node* n : nodes) {
+    yvals.push_back(n->y);
+  }
+
+  sort(yvals.begin(), yvals.end());
+
+  int count = (int)yvals.size();
+  int ncount = min(3, count);
+
+  double sum_low = 0.0;
+  for (int i = 0; i < ncount; i++) {
+    sum_low += yvals[i];
+  }
+
+  double sum_high = 0.0;
+  for (int i = 0; i < ncount; i++) {
+    sum_high += yvals[count - 1 - i];
+  }
+
+  double average_low  = sum_low / ncount;
+  double average_high = sum_high / ncount;
+  return pair<double, double>(average_low, average_high);
+}
+
+
 /**
  * @brief Calculates if the node is at the bottom or top and then checks if it 
  *        is at the corner or not
@@ -1159,13 +1199,14 @@ pair<Node*, Node*> CellBase::findeOpposedNodes(Node* op_node){
  */
 bool CellBase::isNodeWithinBoundary(Node* node, double intervalX, double intervalY)
 {
-  Vector minmaxY { getMinMaxPositionY() };
-  Vector minmaxX { getMinMaxPositionX() };
+  double minY { get<0>(findAverageMinMaxY()) };
+  double maxY { get<1>(findAverageMinMaxY()) };
+  //Vector minmaxX { getMinMaxPositionX() };
   double ny { (node->y) };
   //double nx { (node->x) };
 
-   if ( ((ny > (minmaxY.x) - intervalY && ny < minmaxY.x + intervalY) || 
-        (ny > minmaxY.y - intervalY && ny < minmaxY.y + intervalY )) 
+   if ( ((ny > (minY) - intervalY && ny < minY + intervalY) || 
+        (ny > maxY - intervalY && ny < maxY + intervalY )) 
         // && !((nx > minmaxX.x - intervalX && nx < minmaxX.x + intervalX) || 
         //(nx > minmaxX.y - intervalX && nx < minmaxX.y + intervalX))      
       )

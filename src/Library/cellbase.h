@@ -282,7 +282,6 @@ class CellBase :  public QObject, public Vector
   pair<double,double> findAverageMinMaxY();
   Vector getMinMaxPositionX();
   Vector getMinMaxPositionY();
-  void getMinMaxWall();
 
   QList<WallBase *> getWalls(void) {
     QList<WallBase *> wall_list;

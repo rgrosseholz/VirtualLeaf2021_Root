@@ -29,7 +29,7 @@
     <par name="energy_threshold" val="1000"/>
     <par name="bend_lambda" val="0"/>
     <par name="alignment_lambda" val="0"/>
-    <par name="rel_cell_div_threshold" val="4"/>
+    <par name="rel_cell_div_threshold" val="6"/>
     <par name="rel_perimeter_stiffness" val="2"/>
     <par name="collapse_node_threshold" val="0.05"/>
     <par name="morphogen_div_threshold" val="0.2"/>
@@ -116,8 +116,8 @@
     <par name="e" val="1"/>
     <par name="f" val="0.8"/>
     <par name="c" val="1"/>
-    <par name="mu" val="1.3"/>
-    <par name="nu" val="1.9"/>
+    <par name="mu" val="1.2"/>
+    <par name="nu" val="2"/>
     <par name="rho0" val="0"/>
     <par name="rho1" val="0"/>
     <par name="c0" val="0"/>

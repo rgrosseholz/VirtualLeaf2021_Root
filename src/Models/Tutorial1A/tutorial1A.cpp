@@ -69,7 +69,7 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
     c->PlaceSprings();
     c->SetSigmaSprings( 0.1 ); 
     c->SetSpringDistributionMean( 0 );
-    c->SetSpringsNormalDistributed();
+    c->SetSpringsNormalDistributedExcludeTopBottom();
     c->setSpringBaseLength(9);
     par->bend_lambda = 1;
   } 

@@ -90,7 +90,7 @@ public:
         }
     }
 
-    Matrix getCelluloseStrainMatrix(double rx, double ry);
+
 
     bool checkSpringOrientation(double lowerAngleBound, double higherAngleBound,
                                  Vector ref_vec = Vector { 0, 1, 0});

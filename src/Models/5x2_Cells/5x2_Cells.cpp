@@ -72,7 +72,7 @@ void five_x_two_Cells::CellHouseKeeping(CellBase *c)
       c->PlaceSprings();
       c->SetSigmaSprings( 0.15 ); 
       c->SetSpringDistributionMean( 0 );
-      c->SetSprings();
+      c->SetSpringsNormalDistributed();
       c->setSpringBaseLength(9);
       par->bend_lambda = 1;
       
@@ -88,17 +88,20 @@ void five_x_two_Cells::CellHouseKeeping(CellBase *c)
       // if angle is between 75 - 105 degree return true
       if ( 1.3 < wallVector.Angle(growthDirection) &&  1.9 > wallVector.Angle(growthDirection) ) 
       { 
-        wallElementInfo->getWallElement()->setStiffness(1);
+        wallElementInfo->getWallElement()->setStiffness(1.5);
       } else { 
-        wallElementInfo->getWallElement()->setStiffness(0.65);
+        wallElementInfo->getWallElement()->setStiffness(1);
       }
     });
   }
 
   //division
-  if (c->Area() > par->rel_cell_div_threshold * c->BaseArea()) {
+  if(par->k[1] == 0)
+  {
+    if (c->Area() > par->rel_cell_div_threshold * c->BaseArea()) {
 		c->Divide();
-	}
+	  }
+  }
 }
 
 void five_x_two_Cells::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2)

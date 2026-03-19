@@ -57,9 +57,38 @@ void TwoCells::CellHouseKeeping(CellBase *c)
 {
   // add cell behavioral rules here
   
-  // cellulose spring rules
+
   if(c->Index() == 1){
-  c->EnlargeTargetArea(par->cell_expansion_rate / 5); }
+  c->EnlargeTargetArea(par->cell_expansion_rate / 10); }
+
+  // cellulose spring activation
+  if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k 
+  {
+      c->PlaceSprings();
+      c->SetSigmaSprings( 0.15 ); 
+      c->SetSpringDistributionMean( 0 );
+      c->SetSpringsNormalDistributed();
+      c->setSpringBaseLength(16);
+      par->bend_lambda = 1;
+      
+  }
+  //cell wall weakening happens here
+  if(par->k[0] == 0){
+
+    c->LoopWallElements([](auto wallElementInfo){
+      Vector from { *(wallElementInfo->getFrom()) };
+      Vector to { *(wallElementInfo->getTo()) };
+      Vector wallVector { to - from };
+      Vector growthDirection { 0, 1};
+      // if angle is between 75 - 105 degree return true
+      if ( 1.3 < wallVector.Angle(growthDirection) &&  1.9 > wallVector.Angle(growthDirection) ) 
+      { 
+        wallElementInfo->getWallElement()->setStiffness(1.5);
+      } else { 
+        wallElementInfo->getWallElement()->setStiffness(1);
+      }
+    });
+  }
 
   double base_element_length = 25;
   c->LoopWallElements([base_element_length](auto wallElementInfo)

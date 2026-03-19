@@ -412,7 +412,7 @@
       <par val="0.25" name="vessel_expansion_rate"/>
       
       
-      <par val="800" name="d"/>
+      <par val="1500" name="d"/>
       
       
       <par val="1" name="e"/>

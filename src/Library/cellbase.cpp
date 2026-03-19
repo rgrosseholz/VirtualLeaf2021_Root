@@ -797,6 +797,8 @@ void CellBase::SetSprings(void)
       {
         Spring *s = new Spring(*i, *j, this);
         AddSpringToCell(this, s);
+        (*j)->incrementConnected_to_spring();
+        (*i)->incrementConnected_to_spring();
       }
     }
   }
@@ -946,9 +948,9 @@ void CellBase::SetSpringsNormalDistributed(void)
   
 }
 
-void CellBase::SetSpringOnNodeInsertion(Node* newNode)
+void CellBase::SetSpringOnNodeInsertion(Node* node)
 {
-  //while ( !(newNode->getConnected_to_spring()) ){
+  //while ( !(node->getConnected_to_spring()) ){
   Vector ref_vec = GetRefVecSprings(); // there is a bug where sometimes this becomes 
         //  the vector { 0, 0, 0} no idea why
         // work around set in cellbase.h the initalizer to { 0, 1, 0}
@@ -967,26 +969,26 @@ void CellBase::SetSpringOnNodeInsertion(Node* newNode)
   MyUrand r(shuffled_nodes.size());
   vl_shuffle(shuffled_nodes.begin(), shuffled_nodes.end(), r);
 
-  Vector rel_node = *(newNode);
+  Vector rel_node = *(node);
   double random_angle{abs(d(gen))}; // draw of random angle
 
   for (vector<Node *>::const_iterator j = shuffled_nodes.begin(); j != shuffled_nodes.end(); j++)
   {
     Vector connected_node = *(*j);
-    if ((*j)->index == newNode->index) { continue; }; // check to not connect same nodes
+    if ((*j)->index == node->index) { continue; }; // check to not connect same nodes
     if ( isNodeWithinBoundary(*j) ) { continue; }
     /*
-    if ( newNode->index < (*j)->index )
+    if ( node->index < (*j)->index )
     {
       if (any_of(this->springs.begin(),this->springs.end(), 
-        [j,newNode](Spring* spring) {
-          return ( spring->getNode1() == newNode && spring->getNode2() == *j );
+        [j,node](Spring* spring) {
+          return ( spring->getNode1() == node && spring->getNode2() == *j );
         }
       )) { continue; }
     }else{
       if (any_of(this->springs.begin(),this->springs.end(), 
-        [j,newNode](Spring* spring) {
-          return ( spring->getNode1() == *j && spring->getNode2() == newNode );
+        [j,node](Spring* spring) {
+          return ( spring->getNode1() == *j && spring->getNode2() == node );
         }
       )) { continue; }
     }
@@ -996,19 +998,19 @@ void CellBase::SetSpringOnNodeInsertion(Node* newNode)
     double cos_angle_ref = abs(InnerProduct(ref_vec, normalised_pot_spring));
 
     if (abs(cos_angle_ref - random_angle) <= 0.1 &&
-       (*j)->connected_to_spring < 2 && newNode->connected_to_spring < 10 )
+       (*j)->connected_to_spring < 2 && node->connected_to_spring < 10 )
     {
-      if (newNode->index > (*j)->index ){
-        Spring* s = new Spring(*j, newNode, this, this->getSpringBaseLength());
+      if (node->index > (*j)->index ){
+        Spring* s = new Spring(*j, node, this, this->getSpringBaseLength());
         AddSpringToCell(this, s);
         (*j)->incrementConnected_to_spring();
-        (newNode)->incrementConnected_to_spring();
+        (node)->incrementConnected_to_spring();
         continue;
       }else {
-        Spring* s = new Spring(newNode, *j, this, this->getSpringBaseLength());
+        Spring* s = new Spring(node, *j, this, this->getSpringBaseLength());
         AddSpringToCell(this, s);
         (*j)->incrementConnected_to_spring();
-        (newNode)->incrementConnected_to_spring();
+        (node)->incrementConnected_to_spring();
         continue;
       }
       
@@ -1051,22 +1053,109 @@ void CellBase::resetSprings(double intervalY)
 {
   for( auto node : nodes)
   {
-    //if ( !(node->getConnected_to_spring()) ){
-      Vector minmaxY {getMinMaxPositionY()};
-      if (!((node->y > minmaxY.x - intervalY && node->y < minmaxY.x + intervalY) || 
-            (node->y > minmaxY.y - intervalY && node->y < minmaxY.y + intervalY)))
+    double sigmaSpringInitially { getSigmaSprings() };
+    Vector minmaxY {getMinMaxPositionY()};
+    if (!((node->y > minmaxY.x - intervalY && node->y < minmaxY.x + intervalY) || 
+          (node->y > minmaxY.y - intervalY && node->y < minmaxY.y + intervalY)))
+    {
+      if( node->connected_to_spring < 1)
       {
+        while(node->connected_to_spring < 1 && sigma_springs < sigmaSpringInitially + 0.5 ){
         SetSpringOnNodeInsertion(node);
+        if(sigma_springs < sigmaSpringInitially + 0.5){ sigma_springs += 0.1;} 
+        }
+        SetSigmaSprings(sigmaSpringInitially);
+        if(node->connected_to_spring < 1){
+          pair<Node*, Node*> upper_lower {findeOpposedNodes(node)};
+          Node* upper_node {get<0>(upper_lower)};
+          Node* lower_node {get<1>(upper_lower)};
+          if(!isNodeWithinBoundary(upper_node))
+          {//if else just for right ordering of nodes in the spring
+            if(node->Index() < upper_node->Index()){
+            Spring* s = new Spring(node, upper_node, this, this->getSpringBaseLength());
+            AddSpringToCell(this, s);
+            }else{
+              Spring* s = new Spring(upper_node, node, this, this->getSpringBaseLength());
+              AddSpringToCell(this, s);
+            }
+            (upper_node)->incrementConnected_to_spring();
+            (node)->incrementConnected_to_spring();
+          }
+          if(!isNodeWithinBoundary(lower_node))
+          {  //if else just for right ordering of nodes in the spring
+            if(node->Index() < lower_node->Index()){
+            Spring* s = new Spring(node, lower_node, this, this->getSpringBaseLength());
+            AddSpringToCell(this, s);
+            }else{
+              Spring* s = new Spring(lower_node, node, this, this->getSpringBaseLength());
+              AddSpringToCell(this, s);
+            }
+            (lower_node)->incrementConnected_to_spring();
+            (node)->incrementConnected_to_spring();
+          }
+
+          
+        }
+      }else{
+        SetSpringOnNodeInsertion(node); 
       }
-   // }
+
+
+    }
+
   }
 }
+
+/**
+ * @brief Findes opposing nodes to op_node, which are the closes to the y coordinate
+ * 
+ * @details Loops over the nodes skips nodes and skips nodes which x distance is smaller than 5. 
+ *          5 is more or less a random value. Then updates the lower and upper nodes wether they
+ *          are closer or not.
+ * @return Returns std::pair<Node*, Node*>. First entry is upper node second is lower node.
+ * 
+ */
+pair<Node*, Node*> CellBase::findeOpposedNodes(Node* op_node){
+  Node* upper_node = NULL;
+  Node* lower_node = NULL;
+  double op_node_x { op_node->x };
+  double op_node_y { op_node->y };
+  double best_upper_dy = 1e12;
+  double best_lower_dy = 1e12;
+  double minimal_x_distance { 5 };
+
+  for (Node* n : nodes) {
+    if (n == op_node) {
+      continue;
+    }
+
+    double dx = n->x - op_node_x;
+    if (fabs(dx) < minimal_x_distance) {
+      continue;
+    }
+
+    double dy = n->y - op_node_y;
+    if (dy > 0) {
+      if (dy < best_upper_dy) {
+        best_upper_dy = dy;
+        upper_node = n;
+      }
+    } else {
+      if (fabs(dy) < fabs(best_lower_dy)) {
+        best_lower_dy = dy;
+        lower_node = n;
+      }
+    }
+  }
+
+  return pair<Node*, Node*>(upper_node, lower_node);
+}
+
 /**
  * @brief Calculates if the node is at the bottom or top and then checks if it 
  *        is at the corner or not
  * 
- * @return returns true if node is at the bottom or top of the cell and not at
- *         the corner of the cell
+ * @return returns true if node is at the bottom or top of the cell
  */
 bool CellBase::isNodeWithinBoundary(Node* node, double intervalX, double intervalY)
 {

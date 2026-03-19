@@ -277,7 +277,7 @@ class CellBase :  public QObject, public Vector
   void removeSprings();
   void resetSprings(double intervalY = 5);
   bool isNodeWithinBoundary(Node* node, double intervalX = 5, double intervalY = 5);
-
+  pair<Node*, Node*> findeOpposedNodes(Node* op_node);
   
   Vector getMinMaxPositionX();
   Vector getMinMaxPositionY();

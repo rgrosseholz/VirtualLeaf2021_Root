@@ -1203,13 +1203,14 @@ double Mesh::DisplaceNodes(void)
         double old_length { (oldSpringVec).Norm() };
         double new_length { (newSpringVec).Norm() };
         /* calculate energy with harmonic oszilator for spring length and spring orientation*/
-        cellulose_spring_dh += lambda_cellulose * ( DSQR(new_length / (*j)->getSpringBaseLength() - 1)
-                              - DSQR(old_length / (*j)->getSpringBaseLength() - 1)) ;  
+        cellulose_spring_dh += lambda_cellulose * DSQR(new_length / c.getSpringBaseLength()) *
+                               ( DSQR(new_length / c.getSpringBaseLength() - 1)
+                              - DSQR(old_length / c.getSpringBaseLength() - 1)) ;  
         //and now we want an angle constrain
         Vector referenzVector { c.GetRefVecSprings() };
         double oldAngle { referenzVector.Angle(oldSpringVec)};
         double newAngle { referenzVector.Angle(newSpringVec)};
-        cellulose_spring_dh += par.e*lambda_cellulose * ( DSQR(newAngle / 1.57 - 1)
+        cellulose_spring_dh += lambda_cellulose * ( DSQR(newAngle / 1.57 - 1)
                                 - DSQR(oldAngle / 1.57 - 1)) ; // 1.57 is pi/2
         cellulose_spring_dh+=TINY;
                   
@@ -1228,16 +1229,17 @@ double Mesh::DisplaceNodes(void)
         Vector newSpringVec { (*j)->getSpringVector() };
         double old_length { (oldSpringVec).Norm() };
         double new_length { (newSpringVec).Norm() };
-        cellulose_spring_dh += lambda_cellulose * ( DSQR(new_length / (*j)->getSpringBaseLength() - 1)
-                              - DSQR(old_length / (*j)->getSpringBaseLength() - 1)) ;  
-                  /* and now we want an angle constrain
+        cellulose_spring_dh += lambda_cellulose * DSQR(new_length / c.getSpringBaseLength()) *
+                               ( DSQR(new_length / c.getSpringBaseLength() - 1)
+                              - DSQR(old_length / c.getSpringBaseLength() - 1)) ;  
+                  /* and now we want an angle constrain */
                   Vector referenzVector { c.GetRefVecSprings() };
                   double oldAngle { referenzVector.Angle(oldSpringVec)};
                   double newAngle { referenzVector.Angle(newSpringVec)};
-                  cellulose_spring_dh += par.e*lambda_cellulose * ( DSQR(newAngle / 1.57 - 1)
+                  cellulose_spring_dh += lambda_cellulose * ( DSQR(newAngle / 1.57 - 1)
                                                               - DSQR(oldAngle / 1.57 - 1)) ; // 1.57 is pi/2
                   cellulose_spring_dh+=TINY;
-                  */
+                 
                   /* hier veraltete Springvector komponente
                   Matrix cellulose_strain_tensor_old { (*j)->getCelluloseStrainMatrix(-rx, -ry) };
                   Matrix cellulose_strain_tensor { (*j)->getCelluloseStrainMatrix(0, 0) };

@@ -1033,17 +1033,33 @@ void CellBase::SetSpringOnNodeInsertion(Node* node)
  * @brief remove springs if their orientation is not within the wished angle bound and check than if 
  *        nodes are still connected to a spring
  */
-void CellBase::cleanUpSprings(double angle1, double angle2)
+void CellBase::cleanUpSprings()
 {
-  for (auto it = springs.begin(); it != springs.end(); ) {
+  for (auto node:nodes ) {
     // have to check if the numerical values are good. should represent a +-20 degree around 90 degree
-    if ((*it)->checkSpringOrientation(angle1, angle2, this->GetRefVecSprings())) { 
-      (*it)->m_n1->decrementConnected_to_spring();
-      (*it)->m_n2->decrementConnected_to_spring();
-      it = springs.erase(it);   // erase and move to next element
-    } else {
-        ++it;                    // only advance if no erase happened
-    }
+    
+    if (node->connected_to_spring > 2) {
+      Vector refVec { GetRefVecSprings() } ;
+      Spring* removingSpring { NULL };
+      double angle { 3.1 };
+
+      for(auto spring : springs){
+        
+        if ( ((spring)->m_n1 == node || (spring)->m_n2 == node) ){
+          Vector springVector { (spring)->getSpringVector() };
+          if(fabs(refVec.Angle(springVector)-1.57) > fabs( angle - 1.57))
+          {
+            removingSpring = spring;
+            angle = refVec.Angle(removingSpring->getSpringVector());          
+          }
+        }
+      }   
+      if (removingSpring != NULL ){ 
+        (removingSpring)->m_n1->decrementConnected_to_spring();
+        (removingSpring)->m_n2->decrementConnected_to_spring();
+        springs.remove(removingSpring);
+      }
+    }    
   }
 }
 
@@ -1059,20 +1075,22 @@ void CellBase::removeSprings()
   }
 }
 
+/**
+ * @brief Loops over the nodes and 
+ */
 void CellBase::resetSprings(double intervalY)
 {
   for( auto node : nodes)
   {
     double sigmaSpringInitially { getSigmaSprings() };
     Vector minmaxY {getMinMaxPositionY()};
-    if (!((node->y > minmaxY.x - intervalY && node->y < minmaxY.x + intervalY) || 
-          (node->y > minmaxY.y - intervalY && node->y < minmaxY.y + intervalY)))
+    if (!isNodeWithinBoundary(node))
     {
       if( node->connected_to_spring < 1)
       {
-        while(node->connected_to_spring < 1 && sigma_springs < sigmaSpringInitially + 0.5 ){
+        while(node->connected_to_spring < 1 && sigma_springs < sigmaSpringInitially + 0.3 ){
         SetSpringOnNodeInsertion(node);
-        if(sigma_springs < sigmaSpringInitially + 0.5){ sigma_springs += 0.1;} 
+        if(sigma_springs < sigmaSpringInitially + 0.3){ sigma_springs += 0.1;} 
         }
         SetSigmaSprings(sigmaSpringInitially);
         if(node->connected_to_spring < 1){
@@ -1200,25 +1218,32 @@ pair<double,double> CellBase::findAverageMinMaxY(){
  *        is at the corner or not
  * 
  * @return returns true if node is at the bottom or top of the cell
+ *         and if node is a Null pointer
  */
 bool CellBase::isNodeWithinBoundary(Node* node, double intervalX, double intervalY)
 {
-  double minY { get<0>(findAverageMinMaxY()) };
-  double maxY { get<1>(findAverageMinMaxY()) };
-  //Vector minmaxX { getMinMaxPositionX() };
-  double ny { (node->y) };
-  //double nx { (node->x) };
+  if(node != NULL)
+  {
+    double minY { get<0>(findAverageMinMaxY()) };
+    double maxY { get<1>(findAverageMinMaxY()) };
+    //Vector minmaxX { getMinMaxPositionX() };
+    double ny { (node->y) };
+    //double nx { (node->x) };
 
-   if ( ((ny > (minY) - intervalY && ny < minY + intervalY) || 
-        (ny > maxY - intervalY && ny < maxY + intervalY )) 
-        // && !((nx > minmaxX.x - intervalX && nx < minmaxX.x + intervalX) || 
-        //(nx > minmaxX.y - intervalX && nx < minmaxX.y + intervalX))      
-      )
-    {
-      return true;
-    }else{
-      return false; 
-    }       
+    if ( ((ny > (minY) - intervalY && ny < minY + intervalY) || 
+          (ny > maxY - intervalY && ny < maxY + intervalY )) 
+          // && !((nx > minmaxX.x - intervalX && nx < minmaxX.x + intervalX) || 
+          //(nx > minmaxX.y - intervalX && nx < minmaxX.y + intervalX))      
+        )
+      {
+        return true;
+      }else{
+        return false; 
+      }       
+  }
+  return true;
 }
+
+
 
 /* finis*/

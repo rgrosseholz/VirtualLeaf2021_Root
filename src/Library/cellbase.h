@@ -273,7 +273,7 @@ class CellBase :  public QObject, public Vector
   void SetSpringOnNodeInsertion(Node* newNode);
   void AddSpringToCell (CellBase *c, Spring *s);
   void CheckSprings(void);
-  void cleanUpSprings(double angle1, double angle2);
+  void cleanUpSprings();
   void removeSprings();
   void resetSprings(double intervalY = 5);
   bool isNodeWithinBoundary(Node* node, double intervalX = 5, double intervalY = 5);

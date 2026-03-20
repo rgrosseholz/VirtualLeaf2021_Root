@@ -68,7 +68,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
       c->SetSigmaSprings( 0.15 ); 
       c->SetSpringDistributionMean( 0 );
       c->SetSpringsNormalDistributedExcludeTopBottom();
-      c->setSpringBaseLength(16);
+      c->setSpringBaseLength(17);
       par->bend_lambda = 1;
       
   }

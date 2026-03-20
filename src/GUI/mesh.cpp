@@ -1189,8 +1189,6 @@ double Mesh::DisplaceNodes(void)
   if (c.isSpringPlaced())
   {
 
-    double lambda_cellulose { par.d };
-    //Matrix cellulose_youngs_modulus {Vector{1.5, 0.05, 0}, Vector{0.05, -0.15, 0}, Vector{0, 0, 0}};
     for ( auto j = c.springs.begin(); j != c.springs.end();  ){ // loop over the springs
               
       if( (*j)->m_n1->index == node.index ) // if moved node is connected to a spring, calculate the energy
@@ -1202,8 +1200,15 @@ double Mesh::DisplaceNodes(void)
         Vector newSpringVec { (*j)->getSpringVector() };
         double old_length { (oldSpringVec).Norm() };
         double new_length { (newSpringVec).Norm() };
+        double lambda_cellulose { 1 };
+        if( new_length / c.getSpringBaseLength() > 1) 
+        {
+          lambda_cellulose = par.d * exp( 1 + new_length / c.getSpringBaseLength()) ;
+        }else{
+          lambda_cellulose = par.d * exp( 1 +  c.getSpringBaseLength() / new_length ) ;
+        }
         /* calculate energy with harmonic oszilator for spring length and spring orientation*/
-        cellulose_spring_dh += lambda_cellulose * exp(new_length / c.getSpringBaseLength()) *
+        cellulose_spring_dh += lambda_cellulose  *
                                ( DSQR(new_length / c.getSpringBaseLength() - 1)
                               - DSQR(old_length / c.getSpringBaseLength() - 1)) ;  
         /*and now we want an angle constrain
@@ -1224,12 +1229,19 @@ double Mesh::DisplaceNodes(void)
                   */
       } else if( (*j)->m_n2->index == node.index ) // if moved node is connected to a spring, calculate the energy
       {
-                  
+              
         Vector oldSpringVec { (*j)->getSpringVector( Vector {0,0,0}, -1*delta_p) };
         Vector newSpringVec { (*j)->getSpringVector() };
         double old_length { (oldSpringVec).Norm() };
         double new_length { (newSpringVec).Norm() };
-        cellulose_spring_dh += lambda_cellulose * exp(new_length / c.getSpringBaseLength()) *
+        double lambda_cellulose { 1 };
+        if( new_length / c.getSpringBaseLength() > 1) 
+        {
+          lambda_cellulose = par.d * exp( 1 + new_length / c.getSpringBaseLength()) ;
+        }else{
+          lambda_cellulose = par.d * exp( 1 +  c.getSpringBaseLength() / new_length ) ;
+        }
+         cellulose_spring_dh += lambda_cellulose * 
                                ( DSQR(new_length / c.getSpringBaseLength() - 1)
                               - DSQR(old_length / c.getSpringBaseLength() - 1)) ;  
                   /* and now we want an angle constrain 

@@ -18,7 +18,7 @@
       <par val="1" name="cellnumsize"/>
       
       
-      <par val="1" name="nodenumsize"/>
+      <par val="2" name="nodenumsize"/>
       
       
       <par val="1" name="node_mag"/>
@@ -415,7 +415,7 @@
       <par val="5000" name="d"/>
       
       
-      <par val="1" name="e"/>
+      <par val="2" name="e"/>
       
       
       <par val="0.8" name="f"/>

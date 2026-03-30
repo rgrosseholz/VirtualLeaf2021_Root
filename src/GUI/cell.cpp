@@ -1133,24 +1133,24 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
   /**
   * Inherit cellulose spring properties and reset the springs
   */
-  
-  removeSprings();
-  daughter->removeSprings();
-  if( isSpringPlaced() ) {
-    daughter->PlaceSprings();
-    daughter->SetSigmaSprings( getSigmaSprings() ); 
-    daughter->SetSpringDistributionMean( getSpringDistributionMean() );
-    daughter->setSpringBaseLength( getSpringBaseLength() );
-    daughter->SetRefVecSprings( GetRefVecSprings() );
-    while(daughter->springs.size() < 1){
-    daughter->SetSpringsNormalDistributedExcludeTopBottom();
+  if( par.k[0] == 0){
+    removeSprings();
+    daughter->removeSprings();
+    if( isSpringPlaced() ) {
+      daughter->PlaceSprings();
+      daughter->SetSigmaSprings( getSigmaSprings() ); 
+      daughter->SetSpringDistributionMean( getSpringDistributionMean() );
+      daughter->setSpringBaseLength( getSpringBaseLength() );
+      daughter->SetRefVecSprings( GetRefVecSprings() );
+      while(daughter->springs.size() < 1){
+      daughter->SetSpringsNormalDistributedExcludeTopBottom();
+      }
+    };
+    //parent cell
+    while(springs.size() < 1 ){
+    SetSpringsNormalDistributedExcludeTopBottom();
     }
-  };
-  //parent cell
-  while(springs.size() < 1 ){
-  SetSpringsNormalDistributedExcludeTopBottom();
   }
-
 
   	/**
      * Here we reconnect the wall elements if they got lose ends, if both ends are lose then

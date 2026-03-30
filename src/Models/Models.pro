@@ -2,12 +2,12 @@ TEMPLATE = subdirs
 
 SUBDIRS = \
 #Meinhardt \
-Infection \
+#Infection \
 #MyModel \
-AuxinGrowth \
+#AuxinGrowth \
 #Turing \
 #Test \
-Tutorial0 \
+#Tutorial0 \
 Tutorial1A \
 Tutorial1B \
 #Tutorial1C \
@@ -16,7 +16,7 @@ Tutorial1B \
 #Tutorial3 \
 #Tutorial4 \
 #Tutorial5 \
-twoCells \ 
+#twoCells \ 
 threeCells \
 5x2_Cells \
 nineCells \

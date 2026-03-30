@@ -1090,7 +1090,7 @@ void CellBase::resetSprings(double intervalY)
       {
         while(node->connected_to_spring < 1 && sigma_springs < sigmaSpringInitially + 0.3 ){
         SetSpringOnNodeInsertion(node);
-        if(sigma_springs < sigmaSpringInitially + 0.3){ sigma_springs += 0.1;} 
+        if(sigma_springs < sigmaSpringInitially + 0.3){ sigma_springs += 0.05;} 
         }
         SetSigmaSprings(sigmaSpringInitially);
         if(node->connected_to_spring < 1){
@@ -1175,13 +1175,15 @@ pair<Node*, Node*> CellBase::findeOpposedNodes(Node* op_node){
 }
 
 /**
- * @brief calculates the average of the three highest and lowest nodes
+ * @brief calculates the average of the  highest and lowest nodes. The number of nodes is controlled by par.e ./
  * 
  * @return returns a std::pair<double,double> where the first value is the average
  *         of the lowest nodes and the second value is the average of the highest
  *         nodes
  */
 pair<double,double> CellBase::findAverageMinMaxY(){
+
+  int numOfAverage {par.e};
   if (nodes.empty()) {
     return pair<double,double>(0.0, 0.0);
   }
@@ -1195,7 +1197,7 @@ pair<double,double> CellBase::findAverageMinMaxY(){
   sort(yvals.begin(), yvals.end());
 
   int count = (int)yvals.size();
-  int ncount = min(3, count);
+  int ncount = min(numOfAverage, count);
 
   double sum_low = 0.0;
   for (int i = 0; i < ncount; i++) {
@@ -1211,7 +1213,6 @@ pair<double,double> CellBase::findAverageMinMaxY(){
   double average_high = sum_high / ncount;
   return pair<double, double>(average_low, average_high);
 }
-
 
 /**
  * @brief Calculates if the node is at the bottom or top and then checks if it 

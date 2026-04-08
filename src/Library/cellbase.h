@@ -268,18 +268,19 @@ class CellBase :  public QObject, public Vector
 
   double averageSpringLength();
   void SetSprings(void);
-  void SetSpringsNormalDistributedExcludeTopBottom(void);
+  void SetSpringsNormalDistributedExcludeTopBottom(int numOfAverage);
   void SetSpringsNormalDistributed(void);
-  void SetSpringOnNodeInsertion(Node* newNode);
+  void SetSpringOnNodeInsertion(Node* newNode, int numOfAverage);
   void AddSpringToCell (CellBase *c, Spring *s);
   void CheckSprings(void);
-  void cleanUpSprings();
+  void cleanUpSprings(double angle1, double angle2);
   void removeSprings();
-  void resetSprings(double intervalY = 5);
-  bool isNodeWithinBoundary(Node* node, double intervalX = 5, double intervalY = 5);
+  void resetSprings(int numOfAverage);
+  bool isNodeWithinBoundary(Node* node, int numOfAverage, double intervalY = 3.5,
+                             double intervalX = 3.5);
   pair<Node*, Node*> findeOpposedNodes(Node* op_node);
   
-  pair<double,double> findAverageMinMaxY();
+  pair<double,double> findAverageMinMaxY(int numOfAverage, double intervalY);
   Vector getMinMaxPositionX();
   Vector getMinMaxPositionY();
 

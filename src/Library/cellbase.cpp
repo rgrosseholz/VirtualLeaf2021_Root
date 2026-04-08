@@ -809,6 +809,8 @@ void CellBase::SetSprings(void)
  * @brief Set springs, excluding top and bottom, in cell between nodes with connection
  *         angle drawn from a normal distribution
  * 
+ * @par numOfAverage controls number of average for function isNodewithinBoundary()
+ * 
  * @details 
  * Motivated by the paper Bou Daher et al. eLife 2018, especialy Figure 2. 
  * Draws angle from a normal distribution. If it can find a node node connection which satisfies 
@@ -818,7 +820,7 @@ void CellBase::SetSprings(void)
  * 
  * @return Returns void but modifies the list springs. 
  */
-void CellBase::SetSpringsNormalDistributedExcludeTopBottom(void)
+void CellBase::SetSpringsNormalDistributedExcludeTopBottom(int numOfAverage)
 {
   springs.clear();
   Vector ref_vec = GetRefVecSprings(); // there is a bug where sometimes this becomes 
@@ -842,12 +844,13 @@ void CellBase::SetSpringsNormalDistributedExcludeTopBottom(void)
   for (vector<Node *>::const_iterator i = shuffled_nodes.begin(); i != shuffled_nodes.end(); i++)
   {
     bool goto_nextNode { false };
-    if((*i)->connected_to_spring > 0){
-      if(RandomNumber(4 - (*i)->connected_to_spring) == 1){
+    if((*i)->connected_to_spring > 0 ){ //dieser check wird eig net gebraucht
+      if(RANDOM() <= exp(- ((*i)->connected_to_spring)/2)){
         continue;
      }
     }
-    if ( isNodeWithinBoundary(*i) ) { continue; }
+    if ( isNodeWithinBoundary(*i,numOfAverage) ) {
+       continue; }
     Vector rel_node = *(*i);
     double random_angle{abs(d(gen))}; // draw of random angle
 
@@ -855,12 +858,12 @@ void CellBase::SetSpringsNormalDistributedExcludeTopBottom(void)
     {
       Vector connected_node = *(*j);
       if ((rel_node - connected_node).Norm() < 0.001) { continue; }; // check to not connect same nodes
-      if((*j)->connected_to_spring > 0){
-       if(RandomNumber(4 - (*j)->connected_to_spring) == 1){
+      if((*i)->connected_to_spring > 0){
+       if(RANDOM() <= exp(- ((*j)->connected_to_spring)/2)){
           continue;
         }
       }
-      if ( isNodeWithinBoundary(*j) ) { continue; }
+      if ( isNodeWithinBoundary(*j, numOfAverage) ) { continue; }
       Vector pot_spring = rel_node - connected_node;
       Vector normalised_pot_spring = pot_spring.Normalised();
       double cos_angle_ref = abs(InnerProduct(ref_vec, normalised_pot_spring));
@@ -916,7 +919,7 @@ void CellBase::SetSpringsNormalDistributed(void)
   {
     bool goto_nextNode { false };
     if((*i)->connected_to_spring > 0){
-      if(RandomNumber(4 - (*i)->connected_to_spring) == 1){
+      if(RANDOM() <= exp(- ((*i)->connected_to_spring)/2)){
         continue;
      }
     }
@@ -926,8 +929,8 @@ void CellBase::SetSpringsNormalDistributed(void)
     for (list<Node *>::iterator j = nodes.begin(); j != nodes.end(); j++)
     {
       Vector connected_node = *(*j);
-      if((*j)->connected_to_spring > 0){
-        if(RandomNumber(4 - (*j)->connected_to_spring) == 1){
+      if((*i)->connected_to_spring > 0){
+        if(RANDOM() <= exp(- ((*j)->connected_to_spring)/2)){
           continue;
         }
       }
@@ -952,13 +955,15 @@ void CellBase::SetSpringsNormalDistributed(void)
   
 }
 
-void CellBase::SetSpringOnNodeInsertion(Node* node)
-{
-  if(node->connected_to_spring > 0){
-    if(RandomNumber(4 - node->connected_to_spring) == 1){
-       return;
-    }
+void CellBase::SetSpringOnNodeInsertion(Node* node, int numOfAverage)
+{ 
+  if ( isNodeWithinBoundary(node, numOfAverage) ) {
+     return;
+     }
+  if(RANDOM() <= exp(- (node->connected_to_spring)/2)){
+    return;
   }
+  
   Vector ref_vec = GetRefVecSprings();
   // Normal distribution centered around the mean 0. The standard deviation is sigma_spring.
   std::normal_distribution<double> d(spring_distribution_mean, sigma_springs);
@@ -979,14 +984,13 @@ void CellBase::SetSpringOnNodeInsertion(Node* node)
 
   for (vector<Node *>::const_iterator j = shuffled_nodes.begin(); j != shuffled_nodes.end(); j++)
   {
-    if((*j)->connected_to_spring > 0){
-      if(RandomNumber(4 - (*j)->connected_to_spring) == 1){
-        continue;
-     }
+    if(RANDOM() <= exp(- ((*j)->connected_to_spring)/2)){
+      continue;
     }
+    
     Vector connected_node = *(*j);
     if ((*j)->index == node->index) { continue; }; // check to not connect same nodes
-    if ( isNodeWithinBoundary(*j) ) { continue; }
+    if ( isNodeWithinBoundary(*j, numOfAverage) ) { continue; }
     /*
     if ( node->index < (*j)->index )
     {
@@ -1033,34 +1037,20 @@ void CellBase::SetSpringOnNodeInsertion(Node* node)
  * @brief remove springs if their orientation is not within the wished angle bound and check than if 
  *        nodes are still connected to a spring
  */
-void CellBase::cleanUpSprings()
+void CellBase::cleanUpSprings(double angle1, double angle2)
 {
-  for (auto node:nodes ) {
+  
     // have to check if the numerical values are good. should represent a +-20 degree around 90 degree
-    
-    if (node->connected_to_spring > 2) {
-      Vector refVec { GetRefVecSprings() } ;
-      Spring* removingSpring { NULL };
-      double angle { 3.1 };
-
-      for(auto spring : springs){
+      for(auto j = springs.begin(); j != springs.end();){
         
-        if ( ((spring)->m_n1 == node || (spring)->m_n2 == node) ){
-          Vector springVector { (spring)->getSpringVector() };
-          if(fabs(refVec.Angle(springVector)-1.57) > fabs( angle - 1.57))
-          {
-            removingSpring = spring;
-            angle = refVec.Angle(removingSpring->getSpringVector());          
-          }
+        if( !((*j)->checkSpringOrientation(angle1, angle2)) ){
+        (*j)->m_n1->decrementConnected_to_spring();
+        (*j)->m_n2->decrementConnected_to_spring();
+        j = springs.erase(j);
         }
-      }   
-      if (removingSpring != NULL ){ 
-        (removingSpring)->m_n1->decrementConnected_to_spring();
-        (removingSpring)->m_n2->decrementConnected_to_spring();
-        springs.remove(removingSpring);
+        j++;
       }
-    }    
-  }
+  
 }
 
 /**
@@ -1078,26 +1068,26 @@ void CellBase::removeSprings()
 /**
  * @brief Loops over the nodes and 
  */
-void CellBase::resetSprings(double intervalY)
+void CellBase::resetSprings(int numOfAverage)
 {
   for( auto node : nodes)
   {
     double sigmaSpringInitially { getSigmaSprings() };
-    Vector minmaxY {getMinMaxPositionY()};
-    if (!isNodeWithinBoundary(node))
+    
+    if (node->connected_to_spring < 1)
     {
-      if( node->connected_to_spring < 1)
+      if( !isNodeWithinBoundary(node, numOfAverage) )
       {
-        while(node->connected_to_spring < 1 && sigma_springs < sigmaSpringInitially + 0.3 ){
-        SetSpringOnNodeInsertion(node);
-        if(sigma_springs < sigmaSpringInitially + 0.3){ sigma_springs += 0.05;} 
+        while(node->connected_to_spring < 1 && sigma_springs < sigmaSpringInitially + 0.2 ){
+        SetSpringOnNodeInsertion(node, numOfAverage);
+        if(sigma_springs < sigmaSpringInitially + 0.2){ sigma_springs += 0.05;} 
         }
         SetSigmaSprings(sigmaSpringInitially);
         if(node->connected_to_spring < 1){
           pair<Node*, Node*> upper_lower {findeOpposedNodes(node)};
           Node* upper_node {get<0>(upper_lower)};
           Node* lower_node {get<1>(upper_lower)};
-          if(!isNodeWithinBoundary(upper_node))
+          if(!isNodeWithinBoundary(upper_node, numOfAverage))
           {//if else just for right ordering of nodes in the spring
             if(node->Index() < upper_node->Index()){
             Spring* s = new Spring(node, upper_node, this);
@@ -1109,7 +1099,7 @@ void CellBase::resetSprings(double intervalY)
             (upper_node)->incrementConnected_to_spring();
             (node)->incrementConnected_to_spring();
           }
-          if(!isNodeWithinBoundary(lower_node))
+          if(!isNodeWithinBoundary(lower_node, numOfAverage))
           {  //if else just for right ordering of nodes in the spring
             if(node->Index() < lower_node->Index()){
             Spring* s = new Spring(node, lower_node, this);
@@ -1122,8 +1112,6 @@ void CellBase::resetSprings(double intervalY)
             (node)->incrementConnected_to_spring();
           }    
         }
-      }else{
-        SetSpringOnNodeInsertion(node); 
       }
     }
   }
@@ -1175,15 +1163,20 @@ pair<Node*, Node*> CellBase::findeOpposedNodes(Node* op_node){
 }
 
 /**
- * @brief calculates the average of the  highest and lowest nodes. The number of nodes is controlled by par.e ./
+ * @brief calculates the average of the  highest and lowest nodes. 
+ * 
+ * @par int numofAverage controls the number of nodes used to calculate the average.
+ *      double intervalY controls the range in which we would use either the average or
+ *      the max/min value
  * 
  * @return returns a std::pair<double,double> where the first value is the average
  *         of the lowest nodes and the second value is the average of the highest
- *         nodes
+ *         nodes. The average is replaced by min/max if min/max does not lie within
+ *         the range of intervalY.
  */
-pair<double,double> CellBase::findAverageMinMaxY(){
+pair<double,double> CellBase::findAverageMinMaxY(int numOfAverage, double intervalY){
 
-  int numOfAverage {par.e};
+  
   if (nodes.empty()) {
     return pair<double,double>(0.0, 0.0);
   }
@@ -1211,6 +1204,12 @@ pair<double,double> CellBase::findAverageMinMaxY(){
 
   double average_low  = sum_low / ncount;
   double average_high = sum_high / ncount;
+  if( average_high + intervalY < yvals[count - 1] && average_low - intervalY > yvals[0] )
+   {return pair<double, double>(yvals[0], yvals[count - 1]);}
+  if( average_high + intervalY < yvals[count - 1] )
+   {return pair<double, double>(average_low, yvals[count - 1]);}
+  if( average_low - intervalY > yvals[0] )
+   {return pair<double, double>(yvals[0], average_high);}
   return pair<double, double>(average_low, average_high);
 }
 
@@ -1221,12 +1220,14 @@ pair<double,double> CellBase::findAverageMinMaxY(){
  * @return returns true if node is at the bottom or top of the cell
  *         and if node is a Null pointer
  */
-bool CellBase::isNodeWithinBoundary(Node* node, double intervalX, double intervalY)
+bool CellBase::isNodeWithinBoundary(Node* node, int numOfAverage, double intervalY,
+                                       double intervalX)
 {
   if(node != NULL)
   {
-    double minY { get<0>(findAverageMinMaxY()) };
-    double maxY { get<1>(findAverageMinMaxY()) };
+    pair<double,double> averageMinMax { findAverageMinMaxY(numOfAverage, intervalY) };
+    double minY { get<0>(averageMinMax) };
+    double maxY { get<1>(averageMinMax) };
     //Vector minmaxX { getMinMaxPositionX() };
     double ny { (node->y) };
     //double nx { (node->x) };

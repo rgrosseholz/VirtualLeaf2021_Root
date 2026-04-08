@@ -29,6 +29,7 @@
 #include "wallbase.h"
 #include "cellbase.h"
 #include "threeCells.h"
+#include "node.h"
 
 static const std::string _module_id("$Id$");
 
@@ -64,13 +65,20 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   // cellulose spring activation
   if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k 
   {
-      c->PlaceSprings();
-      c->SetSigmaSprings( 0.15 ); 
-      c->SetSpringDistributionMean( 0 );
-      c->SetSpringsNormalDistributedExcludeTopBottom();
-      c->setSpringBaseLength(17);
-      par->bend_lambda = 1;
-      
+    c->PlaceSprings();
+    c->SetSigmaSprings( 0.15 ); 
+    c->SetSpringDistributionMean( 0 );
+    c->SetSpringsNormalDistributedExcludeTopBottom(par->e);
+    c->setSpringBaseLength(17);      
+  }
+
+  if(par->k[0] == 0){
+    for( auto node : c->getNodesList() ){
+        if( !(node->isConnected_to_spring()) && !(c->isNodeWithinBoundary(node, par->e)) )
+        {
+          c->SetSpringOnNodeInsertion(node, par->e);
+        }
+      }
   }
   //cell wall weakening happens here
   if(par->k[0] == 0){

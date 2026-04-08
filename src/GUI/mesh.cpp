@@ -731,7 +731,7 @@ void Mesh::ReconfigurationWallElement(vector<CellWallCurve> & curves,CellBase* c
 		double length_dh = (
     		elastic_modulus * stiffness * c->GetWallStiffness() *
 			(
-			(s_base) *(
+			(s_base) *( 
 					 DSQR(s_aft/s_base - 1)
 					-DSQR(s_bef/s_base - 1)
 			) -
@@ -1188,7 +1188,7 @@ double Mesh::DisplaceNodes(void)
 
   if (c.isSpringPlaced())
   {
-
+    bool removedSpring {false};
     for ( auto j = c.springs.begin(); j != c.springs.end();  ){ // loop over the springs
               
       if( (*j)->m_n1->index == node.index ) // if moved node is connected to a spring, calculate the energy
@@ -1200,17 +1200,23 @@ double Mesh::DisplaceNodes(void)
         Vector newSpringVec { (*j)->getSpringVector() };
         double old_length { (oldSpringVec).Norm() };
         double new_length { (newSpringVec).Norm() };
+        double springLength { c.getSpringBaseLength() };
         double lambda_cellulose { 1 };
-        if( new_length / c.getSpringBaseLength() > 1) 
-        {
-          lambda_cellulose = par.d * exp( 1 + new_length / c.getSpringBaseLength()) ;
+         if(node.isConnected_to_spring()){
+          lambda_cellulose = 2 ;
         }else{
-          lambda_cellulose = par.d * exp( 1 +  c.getSpringBaseLength() / new_length ) ;
+          lambda_cellulose = 0;
+        }
+        if( new_length / springLength > 1) 
+        {
+          lambda_cellulose =  par.d * DSQR(new_length - springLength);
+        }else{
+          lambda_cellulose = par.d * springLength / new_length ;
         }
         /* calculate energy with harmonic oszilator for spring length and spring orientation*/
         cellulose_spring_dh += lambda_cellulose  *
-                               ( DSQR(new_length / c.getSpringBaseLength() - 1)
-                              - DSQR(old_length / c.getSpringBaseLength() - 1)) ;  
+                               ( DSQR(new_length / springLength - 1)
+                              - DSQR(old_length / springLength - 1)) ;  
         /*and now we want an angle constrain
         Vector referenzVector { c.GetRefVecSprings() };
         double oldAngle { referenzVector.Angle(oldSpringVec)};
@@ -1234,16 +1240,17 @@ double Mesh::DisplaceNodes(void)
         Vector newSpringVec { (*j)->getSpringVector() };
         double old_length { (oldSpringVec).Norm() };
         double new_length { (newSpringVec).Norm() };
+        double springLength { c.getSpringBaseLength() };
         double lambda_cellulose { 1 };
-        if( new_length / c.getSpringBaseLength() > 1) 
+        if( new_length / springLength > 1) 
         {
-          lambda_cellulose = par.d * exp( 1 + new_length / c.getSpringBaseLength()) ;
+          lambda_cellulose = par.d * DSQR(new_length - springLength) ;
         }else{
-          lambda_cellulose = par.d * exp( 1 +  c.getSpringBaseLength() / new_length ) ;
+          lambda_cellulose = par.d * springLength / new_length ;
         }
          cellulose_spring_dh += lambda_cellulose * 
-                               ( DSQR(new_length / c.getSpringBaseLength() - 1)
-                              - DSQR(old_length / c.getSpringBaseLength() - 1)) ;  
+                               ( DSQR(new_length / springLength - 1)
+                              - DSQR(old_length / springLength - 1)) ;  
                   /* and now we want an angle constrain 
                   Vector referenzVector { c.GetRefVecSprings() };
                   double oldAngle { referenzVector.Angle(oldSpringVec)};
@@ -1261,14 +1268,10 @@ double Mesh::DisplaceNodes(void)
                                   
                   cellulose_spring_dh += TINY;
                   */ 
-      }if( !((*j)->checkSpringOrientation(par.mu, par.nu)) ){
-        (*j)->m_n1->decrementConnected_to_spring();
-        (*j)->m_n2->decrementConnected_to_spring();
-        j = c.springs.erase(j);
       }
       ++j;
     }
-        
+    
   }
 
   // make anisotropic energy panality
@@ -1307,16 +1310,16 @@ double Mesh::DisplaceNodes(void)
 
          //(length_constraint_after - length_constraint_before);
 
-        if (dh < 0 || RANDOM() < exp((-dh) / par.T))
-      {
+  if (dh < 0 || RANDOM() < exp((-dh) / par.T))
+  {
 		updateAreasOfCells(&delta_intgrl_list, &node) ;
 
 		node.x = new_p.x;
 		node.y = new_p.y;
 
 		sum_dh += dh;
-      }
-    } 
+  }
+  } 
   next_node:
     delta_intgrl_list.clear();//dA_list.clear();
 
@@ -1536,11 +1539,12 @@ void Mesh::InsertNode(Edge &e) {
 
   // Hier könnte auch einfach true stehen
   if (RandomNumber(1) == 1){ 
-    for (auto c : cells)
+    for (auto owner : owners)
     {
-       if(c->Index() == -1 || !(c->place_springs)) {continue;}
-      c->cleanUpSprings();
-      c->resetSprings();
+      Cell* c { owner.getCell() };
+      if(c->Index() == -1 || !(c->place_springs)) {continue;}
+      c->cleanUpSprings(par.mu, par.nu);
+      c->resetSprings(par.e);
     }
   }
   new_node->splittWallElementsBetween(e.first, e.second);

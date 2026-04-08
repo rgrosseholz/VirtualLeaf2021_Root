@@ -151,7 +151,13 @@ class Node : public NodeBase {
   void setConnected_to_spring(int connections) { connected_to_spring = connections;}
   void incrementConnected_to_spring() { connected_to_spring++;}
   void decrementConnected_to_spring() { if( connected_to_spring > 0 )  connected_to_spring--;}
-  bool getConnected_to_spring() { return static_cast<bool>(connected_to_spring);} // cast int 0 to false else true
+  // returns true if node has spring connection
+  bool isConnected_to_spring(){
+    if( connected_to_spring == 0) { return false;
+    }else{
+      return true;
+    }
+  }
 
   inline void setPos( Vector p ) { 
     x = p.x;

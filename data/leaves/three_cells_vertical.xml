@@ -5,7 +5,7 @@
    <parameter>
       
       
-      <par val="white" name="arrowcolor"/>
+      <par val="yellow" name="arrowcolor"/>
       
     
       
@@ -15,7 +15,7 @@
       <par val="red" name="textcolor"/>
       
       
-      <par val="1" name="cellnumsize"/>
+      <par val="2" name="cellnumsize"/>
       
       
       <par val="2" name="nodenumsize"/>
@@ -84,7 +84,7 @@
       <par val="1000" name="energy_threshold"/>
       
       
-      <par val="0" name="bend_lambda"/>
+      <par val="100" name="bend_lambda"/>
       
       
       <par val="0" name="alignment_lambda"/>
@@ -412,7 +412,7 @@
       <par val="0.25" name="vessel_expansion_rate"/>
       
       
-      <par val="5000" name="d"/>
+      <par val="500 " name="d"/>
       
       
       <par val="2" name="e"/>

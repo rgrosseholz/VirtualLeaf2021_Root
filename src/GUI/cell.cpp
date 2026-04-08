@@ -1143,12 +1143,12 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
       daughter->setSpringBaseLength( getSpringBaseLength() );
       daughter->SetRefVecSprings( GetRefVecSprings() );
       while(daughter->springs.size() < 1){
-      daughter->SetSpringsNormalDistributedExcludeTopBottom();
+      daughter->SetSpringsNormalDistributedExcludeTopBottom(par.e);
       }
     };
     //parent cell
     while(springs.size() < 1 ){
-    SetSpringsNormalDistributedExcludeTopBottom();
+    SetSpringsNormalDistributedExcludeTopBottom(par.e);
     }
   }
 

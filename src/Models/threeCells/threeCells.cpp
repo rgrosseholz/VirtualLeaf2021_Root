@@ -73,12 +73,8 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   }
 
   if(par->k[0] == 0){
-    for( auto node : c->getNodesList() ){
-        if( !(node->isConnected_to_spring()) && !(c->isNodeWithinBoundary(node, par->e)) )
-        {
-          c->SetSpringOnNodeInsertion(node, par->e);
-        }
-      }
+    c->cleanUpSprings(par->mu, par->nu);
+    c->resetSprings(par->e);
   }
   //cell wall weakening happens here
   if(par->k[0] == 0){

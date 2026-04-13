@@ -56,26 +56,25 @@ void five_x_two_Cells::SetCellColor(CellBase *c, QColor *color)
 
 void five_x_two_Cells::CellHouseKeeping(CellBase *c)
 {
-  // add cell behavioral rules here
-  c->EnlargeTargetArea(par->cell_expansion_rate/10);
+   // add cell behavioral rules here
+  
 
-  double base_element_length = 25;
-  c->LoopWallElements([base_element_length](auto wallElementInfo)
-                      {
-        if(std::isnan(wallElementInfo->getWallElement()->getBaseLength())){
-        wallElementInfo->getWallElement()->setBaseLength(base_element_length);
-        } });
+  
+  c->EnlargeTargetArea(par->cell_expansion_rate / 10); 
 
   // cellulose spring activation
   if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k 
   {
-      c->PlaceSprings();
-      c->SetSigmaSprings( 0.15 ); 
-      c->SetSpringDistributionMean( 0 );
-      c->SetSpringsNormalDistributedExcludeTopBottom(par->e);
-      c->setSpringBaseLength(9);
-      par->bend_lambda = 1;
-      
+    c->PlaceSprings();
+    c->SetSigmaSprings( 0.15 ); 
+    c->SetSpringDistributionMean( 0 );
+    c->SetSpringsNormalDistributedExcludeTopBottom(par->e);
+    c->setSpringBaseLength(17);      
+  }
+
+  if(par->k[0] == 0){
+    c->cleanUpSprings(par->mu, par->nu);
+    c->resetSprings(par->e);
   }
   //cell wall weakening happens here
   if(par->k[0] == 0){
@@ -95,13 +94,12 @@ void five_x_two_Cells::CellHouseKeeping(CellBase *c)
     });
   }
 
-  //division
-  if(par->k[1] == 0)
-  {
-    if (c->Area() > par->rel_cell_div_threshold * c->BaseArea()) {
-		c->Divide();
-	  }
-  }
+  double base_element_length = 25;
+  c->LoopWallElements([base_element_length](auto wallElementInfo)
+                      {
+        if(std::isnan(wallElementInfo->getWallElement()->getBaseLength())){
+        wallElementInfo->getWallElement()->setBaseLength(base_element_length);
+        } });
 }
 
 void five_x_two_Cells::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2)

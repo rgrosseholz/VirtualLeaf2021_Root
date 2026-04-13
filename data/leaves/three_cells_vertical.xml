@@ -427,7 +427,7 @@
       <par val="1.2" name="mu"/>
       
       
-      <par val="1.9" name="nu"/>
+      <par val="2" name="nu"/>
       
       
       <par val="0" name="rho0"/>

@@ -844,7 +844,7 @@ void CellBase::SetSpringsNormalDistributedExcludeTopBottom(int numOfAverage)
   for (vector<Node *>::const_iterator i = shuffled_nodes.begin(); i != shuffled_nodes.end(); i++)
   {
     bool goto_nextNode { false };
-    if((*i)->connected_to_spring > 0 ){ //dieser check wird eig net gebraucht
+    if((*i)->connected_to_spring > 0 ){ 
       if(RANDOM() <= exp(- ((*i)->connected_to_spring)/2)){
         continue;
      }
@@ -858,7 +858,7 @@ void CellBase::SetSpringsNormalDistributedExcludeTopBottom(int numOfAverage)
     {
       Vector connected_node = *(*j);
       if ((rel_node - connected_node).Norm() < 0.001) { continue; }; // check to not connect same nodes
-      if((*i)->connected_to_spring > 0){
+      if((*j)->connected_to_spring > 0){
        if(RANDOM() <= exp(- ((*j)->connected_to_spring)/2)){
           continue;
         }
@@ -929,7 +929,7 @@ void CellBase::SetSpringsNormalDistributed(void)
     for (list<Node *>::iterator j = nodes.begin(); j != nodes.end(); j++)
     {
       Vector connected_node = *(*j);
-      if((*i)->connected_to_spring > 0){
+      if((*j)->connected_to_spring > 0){
         if(RANDOM() <= exp(- ((*j)->connected_to_spring)/2)){
           continue;
         }
@@ -957,12 +957,14 @@ void CellBase::SetSpringsNormalDistributed(void)
 
 void CellBase::SetSpringOnNodeInsertion(Node* node, int numOfAverage)
 { 
+  if(node->isConnected_to_spring()){
+    if(RANDOM() <= exp(- (node->connected_to_spring)/2)){
+      return;
+    }
+  }
   if ( isNodeWithinBoundary(node, numOfAverage) ) {
      return;
      }
-  if(RANDOM() <= exp(- (node->connected_to_spring)/2)){
-    return;
-  }
   
   Vector ref_vec = GetRefVecSprings();
   // Normal distribution centered around the mean 0. The standard deviation is sigma_spring.
@@ -984,9 +986,11 @@ void CellBase::SetSpringOnNodeInsertion(Node* node, int numOfAverage)
 
   for (vector<Node *>::const_iterator j = shuffled_nodes.begin(); j != shuffled_nodes.end(); j++)
   {
+    if((*j)->isConnected_to_spring()){
     if(RANDOM() <= exp(- ((*j)->connected_to_spring)/2)){
-      continue;
+      return;
     }
+  }
     
     Vector connected_node = *(*j);
     if ((*j)->index == node->index) { continue; }; // check to not connect same nodes

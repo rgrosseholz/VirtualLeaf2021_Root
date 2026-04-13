@@ -274,4 +274,30 @@ void Node::splittWallElementsBetween(Node *from, Node *to) {
 		}
 	}
 }
+
+/**
+ * @brief Gets Spring object of node and it's neighboring nodes
+ * 
+ * @return Returns vector<Spring*> of size 3. Entry 0 is for spring of node,
+ *         entry 1 is for spring of neighbor1(nb1) and entry 2 is for nb2. 
+ *         If a node is not connected to a spring returns NULL.
+ */
+vector<Spring*> Node::getSprings(const Neighbor &i){
+  for ( auto spring : (getCell( i ).springs)  ){ // loop over the springs
+    vector<Spring*> springs { NULL, NULL, NULL };
+
+    int springNode1 { spring->getNode1()->index };
+    int springNode2 { spring->getNode2()->index };
+
+    if( springNode1 == index ) { springs[0] = spring;}
+    if( springNode2 == index ) { springs[0] = spring;}
+
+    if( springNode1 == i.nb1->Index() ) { springs[1] = spring;}
+    if( springNode2 == i.nb1->Index() ) { springs[1] = spring;}
+
+    if( springNode1 == i.nb2->Index() ) { springs[2] = spring;}
+    if( springNode2 == i.nb2->Index() ) { springs[2] = spring;}
+    return springs;   
+  }
+}
 /* finis */

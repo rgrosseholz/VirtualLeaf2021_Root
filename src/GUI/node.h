@@ -43,6 +43,7 @@
 #include <QVector>
 
 #include "Neighbor.h"
+#include "spring.h"
 
 extern Parameter par;
 
@@ -158,6 +159,8 @@ class Node : public NodeBase {
       return true;
     }
   }
+
+ vector<Spring*> getSprings(const Neighbor &i){};
 
   inline void setPos( Vector p ) { 
     x = p.x;

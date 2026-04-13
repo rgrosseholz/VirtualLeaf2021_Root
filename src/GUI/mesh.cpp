@@ -851,6 +851,21 @@ void Mesh::InitializeCellSprings()
   }
 }
 
+/**
+ * @brief calculates crosspoint in the middle of 4 nodes
+ * 
+ * @return returns a vector
+ */
+Vector Mesh::calcSpringConnection( Vector node1, Vector node2, Vector node3, Vector node4 ){
+  Vector b { node1 - node3 };
+  Vector u { (node4 - node1).Normalised() };
+  Vector v { (node4 - node1).Normalised() };
+
+  double rSol { (b.y - b.x * u.y) / (v.y + u.y*v.x) };
+  Vector crossPoint { node1 + rSol * u };
+  return crossPoint;
+}
+
 double Mesh::DisplaceNodes(void)
 {
 
@@ -1188,90 +1203,36 @@ double Mesh::DisplaceNodes(void)
 
   if (c.isSpringPlaced())
   {
-    bool removedSpring {false};
-    for ( auto j = c.springs.begin(); j != c.springs.end();  ){ // loop over the springs
-              
-      if( (*j)->m_n1->index == node.index ) // if moved node is connected to a spring, calculate the energy
-      {
-                  
-        //Here I take the connecting spring vector and calculate the energy panality similar to 
-                    //the cell wall panality
-        Vector oldSpringVec { (*j)->getSpringVector( -1*delta_p, Vector {0,0,0}) };
-        Vector newSpringVec { (*j)->getSpringVector() };
-        double old_length { (oldSpringVec).Norm() };
-        double new_length { (newSpringVec).Norm() };
-        double springLength { c.getSpringBaseLength() };
-        double lambda_cellulose { 1 };
-         if(node.isConnected_to_spring()){
-          lambda_cellulose = 2 ;
-        }else{
-          lambda_cellulose = 0;
-        }
-        if( new_length / springLength > 1) 
-        {
-          lambda_cellulose =  par.d * DSQR(new_length - springLength);
-        }else{
-          lambda_cellulose = par.d * springLength / new_length ;
-        }
-        /* calculate energy with harmonic oszilator for spring length and spring orientation*/
-        cellulose_spring_dh += lambda_cellulose  *
-                               ( DSQR(new_length / springLength - 1)
-                              - DSQR(old_length / springLength - 1)) ;  
-        /*and now we want an angle constrain
-        Vector referenzVector { c.GetRefVecSprings() };
-        double oldAngle { referenzVector.Angle(oldSpringVec)};
-        double newAngle { referenzVector.Angle(newSpringVec)};
-        cellulose_spring_dh += lambda_cellulose * ( DSQR(newAngle / 1.57 - 1)
-                                - DSQR(oldAngle / 1.57 - 1)) ; // 1.57 is pi/2
-        cellulose_spring_dh+=TINY;
-        */          
-                  /* Now i want to follow the generalized hookean law. old code.
-                  Matrix cellulose_strain_tensor_old { (*j)->getCelluloseStrainMatrix(-rx, -ry) };
-                  Matrix cellulose_strain_tensor { (*j)->getCelluloseStrainMatrix(0, 0) };
-                
-                  cellulose_spring_dh += lambda_cellulose * (((cellulose_youngs_modulus*cellulose_strain_tensor)*cellulose_strain_tensor
-                        - (cellulose_youngs_modulus*cellulose_strain_tensor_old)*cellulose_strain_tensor_old).Trace()); 
-                  cellulose_spring_dh += TINY;
-                  */
-      } else if( (*j)->m_n2->index == node.index ) // if moved node is connected to a spring, calculate the energy
-      {
-              
-        Vector oldSpringVec { (*j)->getSpringVector( Vector {0,0,0}, -1*delta_p) };
-        Vector newSpringVec { (*j)->getSpringVector() };
-        double old_length { (oldSpringVec).Norm() };
-        double new_length { (newSpringVec).Norm() };
-        double springLength { c.getSpringBaseLength() };
-        double lambda_cellulose { 1 };
-        if( new_length / springLength > 1) 
-        {
-          lambda_cellulose = par.d * DSQR(new_length - springLength) ;
-        }else{
-          lambda_cellulose = par.d * springLength / new_length ;
-        }
-         cellulose_spring_dh += lambda_cellulose * 
-                               ( DSQR(new_length / springLength - 1)
-                              - DSQR(old_length / springLength - 1)) ;  
-                  /* and now we want an angle constrain 
-                  Vector referenzVector { c.GetRefVecSprings() };
-                  double oldAngle { referenzVector.Angle(oldSpringVec)};
-                  double newAngle { referenzVector.Angle(newSpringVec)};
-                  cellulose_spring_dh += lambda_cellulose * ( DSQR(newAngle / 1.57 - 1)
-                                                              - DSQR(oldAngle / 1.57 - 1)) ; // 1.57 is pi/2
-                  cellulose_spring_dh+=TINY;
-                 */
-                  /* hier veraltete Springvector komponente
-                  Matrix cellulose_strain_tensor_old { (*j)->getCelluloseStrainMatrix(-rx, -ry) };
-                  Matrix cellulose_strain_tensor { (*j)->getCelluloseStrainMatrix(0, 0) };
-                  
-                  cellulose_spring_dh += lambda_cellulose * (((cellulose_youngs_modulus*cellulose_strain_tensor)*cellulose_strain_tensor
-                        - (cellulose_youngs_modulus*cellulose_strain_tensor_old)*cellulose_strain_tensor_old).Trace());
-                                  
-                  cellulose_spring_dh += TINY;
-                  */ 
+    Vector spring0 { 0, 0, 0 };
+    Vector spring1 { 0, 0, 0 };
+    Vector spring2 { 0, 0, 0 };
+
+    if( node.isConnected_to_spring() ){
+      int numOfSprings { 0 };
+      vector<Spring*> springs { node.getSprings( c.getNeighbor( &node ) )};
+      if( springs[0] != NULL ) { spring0 = springs[0]->getSpringVector(); numOfSprings++; }
+      if( springs[1] != NULL ) { spring1 = springs[1]->getSpringVector(); numOfSprings++; }
+      if( springs[2] != NULL ) { spring2 = springs[2]->getSpringVector(); numOfSprings++; }
+
+      if( springs[1] != NULL && springs[2] != NULL ){
+
+      } else if( springs[1] != NULL ){
+
+      } else if( springs[2] != NULL ){
+        Vector node1 { springs[0]->getNode1()->x, springs[0]->getNode1()->y };
+        Vector node2 { springs[0]->getNode2()->x, springs[0]->getNode2()->y };
+        Vector node3 { springs[2]->getNode1()->x, springs[2]->getNode1()->y };
+        Vector node4 { springs[2]->getNode2()->x, springs[2]->getNode2()->y };
+        Vector connection { calcSpringConnection( node1, node2, node3, node4 )};
+        Vector spring1 { connection - node1 };
+        Vector spring2 { connection - node2 };
+        Vector spring3 { connection - node3 };
+        Vector spring4 { connection - node4 };
+
+      } else {
+
       }
-      ++j;
     }
-    
   }
 
   // make anisotropic energy panality

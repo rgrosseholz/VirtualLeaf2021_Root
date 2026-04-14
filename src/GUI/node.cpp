@@ -283,9 +283,9 @@ void Node::splittWallElementsBetween(Node *from, Node *to) {
  *         If a node is not connected to a spring returns NULL.
  */
 vector<Spring*> Node::getSprings(const Neighbor &i){
+  vector<Spring*> springs { NULL, NULL, NULL };
   for ( auto spring : (getCell( i ).springs)  ){ // loop over the springs
-    vector<Spring*> springs { NULL, NULL, NULL };
-
+    
     int springNode1 { spring->getNode1()->index };
     int springNode2 { spring->getNode2()->index };
 
@@ -296,8 +296,8 @@ vector<Spring*> Node::getSprings(const Neighbor &i){
     if( springNode2 == i.nb1->Index() ) { springs[1] = spring;}
 
     if( springNode1 == i.nb2->Index() ) { springs[2] = spring;}
-    if( springNode2 == i.nb2->Index() ) { springs[2] = spring;}
-    return springs;   
+    if( springNode2 == i.nb2->Index() ) { springs[2] = spring;}  
   }
+  return springs; 
 }
 /* finis */

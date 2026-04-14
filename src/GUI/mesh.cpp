@@ -859,7 +859,7 @@ void Mesh::InitializeCellSprings()
 Vector Mesh::calcSpringConnection( Vector node1, Vector node2, Vector node3, Vector node4 ){
   Vector b { node1 - node3 };
   Vector u { (node4 - node1).Normalised() };
-  Vector v { (node4 - node1).Normalised() };
+  Vector v { (node2 - node3).Normalised() };
 
   double rSol { (b.y - b.x * u.y) / (v.y + u.y*v.x) };
   Vector crossPoint { node1 + rSol * u };
@@ -874,12 +874,13 @@ double Mesh::calcSpringNetworkEnergy(Vector node1, Vector node2, Vector node3, V
         Vector spring3 { connection - node3 };
         Vector spring4 { connection - node4 };
         Vector force { 0,0,0 };
+        Vector delta_p234 { 0,0,0 };
         double spring_length { 0.5 * cell.getSpringBaseLength() };
-        force = lambda_spring * ( spring1.Normalised() * ( spring1.Norm()/spring_length -1)
-                    + spring2.Normalised() * ( spring2.Norm()/spring_length -1)
-                    + spring3.Normalised() * ( spring3.Norm()/spring_length -1)
-                    + spring4.Normalised() * ( spring4.Norm()/spring_length -1) );
-        Vector delta_p234 { 1/3 * ( force / lambda_spring - displacment )};
+        force = ( spring1.Normalised() * ( spring1.Norm()/spring_length -1)
+                  + spring2.Normalised() * ( spring2.Norm()/spring_length -1)
+                  + spring3.Normalised() * ( spring3.Norm()/spring_length -1)
+                  + spring4.Normalised() * ( spring4.Norm()/spring_length -1) );
+        delta_p234 = 1/3 * ( force - displacment );
         double cellulose_spring_dh {0};
         cellulose_spring_dh = 
           lambda_spring * ( DSQR((spring1 + displacment).Norm() / spring_length - 1) 
@@ -1245,17 +1246,31 @@ double Mesh::DisplaceNodes(void)
       if( springs[1] != NULL && springs[2] != NULL ){
         Vector node1 {0,0,0};
         Vector node2 {0,0,0};
+        Vector node3 {0,0,0};
+        Vector node4 {0,0,0};
+        Vector node5 {0,0,0};
+        Vector node6 {0,0,0};
         if( node == *springs[0]->getNode1() ){
-          node1 = springs[0]->getNode1()->x, springs[0]->getNode1()->y;
-          node2 = springs[0]->getNode2()->x, springs[0]->getNode2()->y;
+          node1 = {springs[0]->getNode1()->x, springs[0]->getNode1()->y, 0};
+          node2 = {springs[0]->getNode2()->x, springs[0]->getNode2()->y, 0};
         } else {
-          node2 = springs[0]->getNode1()->x, springs[0]->getNode1()->y;
-          node1 = springs[0]->getNode2()->x, springs[0]->getNode2()->y;
+          node2 = {springs[0]->getNode1()->x, springs[0]->getNode1()->y, 0};
+          node1 = {springs[0]->getNode2()->x, springs[0]->getNode2()->y, 0};
         }
-        Vector node3 { springs[1]->getNode1()->x, springs[1]->getNode1()->y };
-        Vector node4 { springs[1]->getNode2()->x, springs[1]->getNode2()->y };
-        Vector node5 { springs[2]->getNode1()->x, springs[2]->getNode1()->y };
-        Vector node6 { springs[2]->getNode2()->x, springs[2]->getNode2()->y };
+        if(springs[1]->getNode1()->x * node.x >= 0){
+          node3 = { springs[1]->getNode1()->x, springs[1]->getNode1()->y };
+          node4 = { springs[1]->getNode2()->x, springs[1]->getNode2()->y };
+        }else{
+          node4 = { springs[1]->getNode1()->x, springs[1]->getNode1()->y };
+          node3 = { springs[1]->getNode2()->x, springs[1]->getNode2()->y };
+        }
+        if(springs[2]->getNode1()->x * node.x >= 0){
+          node5 = { springs[2]->getNode1()->x, springs[2]->getNode1()->y };
+          node6 = { springs[2]->getNode2()->x, springs[2]->getNode2()->y };
+        }else{
+          node6 = { springs[2]->getNode1()->x, springs[2]->getNode1()->y };
+          node5 = { springs[2]->getNode2()->x, springs[2]->getNode2()->y };
+        }
         cellulose_spring_dh += calcSpringNetworkEnergy(node1, node2, node3,
                                    node4, c, delta_p, lambda_spring)
                              + calcSpringNetworkEnergy(node1, node2, node5,
@@ -1263,33 +1278,61 @@ double Mesh::DisplaceNodes(void)
       } else if( springs[1] != NULL ){
         Vector node1 {0,0,0};
         Vector node2 {0,0,0};
+        Vector node3 {0,0,0};
+        Vector node4 {0,0,0};
         if( node == *springs[0]->getNode1() ){
-          node1 = springs[0]->getNode1()->x, springs[0]->getNode1()->y;
-          node2 = springs[0]->getNode2()->x, springs[0]->getNode2()->y;
+          node1 = {springs[0]->getNode1()->x, springs[0]->getNode1()->y, 0};
+          node2 = {springs[0]->getNode2()->x, springs[0]->getNode2()->y, 0};
         } else {
-          node2 = springs[0]->getNode1()->x, springs[0]->getNode1()->y;
-          node1 = springs[0]->getNode2()->x, springs[0]->getNode2()->y;
+          node2 = {springs[0]->getNode1()->x, springs[0]->getNode1()->y, 0};
+          node1 = {springs[0]->getNode2()->x, springs[0]->getNode2()->y, 0};
         }
-        Vector node3 { springs[1]->getNode1()->x, springs[1]->getNode1()->y };
-        Vector node4 { springs[1]->getNode2()->x, springs[1]->getNode2()->y };
+        if(springs[1]->getNode1()->x * node.x >= 0){
+          node3 = { springs[1]->getNode1()->x, springs[1]->getNode1()->y };
+          node4 = { springs[1]->getNode2()->x, springs[1]->getNode2()->y };
+        }else{
+          node4 = { springs[1]->getNode1()->x, springs[1]->getNode1()->y };
+          node3 = { springs[1]->getNode2()->x, springs[1]->getNode2()->y };
+        }
         cellulose_spring_dh += calcSpringNetworkEnergy(node1, node2, node3,
                                    node4, c, delta_p, lambda_spring);
       } else if( springs[2] != NULL ){
         Vector node1 {0,0,0};
         Vector node2 {0,0,0};
+        Vector node3 {0,0,0};
+        Vector node4 {0,0,0};
         if( node == *springs[0]->getNode1() ){
-          node1 = springs[0]->getNode1()->x, springs[0]->getNode1()->y;
-          node2 = springs[0]->getNode2()->x, springs[0]->getNode2()->y;
+          node1 = {springs[0]->getNode1()->x, springs[0]->getNode1()->y, 0};
+          node2 = {springs[0]->getNode2()->x, springs[0]->getNode2()->y, 0};
         } else {
-          node2 = springs[0]->getNode1()->x, springs[0]->getNode1()->y;
-          node1 = springs[0]->getNode2()->x, springs[0]->getNode2()->y;
+          node2 = {springs[0]->getNode1()->x, springs[0]->getNode1()->y, 0};
+          node1 = {springs[0]->getNode2()->x, springs[0]->getNode2()->y, 0};
         }
-        Vector node3 { springs[2]->getNode1()->x, springs[2]->getNode1()->y };
-        Vector node4 { springs[2]->getNode2()->x, springs[2]->getNode2()->y };
+        if(springs[2]->getNode1()->x * node.x >= 0){
+          node3 = { springs[2]->getNode1()->x, springs[2]->getNode1()->y };
+          node4 = { springs[2]->getNode2()->x, springs[2]->getNode2()->y };
+        }else{
+          node4 = { springs[2]->getNode1()->x, springs[2]->getNode1()->y };
+          node3 = { springs[2]->getNode2()->x, springs[2]->getNode2()->y };
+        }
         cellulose_spring_dh += calcSpringNetworkEnergy(node1, node2, node3,
-                                   node4, c, delta_p, lambda_spring); 
+                                   node4, c, delta_p, lambda_spring);
       } else {
-        
+        Vector oldSpringVec { springs[0]->getSpringVector( Vector {0,0,0}, -1*delta_p) };
+        Vector newSpringVec { springs[0]->getSpringVector() };
+        double old_length { (oldSpringVec).Norm() };
+        double new_length { (newSpringVec).Norm() };
+        double springLength { c.getSpringBaseLength() };
+        double lambda_cellulose { 1 };
+        if( new_length / springLength > 1) 
+        {
+          lambda_cellulose = par.d * DSQR(new_length - springLength) ;
+        }else{
+          lambda_cellulose = par.d * springLength / new_length ;
+        }
+         cellulose_spring_dh += lambda_cellulose * 
+                               ( DSQR(new_length / springLength - 1)
+                              - DSQR(old_length / springLength - 1)) ;
       }
     }
   }

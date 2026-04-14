@@ -19,7 +19,6 @@
 #include "warning.h"
 #include "node.h"
 
-
 class Spring{
 
     friend class Cell;
@@ -46,23 +45,14 @@ public:
     Node* getNode1() { return m_n1; };
     Node* getNode2() { return m_n2; };
 
-    Vector getSpringVector() // vector points from node 2 to node 1 
-    {
-        return Vector { m_n1->x - m_n2->x, m_n1->y - m_n2->y, m_n1->z - m_n2->z};
-    }
-    Vector getSpringVector(Vector rN1, Vector rN2) // vector points from node 2 to node 1 
-    {
-        return Vector { (m_n1->x + rN1.x) - (m_n2->x + rN2.x) ,
-                        (m_n1->y + rN1.y) - (m_n2->y + rN2.y) ,
-                        (m_n1->z + rN1.z) - (m_n2->z + rN2.z)};
-    }
+    Vector getSpringVector();
+
+    Vector getSpringVector(Vector rN1, Vector rN2);
+    
     /**
      * @brief Calculates the norm of the vector between the two nodes
      */
-    double getSpringLength()
-    {
-        return sqrt(DSQR(m_n1->x - m_n2->x)+DSQR(m_n1->y - m_n2->y)+DSQR(m_n1->z - m_n2->z));
-    }
+    double getSpringLength();
 
     bool checkSpringOrientation(double lowerAngleBound, double higherAngleBound,
                                  Vector ref_vec = Vector { 0, 1, 0});

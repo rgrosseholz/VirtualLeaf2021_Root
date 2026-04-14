@@ -160,7 +160,14 @@ class Node : public NodeBase {
     }
   }
 
- vector<Spring*> getSprings(const Neighbor &i){};
+  /**
+  * @brief Gets Spring object of node and it's neighboring nodes
+  * 
+  * @return Returns vector<Spring*> of size 3. Entry 0 is for spring of node,
+  *         entry 1 is for spring of neighbor1(nb1) and entry 2 is for nb2. 
+  *         If a node is not connected to a spring returns NULL.
+  */
+  vector<Spring*> getSprings(const Neighbor &i);
 
   inline void setPos( Vector p ) { 
     x = p.x;

@@ -296,7 +296,9 @@ class Mesh {
   bool activateWallStiffnessHamiltonian() {return (this->compatibility_level & WALL_STIFFNESS_HAMILTONIAN) != 0;}
   bool activateWallReconfigurationing() {return (this->compatibility_level & WALL_SLIDING) != 0;}
   void InitializeCellSprings();
-
+  Vector calcSpringConnection( Vector node1, Vector node2, Vector node3, Vector node4 );
+  double calcSpringNetworkEnergy(Vector node1, Vector node2, Vector node3, Vector node4
+                                  , Cell cell, Vector displacment, double lambda_spring);
   void BoundingBox(Vector &LowerLeft, Vector &UpperRight);
   int NEqs(void) {     int nwalls = walls.size();
     int ncells =cells.size();

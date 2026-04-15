@@ -955,6 +955,71 @@ void CellBase::SetSpringsNormalDistributed(void)
   
 }
 
+bool CellBase::isSpringAlready(Node* node1, Node* node2){
+  for(auto spring : springs){
+    if( (node1 == spring->m_n1 && node2 == spring->m_n2) 
+        || (node1 == spring->m_n2 && node2 == spring->m_n1)){
+      return true;
+    }
+  }
+  return false;
+}
+
+void CellBase::SetSpringsNormalDistributed(double spring_distribution_mean, double sigma_springs)
+{
+  Vector ref_vec = GetRefVecSprings(); // there is a bug where sometimes this becomes 
+        //  the vector { 0, 0, 0} no idea why
+        // work around set in cellbase.h the initalizer to { 0, 1, 0}
+
+  // Normal distribution centered around the mean 0. The standard deviation is sigma_spring.
+  std::normal_distribution<double> d(spring_distribution_mean, sigma_springs);
+  std::random_device rd{};
+  std::mt19937 gen{rd()};
+  vector<Node *> shuffled_nodes;
+  shuffled_nodes.reserve(this->nodes.size());
+  std::copy(std::begin(this->nodes), std::end(this->nodes), std::back_inserter(shuffled_nodes));
+
+  MyUrand r(shuffled_nodes.size());
+  vl_shuffle(shuffled_nodes.begin(), shuffled_nodes.end(), r);
+
+  for (vector<Node *>::const_iterator i = shuffled_nodes.begin(); i != shuffled_nodes.end(); i++)
+  {
+    Vector rel_node = *(*i);
+    while(
+       RANDOM() <= (exp(- ((*i)->connected_to_spring)/3) - 0.1)
+      ){
+      double ran { RANDOM() };
+      double cos_random_angle{fabs(d(gen))}; // draw of random angle
+      for (list<Node *>::iterator j = nodes.begin(); j != nodes.end(); j++)
+      {
+        Vector connected_node = *(*j);
+        if((*j)->connected_to_spring > 0){
+          if(!(RANDOM() <= exp(- ((*j)->connected_to_spring)/3))){
+            continue;
+          }
+        }
+        if ((rel_node - connected_node).Norm() < 0.001) { continue; }; // check to not connect same nodes
+
+        Vector pot_spring = rel_node - connected_node;
+        Vector normalised_pot_spring = pot_spring.Normalised();
+        double cos_angle_ref = fabs(InnerProduct(ref_vec, normalised_pot_spring));
+
+
+        if (fabs(cos_angle_ref - cos_random_angle) <= 0.1) //abs wurde manchmal auf int gecastet
+        {
+          if( isSpringAlready(*i, *j) ) { continue; }
+          Spring* s = new Spring(*i, *j, this);
+            AddSpringToCell(this, s);
+            (*j)->incrementConnected_to_spring();
+            (*i)->incrementConnected_to_spring();
+            continue;
+        }
+      }
+    }
+  }
+  
+}
+
 void CellBase::SetSpringOnNodeInsertion(Node* node, int numOfAverage)
 { 
   if(node->isConnected_to_spring()){
@@ -982,7 +1047,7 @@ void CellBase::SetSpringOnNodeInsertion(Node* node, int numOfAverage)
   vl_shuffle(shuffled_nodes.begin(), shuffled_nodes.end(), r);
 
   Vector rel_node = *(node);
-  double random_angle{abs(d(gen))}; // draw of random angle
+  double random_angle{fabs(d(gen))}; // draw of random angle
 
   for (vector<Node *>::const_iterator j = shuffled_nodes.begin(); j != shuffled_nodes.end(); j++)
   {

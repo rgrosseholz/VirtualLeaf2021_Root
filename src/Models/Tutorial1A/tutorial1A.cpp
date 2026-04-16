@@ -69,7 +69,7 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
     c->PlaceSprings();
     c->SetSigmaSprings( 0.1 ); 
     c->SetSpringDistributionMean( 0 );
-    c->SetSpringNetwork(0.,0.21);
+    c->SetSpringNetwork(0.,par->e);
     c->setSpringBaseLength(9);
     par->bend_lambda = 1;
   } 
@@ -77,7 +77,7 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
     if(par->k[0] == 0){
     c->cleanUpNetwork(par->mu, par->nu, 3);
     for(auto node : c->getNodesList())
-     { c->SetSpringsOnNodeIntoNetwork(node, 0., 0.21);}
+     { c->SetSpringsOnNodeIntoNetwork(node, 0., par->e);}
   }
   //cell wall weakening happens here
   if(par->k[0] == 0){

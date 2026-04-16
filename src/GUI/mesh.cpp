@@ -940,14 +940,18 @@ double Mesh::DisplaceNodes(void)
 
       double dh=0.;
 
+      if(node.index == 9){
+        old_l1 = TINY;
+      }
+
       for (list<Neighbor>::const_iterator cit = node.owners.begin(); cit != node.owners.end(); cit++)
       {
         // over what do we exactly loop here? nodes of current cell and adjacent nodes?
         // lasse
 
-	
+        
 	Cell &c=*((Cell *)(cit->cell));
-
+        
          if (c.MoveSelfIntersectsP(&node, new_p))
         {
 		
@@ -1528,7 +1532,7 @@ void Mesh::InsertNode(Edge &e) {
       Cell* c { owner.getCell() };
       if(c->Index() == -1 || !(c->place_springs)) {continue;}
       c->cleanUpNetwork(par.mu, par.nu, 3);
-      c->resetSpringNetwork(new_node, 0., 0.21);
+      c->resetSpringNetwork(new_node, 0., par.e);
     }
   }
   new_node->splittWallElementsBetween(e.first, e.second);

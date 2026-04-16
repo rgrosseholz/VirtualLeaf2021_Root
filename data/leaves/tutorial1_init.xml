@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leaf name="/ufs/merks/VLeaf1.0/V1.0/data/leaves/tutorial1_init.xml" date="Thu Nov 25 14:26:38 2010" simtime="0">
   <parameter>
-    <par name="arrowcolor" val="white"/>
+    <par name="arrowcolor" val="yellow"/>
     <par name="arrowsize" val="10"/>
     <par name="textcolor" val="red"/>
     <par name="cellnumsize" val="1"/>
@@ -112,12 +112,12 @@
     <par name="constituous_expansion_limit" val="16"/>
     <par name="vessel_inh_level" val="1"/>
     <par name="vessel_expansion_rate" val="0.25"/>
-    <par name="d" val="300"/>
+    <par name="d" val="2"/>
     <par name="e" val="2"/>
     <par name="f" val="0.8"/>
-    <par name="c" val="1"/>
-    <par name="mu" val="0"/>
-    <par name="nu" val="3"/>
+    <par name="c" val="0.4"/>
+    <par name="mu" val="0.4"/>
+    <par name="nu" val="1"/>
     <par name="rho0" val="0"/>
     <par name="rho1" val="0"/>
     <par name="c0" val="0"/>

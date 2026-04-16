@@ -965,7 +965,7 @@ bool CellBase::isSpringAlready(Node* node1, Node* node2){
   return false;
 }
 
-void CellBase::SetSpringsNormalDistributed(double spring_distribution_mean, double sigma_springs)
+void CellBase::SetSpringNetwork(double spring_distribution_mean, double sigma_springs)
 {
   Vector ref_vec = GetRefVecSprings(); // there is a bug where sometimes this becomes 
         //  the vector { 0, 0, 0} no idea why
@@ -985,16 +985,13 @@ void CellBase::SetSpringsNormalDistributed(double spring_distribution_mean, doub
   for (vector<Node *>::const_iterator i = shuffled_nodes.begin(); i != shuffled_nodes.end(); i++)
   {
     Vector rel_node = *(*i);
-    while(
-       RANDOM() <= (exp(- ((*i)->connected_to_spring)/3) - 0.1)
-      ){
-      double ran { RANDOM() };
+    while(RANDOM() <= (exp(- ((*i)->connected_to_spring)/3) - 0.1)){
       double cos_random_angle{fabs(d(gen))}; // draw of random angle
       for (list<Node *>::iterator j = nodes.begin(); j != nodes.end(); j++)
       {
         Vector connected_node = *(*j);
         if((*j)->connected_to_spring > 0){
-          if(!(RANDOM() <= exp(- ((*j)->connected_to_spring)/3))){
+          if(!(RANDOM() <= exp(- ((*j)->connected_to_spring)/3.0))){
             continue;
           }
         }
@@ -1004,8 +1001,7 @@ void CellBase::SetSpringsNormalDistributed(double spring_distribution_mean, doub
         Vector normalised_pot_spring = pot_spring.Normalised();
         double cos_angle_ref = fabs(InnerProduct(ref_vec, normalised_pot_spring));
 
-
-        if (fabs(cos_angle_ref - cos_random_angle) <= 0.1) //abs wurde manchmal auf int gecastet
+        if (fabs(cos_angle_ref - cos_random_angle) <= 0.1) 
         {
           if( isSpringAlready(*i, *j) ) { continue; }
           Spring* s = new Spring(*i, *j, this);
@@ -1018,6 +1014,101 @@ void CellBase::SetSpringsNormalDistributed(double spring_distribution_mean, doub
     }
   }
   
+}
+
+void CellBase::SetSpringsOnNodeIntoNetwork(Node* node, double spring_distribution_mean, double sigma_springs)
+{ 
+  Vector ref_vec = GetRefVecSprings();
+  // Normal distribution centered around the mean 0. The standard deviation is sigma_spring.
+  std::normal_distribution<double> d(spring_distribution_mean, sigma_springs);
+  std::random_device rd{};
+  std::mt19937 gen{rd()};
+  // Source - https://stackoverflow.com/a/33761498
+  // Posted by Barry, modified by community. See post 'Timeline' for change history
+  // Retrieved 2026-02-11, License - CC BY-SA 4.0
+  vector<Node *> shuffled_nodes;
+  shuffled_nodes.reserve(this->nodes.size() -1);
+  std::copy(std::begin(this->nodes), std::end(this->nodes)--, std::back_inserter(shuffled_nodes));
+
+  MyUrand r(shuffled_nodes.size());
+  vl_shuffle(shuffled_nodes.begin(), shuffled_nodes.end(), r);
+
+  Vector rel_node = *(node);
+
+  while(RANDOM() <= (exp(- (node->connected_to_spring)/3.0) - 0.1)){
+    double cos_random_angle{fabs(d(gen))}; // draw of random angle
+
+    for (vector<Node *>::const_iterator j = shuffled_nodes.begin(); j != shuffled_nodes.end(); j++)
+    {
+      if((*j)->isConnected_to_spring()){
+        if(RANDOM() <= exp(- ((*j)->connected_to_spring)/6.0)){
+          continue;
+        }
+      }
+      Vector connected_node = *(*j);
+      if ((*j)->index == node->index) { continue; }; // check to not connect same nodes
+      Vector pot_spring = rel_node - connected_node;
+      Vector normalised_pot_spring = pot_spring.Normalised();
+      double cos_angle_ref = fabs(InnerProduct(ref_vec, normalised_pot_spring));
+        
+      if (fabs(cos_angle_ref - cos_random_angle) <= 0.1) 
+      {
+        if( isSpringAlready(node, *j) ) { continue; }
+        Spring* s = new Spring(node, *j, this);
+          AddSpringToCell(this, s);
+          (*j)->incrementConnected_to_spring();
+          (node)->incrementConnected_to_spring();
+          continue;
+      }
+    }
+  }
+}
+
+void CellBase::resetSpringNetwork(Node* newNode, double spring_distribution_mean, double sigma_springs)
+{
+  
+  SetSpringsOnNodeIntoNetwork(newNode, spring_distribution_mean, sigma_springs);
+  for( auto node : nodes)
+  {
+    SetSpringsOnNodeIntoNetwork(node, spring_distribution_mean, sigma_springs);   
+  }
+}
+
+void CellBase::cleanUpNetwork(double angle1, double angle2, int maxNumSprings)
+{  
+  // have to check if the numerical values are good. should represent a +-20 degree around 90 degree
+    for(auto j = springs.begin(); j != springs.end();){
+        
+      if( !((*j)->checkSpringOrientation(angle1, angle2)) ){
+      (*j)->m_n1->decrementConnected_to_spring();
+      (*j)->m_n2->decrementConnected_to_spring();
+      j = springs.erase(j);
+      }
+      j++;
+    }
+  int integer {0};
+  for( auto node : nodes)
+  {
+    while(node->connected_to_spring > maxNumSprings) {
+      bool found_and_deleted = false;
+    
+      for (auto it = springs.begin(); it != springs.end(); ) {
+        if ((node == (*it)->m_n1) || (node == (*it)->m_n2)) { 
+          (*it)->m_n1->decrementConnected_to_spring();
+          (*it)->m_n2->decrementConnected_to_spring();
+          it = springs.erase(it); 
+          found_and_deleted = true;
+          break;
+        } else {
+          ++it;
+        }
+      }
+    // If no spring was found, exit while loop to move to next node
+    if (!found_and_deleted) {
+      break;
+    }
+  }    
+}
 }
 
 void CellBase::SetSpringOnNodeInsertion(Node* node, int numOfAverage)
@@ -1107,19 +1198,17 @@ void CellBase::SetSpringOnNodeInsertion(Node* node, int numOfAverage)
  *        nodes are still connected to a spring
  */
 void CellBase::cleanUpSprings(double angle1, double angle2)
-{
-  
-    // have to check if the numerical values are good. should represent a +-20 degree around 90 degree
-      for(auto j = springs.begin(); j != springs.end();){
+{  
+  // have to check if the numerical values are good. should represent a +-20 degree around 90 degree
+    for(auto j = springs.begin(); j != springs.end();){
         
-        if( !((*j)->checkSpringOrientation(angle1, angle2)) ){
-        (*j)->m_n1->decrementConnected_to_spring();
-        (*j)->m_n2->decrementConnected_to_spring();
-        j = springs.erase(j);
-        }
-        j++;
+      if( !((*j)->checkSpringOrientation(angle1, angle2)) ){
+      (*j)->m_n1->decrementConnected_to_spring();
+      (*j)->m_n2->decrementConnected_to_spring();
+      j = springs.erase(j);
       }
-  
+      j++;
+    } 
 }
 
 /**

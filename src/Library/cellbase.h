@@ -270,7 +270,10 @@ class CellBase :  public QObject, public Vector
   void SetSprings(void);
   void SetSpringsNormalDistributedExcludeTopBottom(int numOfAverage);
   void SetSpringsNormalDistributed(void);
-  void SetSpringsNormalDistributed(double spring_distribution_mean, double sigma_springs);
+  void SetSpringNetwork(double spring_distribution_mean, double sigma_springs);
+  void SetSpringsOnNodeIntoNetwork(Node* node, double spring_distribution_mean, double sigma_springs);
+  void resetSpringNetwork(Node* newNode, double spring_distribution_mean, double sigma_springs);
+  void cleanUpNetwork(double angle1, double angle2, int maxNumSprings);
   bool isSpringAlready(Node* node1, Node* node2);
   void SetSpringOnNodeInsertion(Node* newNode, int numOfAverage);
   void AddSpringToCell (CellBase *c, Spring *s);

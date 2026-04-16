@@ -1188,31 +1188,20 @@ double Mesh::DisplaceNodes(void)
 
   if (c.isSpringPlaced())
   {
-    bool removedSpring {false};
     for ( auto j = c.springs.begin(); j != c.springs.end();  ){ // loop over the springs
               
-      if( (*j)->m_n1->index == node.index ) // if moved node is connected to a spring, calculate the energy
-      {
-                  
+      if( (*j)->m_n1 == &node ) // if moved node is connected to a spring, calculate the energy
+      {    
         //Here I take the connecting spring vector and calculate the energy panality similar to 
                     //the cell wall panality
-        Vector oldSpringVec { (*j)->getSpringVector( -1*delta_p, Vector {0,0,0}) };
-        Vector newSpringVec { (*j)->getSpringVector() };
+        Vector n1 {(*j)->m_n1->getPos()};
+        Vector n2 {(*j)->m_n2->getPos()};
+        Vector oldSpringVec { (*j)->getSpringVector() };
+        Vector newSpringVec { (*j)->getSpringVector((n1 + delta_p), n2) };
         double old_length { (oldSpringVec).Norm() };
         double new_length { (newSpringVec).Norm() };
         double springLength { c.getSpringBaseLength() };
-        double lambda_cellulose { 1 };
-         if(node.isConnected_to_spring()){
-          lambda_cellulose = 2 ;
-        }else{
-          lambda_cellulose = 0;
-        }
-        if( new_length / springLength > 1) 
-        {
-          lambda_cellulose =  par.d * DSQR(new_length - springLength);
-        }else{
-          lambda_cellulose = par.d * springLength / new_length ;
-        }
+        double lambda_cellulose { par.d };
         /* calculate energy with harmonic oszilator for spring length and spring orientation*/
         cellulose_spring_dh += lambda_cellulose  *
                                ( DSQR(new_length / springLength - 1)
@@ -1233,21 +1222,16 @@ double Mesh::DisplaceNodes(void)
                         - (cellulose_youngs_modulus*cellulose_strain_tensor_old)*cellulose_strain_tensor_old).Trace()); 
                   cellulose_spring_dh += TINY;
                   */
-      } else if( (*j)->m_n2->index == node.index ) // if moved node is connected to a spring, calculate the energy
-      {
-              
-        Vector oldSpringVec { (*j)->getSpringVector( Vector {0,0,0}, -1*delta_p) };
-        Vector newSpringVec { (*j)->getSpringVector() };
+      } else if( (*j)->m_n2 == &node ) // if moved node is connected to a spring, calculate the energy
+      {     
+        Vector n1 {(*j)->m_n1->getPos()};
+        Vector n2 {(*j)->m_n2->getPos()};
+        Vector oldSpringVec { (*j)->getSpringVector() };
+        Vector newSpringVec { (*j)->getSpringVector(n1 , (n2 + delta_p)) };
         double old_length { (oldSpringVec).Norm() };
         double new_length { (newSpringVec).Norm() };
         double springLength { c.getSpringBaseLength() };
-        double lambda_cellulose { 1 };
-        if( new_length / springLength > 1) 
-        {
-          lambda_cellulose = par.d * DSQR(new_length - springLength) ;
-        }else{
-          lambda_cellulose = par.d * springLength / new_length ;
-        }
+        double lambda_cellulose { par.d };
          cellulose_spring_dh += lambda_cellulose * 
                                ( DSQR(new_length / springLength - 1)
                               - DSQR(old_length / springLength - 1)) ;  
@@ -1543,8 +1527,8 @@ void Mesh::InsertNode(Edge &e) {
     {
       Cell* c { owner.getCell() };
       if(c->Index() == -1 || !(c->place_springs)) {continue;}
-      c->cleanUpSprings(par.mu, par.nu);
-      c->resetSprings(par.e);
+      c->cleanUpNetwork(par.mu, par.nu, 3);
+      c->resetSpringNetwork(new_node, 0., 0.21);
     }
   }
   new_node->splittWallElementsBetween(e.first, e.second);

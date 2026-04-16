@@ -68,13 +68,17 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     c->PlaceSprings();
     c->SetSigmaSprings( 0.15 ); 
     c->SetSpringDistributionMean( 0 );
-    c->SetSpringsNormalDistributedExcludeTopBottom(par->e);
+    c->SetSpringNetwork(0.,0.21);
     c->setSpringBaseLength(17);      
   }
 
   if(par->k[0] == 0){
-    c->cleanUpSprings(par->mu, par->nu);
-    c->resetSprings(par->e);
+    c->cleanUpNetwork(par->mu, par->nu, 3);
+    for(auto node : c->getNodesList())
+    {
+      if(RANDOM() <= (exp(- (node->getConnected_to_spring()/3.0)) - 0.1))
+      c->SetSpringsOnNodeIntoNetwork(node, 0., 0.21);
+    }
   }
   //cell wall weakening happens here
   if(par->k[0] == 0){

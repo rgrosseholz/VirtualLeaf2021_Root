@@ -929,7 +929,7 @@ double Mesh::DisplaceNodes(void)
       //    (c->index == 0) ? c->anisotropic_growth = true : c->anisotropic_growth = false;
       // };
 
-      double &anisotropic_penality{par.k[0]};
+      double &anisotropic_penality{par.d};
       Vector anisotropic_growth_axis{0, 1};
 
       double old_l1=0.,old_l2=0.,new_l1=0.,new_l2=0.;
@@ -1209,7 +1209,7 @@ double Mesh::DisplaceNodes(void)
         /* calculate energy with harmonic oszilator for spring length and spring orientation*/
         cellulose_spring_dh += lambda_cellulose  *
                                ( DSQR(new_length / springLength - 1)
-                              - DSQR(old_length / springLength - 1)) ;  
+                              - DSQR(old_length / springLength - 1)) ;   
         /*and now we want an angle constrain
         Vector referenzVector { c.GetRefVecSprings() };
         double oldAngle { referenzVector.Angle(oldSpringVec)};
@@ -1283,11 +1283,15 @@ double Mesh::DisplaceNodes(void)
                              - sgn(InnerProduct((old_p - c.Centroid()), delta_p))
                              * DSQR(InnerProduct(anisotropic_growth_axis, delta_p)))
                              * anisotropic_penality;
-          
-          Matrix youngs_modulus{Vector{1, 0, 0}, Vector{0, 0, 0}, Vector{0, 0, 0}};                    
+          */
+          Matrix youngs_modulus{Vector{1, 0, 0}, Vector{0, 0, 0}, Vector{0, 0, 0}};   
+          Vector quadrat_delta_p {DSQR(delta_p.x), DSQR(delta_p.y)};
+          Vector young_delta_p { youngs_modulus * delta_p };
+          double anisoDH {InnerProduct(young_delta_p, delta_p)};
+          anisotropic_dh += anisoDH * par.d;
           anisotropic_dh += InnerProduct(youngs_modulus * Vector{DSQR(delta_p.x), DSQR(delta_p.y)},
                                         anisotropic_growth_axis) * anisotropic_penality;
-          */
+          
         }
          
       }

@@ -65,14 +65,16 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   // cellulose spring activation
   if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k 
   {
+    //c->setAnisotropicGrowth(true);
     c->PlaceSprings();
     c->SetSigmaSprings( 0.15 ); 
     c->SetSpringDistributionMean( 0 );
     c->SetSpringNetwork(0.,0.21);
     c->setSpringBaseLength(17);      
+    
   }
 
-  if(par->k[0] == 0){
+  if(c->isSpringPlaced()){
     c->cleanUpNetwork(par->mu, par->nu, 3);
     for(auto node : c->getNodesList())
     {

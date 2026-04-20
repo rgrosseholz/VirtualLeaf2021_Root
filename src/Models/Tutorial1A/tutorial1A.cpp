@@ -53,7 +53,7 @@ void Tutorial1A::SetCellColor(CellBase *c, QColor *color) {
 
 void Tutorial1A::CellHouseKeeping(CellBase *c) {
   // add cell behavioral rules here
-  c->EnlargeTargetArea(par->cell_expansion_rate/5);
+  c->EnlargeTargetArea(par->cell_expansion_rate);
 
   double base_element_length = 25;
   c->LoopWallElements([base_element_length](auto wallElementInfo)
@@ -71,10 +71,9 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
     c->SetSpringDistributionMean( 0 );
     c->SetSpringNetwork(0.,par->e);
     c->setSpringBaseLength(9);
-    par->bend_lambda = 1;
   } 
 
-    if(par->k[0] == 0){
+    if(c->isSpringPlaced()){
     c->cleanUpNetwork(par->mu, par->nu, 3);
     for(auto node : c->getNodesList())
      { c->SetSpringsOnNodeIntoNetwork(node, 0., par->e);}

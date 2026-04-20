@@ -216,6 +216,8 @@ class CellBase :  public QObject, public Vector
 
   inline double EnlargeTargetArea(double da) { return target_area+=da; }
 
+  double getTargetArea() { return target_area; }
+
   inline double Area(void) const { return area; }
 
   inline double SetWallStiffness(double value_stiffness) {return wall_stiffness = value_stiffness;}

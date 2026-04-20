@@ -115,6 +115,9 @@ public:
 	  if (m.ShowMeshP()) {
 		  c->DrawNodes(&canvas);
 	  }
+    if (m.ShowSprings()){
+      c->DrawSprings(&canvas);
+    }
     if (m.ShowBorderCellsP() || c->Boundary()==Cell::None) {
       if (!m.ShowBoundaryOnlyP() && !m.HideCellsP()) {
 	if (m.ShowToolTipsP()) {
@@ -161,6 +164,8 @@ void MainBase::Plot(int resize_stride)
   }
   
   mesh.LoopCells(DrawCell(),canvas,*this);
+  if (ShowSprings())
+    mesh.LoopCells([this](auto cell){cell->DrawSprings(&canvas);});
   if (ShowNodeNumbersP()) 
     mesh.LoopNodes([this](auto node){node->DrawIndex(&canvas);});
   if (ShowCellNumbersP()) 
@@ -266,6 +271,8 @@ TIMESTEP {
 		mesh.ElasticModulus(par.elastic_modulus);
 		mesh.setElasticLimit(par.elastic_limit);
 		mesh.WallRelaxation();
+    //mesh.InitializeCellSprings();
+
 
 		dh = mesh.DisplaceNodes();
 

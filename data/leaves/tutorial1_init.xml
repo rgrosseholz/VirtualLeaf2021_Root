@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leaf name="/ufs/merks/VLeaf1.0/V1.0/data/leaves/tutorial1_init.xml" date="Thu Nov 25 14:26:38 2010" simtime="0">
   <parameter>
-    <par name="arrowcolor" val="white"/>
+    <par name="arrowcolor" val="yellow"/>
     <par name="arrowsize" val="10"/>
     <par name="textcolor" val="red"/>
     <par name="cellnumsize" val="1"/>
-    <par name="nodenumsize" val="1"/>
+    <par name="nodenumsize" val="2"/>
     <par name="node_mag" val="1"/>
     <par name="outlinewidth" val="1"/>
     <par name="cell_outline_color" val="forestgreen"/>
@@ -29,7 +29,7 @@
     <par name="energy_threshold" val="1000"/>
     <par name="bend_lambda" val="0"/>
     <par name="alignment_lambda" val="0"/>
-    <par name="rel_cell_div_threshold" val="2"/>
+    <par name="rel_cell_div_threshold" val="6"/>
     <par name="rel_perimeter_stiffness" val="2"/>
     <par name="collapse_node_threshold" val="0.05"/>
     <par name="morphogen_div_threshold" val="0.2"/>
@@ -112,12 +112,12 @@
     <par name="constituous_expansion_limit" val="16"/>
     <par name="vessel_inh_level" val="1"/>
     <par name="vessel_expansion_rate" val="0.25"/>
-    <par name="d" val="0"/>
-    <par name="e" val="0"/>
-    <par name="f" val="0"/>
-    <par name="c" val="0"/>
-    <par name="mu" val="0"/>
-    <par name="nu" val="0"/>
+    <par name="d" val="10"/>
+    <par name="e" val="0.15 "/>
+    <par name="f" val="2000"/>
+    <par name="c" val="0.4"/>
+    <par name="mu" val="0.4"/>
+    <par name="nu" val="1"/>
     <par name="rho0" val="0"/>
     <par name="rho1" val="0"/>
     <par name="c0" val="0"/>
@@ -201,9 +201,9 @@
   <nodesets n="0"/>
   <settings>
     <setting name="show_cell_centers" val="false"/>
-    <setting name="show_nodes" val="false"/>
-    <setting name="show_node_numbers" val="false"/>
-    <setting name="show_cell_numbers" val="false"/>
+    <setting name="show_nodes" val="true"/>
+    <setting name="show_node_numbers" val="true"/>
+    <setting name="show_cell_numbers" val="true"/>
     <setting name="show_border_cells" val="false"/>
     <setting name="show_cell_axes" val="false"/>
     <setting name="show_cell_strain" val="false"/>

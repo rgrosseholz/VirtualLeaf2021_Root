@@ -46,6 +46,7 @@
 #include "mesh.h"
 #include "sqr.h"
 #include "tiny.h"
+#include "spring.h"
 
 static const std::string _module_id("$Id$");
 
@@ -86,6 +87,7 @@ CellBase::CellBase(QObject *parent) :
   at_boundary=false;
   fixed = false;
   pin_fixed = false;
+  stiffness = 0;
   wall_stiffness = 1;
   veto_reconfigurationling = false;
   marked = false;
@@ -94,6 +96,11 @@ CellBase::CellBase(QObject *parent) :
   cell_type = 0;
   flag_for_divide = false;
   division_axis = 0;
+  place_springs = false;
+  sigma_springs = 0.0;
+  spring_distribution_mean = 0.0;
+  reference_springs = 0;
+  
 }
 
 
@@ -127,6 +134,7 @@ CellBase::CellBase(double x,double y,double z) : QObject(), Vector(x,y,z)
   fixed = false;
   at_boundary=false;
   pin_fixed = false;
+  stiffness = 0;
   wall_stiffness = 1;
   veto_reconfigurationling = false;
   marked=false;
@@ -168,6 +176,7 @@ CellBase::CellBase(const CellBase &src) :  QObject(), Vector(src)
   cellvec = src.cellvec;
   at_boundary=src.at_boundary;
   pin_fixed = src.pin_fixed;
+  stiffness = src.stiffness;
   wall_stiffness = src.wall_stiffness;
   veto_reconfigurationling = src.veto_reconfigurationling;
   marked = src.marked;
@@ -176,6 +185,11 @@ CellBase::CellBase(const CellBase &src) :  QObject(), Vector(src)
   div_counter = src.div_counter;
   flag_for_divide = src.flag_for_divide;
   division_axis = src.division_axis;
+  place_springs = src.place_springs;
+    sigma_springs = src.sigma_springs;
+  spring_distribution_mean = src.spring_distribution_mean;
+  reference_springs = src.reference_springs;
+
 }
 
 
@@ -209,6 +223,7 @@ CellBase CellBase::operator=(const CellBase &src)
   cellvec = src.cellvec;
   at_boundary=src.at_boundary;
   pin_fixed = src.pin_fixed;
+  stiffness = src.stiffness;
   wall_stiffness = src.wall_stiffness;
   veto_reconfigurationling = src.veto_reconfigurationling;
   marked = src.marked;
@@ -217,6 +232,7 @@ CellBase CellBase::operator=(const CellBase &src)
   div_counter = src.div_counter;
   flag_for_divide = src.flag_for_divide;
   division_axis = src.division_axis;
+  place_springs = src.place_springs;
   return *this;
 }
 
@@ -306,6 +322,7 @@ double CellBase::CalcArea(void) const
   return fabs(loc_area)/2.0; 
 } 
 
+// center
 Vector CellBase::Centroid(void) const
 {
 
@@ -701,4 +718,692 @@ void CellBase::correctNeighbors() {}
 double CellBase::elastic_limit() {
 	return std::nan("1");
 }
+
+/**
+ * @brief gets the min and max values on the x-axis
+ * 
+ * @details I am returning the double value max(x) and min(x) but one could also return Node* instead
+ * @return returns a vector where the x coordinate stores the min x value and the y coordinate stores 
+ *         the max x value
+ */
+Vector CellBase::getMinMaxPositionX()
+{
+  auto minmax { minmax_element(nodes.begin(),nodes.end(), [](const Node* a, const Node*  b){
+                 return a->x < b->x;})
+              };
+  
+  return Vector { (*minmax.first)->x, (*minmax.second)->x };
+  
+};
+
+/**
+ * @brief gets the min and max values on the y-axis
+ * 
+ * @details I am returning the double value max(y) and min(y) but one could also return Node* instead
+ * @return returns a vector where the x coordinate stores the min y value and the y coordinate stores 
+ *         the max y value
+ */
+Vector CellBase::getMinMaxPositionY()
+{
+  auto minmax { minmax_element(nodes.begin(),nodes.end(), [](const Node* a, const Node*  b){
+                 return a->y < b->y;})
+              };
+  
+  return Vector { (*minmax.first)->y, (*minmax.second)->y };
+  
+};
+
+void CellBase::AddSpringToCell(CellBase *c, Spring *s)
+{
+  springs.push_back(s);
+}
+
+double CellBase::averageSpringLength()
+{
+  double totalLength { 0 }; 
+  int springCount { 0 };
+  for (auto spring : springs ){
+    totalLength+= spring->getSpringLength();
+    springCount++;
+  }
+  return totalLength / springCount;
+}
+
+// Set Springs if the connecting vector between nodes is vertical to the reference vector within a
+// 5% deviation.
+// lasse
+void CellBase::SetSprings(void)
+{
+  springs.clear();
+  Vector ref_vec = GetRefVecSprings();
+  for (list<Node *>::iterator i = nodes.begin(); i != nodes.end(); i++)
+  {
+    Vector rel_node = *(*i);
+    for (list<Node *>::iterator j = nodes.begin(); j != nodes.end(); j++)
+    {
+      Vector connected_node = *(*j);
+      if ((rel_node - connected_node).Norm() < 0.001)
+      {
+        continue;
+      }; // check to not connect same nodes
+
+      Vector pot_spring = rel_node - connected_node;
+      Vector norm_pot_spring = pot_spring.Normalised();
+      double cos_angle_ref = InnerProduct(ref_vec, norm_pot_spring);
+
+      if ((abs(cos_angle_ref) <= 0.1 || (abs(cos_angle_ref)>= 1.57 - 0.1 &&
+                   abs(cos_angle_ref)<= 1.57 + 0.1) )
+             && (*i)->index < (*j)->index)
+      {
+        Spring *s = new Spring(*i, *j, this);
+        AddSpringToCell(this, s);
+        (*j)->incrementConnected_to_spring();
+        (*i)->incrementConnected_to_spring();
+      }
+    }
+  }
+}
+
+
+/**
+ * @brief Set springs, excluding top and bottom, in cell between nodes with connection
+ *         angle drawn from a normal distribution
+ * 
+ * @par numOfAverage controls number of average for function isNodewithinBoundary()
+ * 
+ * @details 
+ * Motivated by the paper Bou Daher et al. eLife 2018, especialy Figure 2. 
+ * Draws angle from a normal distribution. If it can find a node node connection which satisfies 
+ * the angle within a certain error, a spring is placed. It skips nodes if they have already, 
+ * a spring connection with a certain probability or if they are to close to the top or bottom
+ * layer
+ * 
+ * @return Returns void but modifies the list springs. 
+ */
+void CellBase::SetSpringsNormalDistributedExcludeTopBottom(int numOfAverage)
+{
+  springs.clear();
+  Vector ref_vec = GetRefVecSprings(); // there is a bug where sometimes this becomes 
+        //  the vector { 0, 0, 0} no idea why
+        // work around set in cellbase.h the initalizer to { 0, 1, 0}
+
+  // Normal distribution centered around the mean 0. The standard deviation is sigma_spring.
+  std::normal_distribution<double> d(spring_distribution_mean, sigma_springs);
+  std::random_device rd{};
+  std::mt19937 gen{rd()};
+  // Source - https://stackoverflow.com/a/33761498
+    // Posted by Barry, modified by community. See post 'Timeline' for change history
+    // Retrieved 2026-02-11, License - CC BY-SA 4.0
+  vector<Node *> shuffled_nodes;
+  shuffled_nodes.reserve(this->nodes.size());
+  std::copy(std::begin(this->nodes), std::end(this->nodes), std::back_inserter(shuffled_nodes));
+
+  MyUrand r(shuffled_nodes.size());
+  vl_shuffle(shuffled_nodes.begin(), shuffled_nodes.end(), r);
+
+  for (vector<Node *>::const_iterator i = shuffled_nodes.begin(); i != shuffled_nodes.end(); i++)
+  {
+    bool goto_nextNode { false };
+    if((*i)->connected_to_spring > 0 ){ 
+      if(RANDOM() <= exp(- ((*i)->connected_to_spring)/2)){
+        continue;
+     }
+    }
+    if ( isNodeWithinBoundary(*i,numOfAverage) ) {
+       continue; }
+    Vector rel_node = *(*i);
+    double random_angle{abs(d(gen))}; // draw of random angle
+
+    for (list<Node *>::iterator j = nodes.begin(); j != nodes.end(); j++)
+    {
+      Vector connected_node = *(*j);
+      if ((rel_node - connected_node).Norm() < 0.001) { continue; }; // check to not connect same nodes
+      if((*j)->connected_to_spring > 0){
+       if(RANDOM() <= exp(- ((*j)->connected_to_spring)/2)){
+          continue;
+        }
+      }
+      if ( isNodeWithinBoundary(*j, numOfAverage) ) { continue; }
+      Vector pot_spring = rel_node - connected_node;
+      Vector normalised_pot_spring = pot_spring.Normalised();
+      double cos_angle_ref = abs(InnerProduct(ref_vec, normalised_pot_spring));
+
+      if (abs(cos_angle_ref - random_angle) <= 0.26 && (*i)->index < (*j)->index )
+      {
+        Spring* s = new Spring(*i, *j, this);
+          AddSpringToCell(this, s);
+          (*j)->incrementConnected_to_spring();
+          (*i)->incrementConnected_to_spring();
+          goto_nextNode = true;
+          break;
+        }
+      }
+      if (goto_nextNode) continue;
+    }
+  
+}
+
+/**
+ * @brief Set springs in cell between nodes with connection angle drawn from a normal distribution
+ * 
+ * @details 
+ * Motivated by the paper Bou Daher et al. eLife 2018, especialy Figure 2. 
+ * Draws angle from a normal distribution. If it can find a node node connection which satisfies 
+ * the angle within a certain error, a spring is placed. It skips nodes if they have already
+ * a spring connection with a certain probability.
+ * 
+ * @return Returns void but modifies the list springs. 
+ */
+void CellBase::SetSpringsNormalDistributed(void)
+{
+  springs.clear();
+  Vector ref_vec = GetRefVecSprings(); // there is a bug where sometimes this becomes 
+        //  the vector { 0, 0, 0} no idea why
+        // work around set in cellbase.h the initalizer to { 0, 1, 0}
+
+  // Normal distribution centered around the mean 0. The standard deviation is sigma_spring.
+  std::normal_distribution<double> d(spring_distribution_mean, sigma_springs);
+  std::random_device rd{};
+  std::mt19937 gen{rd()};
+  // Source - https://stackoverflow.com/a/33761498
+    // Posted by Barry, modified by community. See post 'Timeline' for change history
+    // Retrieved 2026-02-11, License - CC BY-SA 4.0
+  vector<Node *> shuffled_nodes;
+  shuffled_nodes.reserve(this->nodes.size());
+  std::copy(std::begin(this->nodes), std::end(this->nodes), std::back_inserter(shuffled_nodes));
+
+  MyUrand r(shuffled_nodes.size());
+  vl_shuffle(shuffled_nodes.begin(), shuffled_nodes.end(), r);
+
+  for (vector<Node *>::const_iterator i = shuffled_nodes.begin(); i != shuffled_nodes.end(); i++)
+  {
+    bool goto_nextNode { false };
+    if((*i)->connected_to_spring > 0){
+      if(RANDOM() <= exp(- ((*i)->connected_to_spring)/2)){
+        continue;
+     }
+    }
+    Vector rel_node = *(*i);
+    double random_angle{abs(d(gen))}; // draw of random angle
+
+    for (list<Node *>::iterator j = nodes.begin(); j != nodes.end(); j++)
+    {
+      Vector connected_node = *(*j);
+      if((*j)->connected_to_spring > 0){
+        if(RANDOM() <= exp(- ((*j)->connected_to_spring)/2)){
+          continue;
+        }
+      }
+      if ((rel_node - connected_node).Norm() < 0.001) { continue; }; // check to not connect same nodes
+
+      Vector pot_spring = rel_node - connected_node;
+      Vector normalised_pot_spring = pot_spring.Normalised();
+      double cos_angle_ref = abs(InnerProduct(ref_vec, normalised_pot_spring));
+
+      if (abs(cos_angle_ref - random_angle) <= 0.26 ) //&& (*i)->index < (*j)->index
+      {
+        Spring* s = new Spring(*i, *j, this);
+          AddSpringToCell(this, s);
+          (*j)->incrementConnected_to_spring();
+          (*i)->incrementConnected_to_spring();
+          goto_nextNode = true;
+          break;
+        }
+      }
+      if (goto_nextNode) continue;
+    }
+  
+}
+
+bool CellBase::isSpringAlready(Node* node1, Node* node2){
+  for(auto spring : springs){
+    if( (node1 == spring->m_n1 && node2 == spring->m_n2) 
+        || (node1 == spring->m_n2 && node2 == spring->m_n1)){
+      return true;
+    }
+  }
+  return false;
+}
+
+void CellBase::SetSpringNetwork(double spring_distribution_mean, double sigma_springs)
+{
+  Vector ref_vec = GetRefVecSprings(); // there is a bug where sometimes this becomes 
+        //  the vector { 0, 0, 0} no idea why
+        // work around set in cellbase.h the initalizer to { 0, 1, 0}
+
+  // Normal distribution centered around the mean 0. The standard deviation is sigma_spring.
+  std::normal_distribution<double> d(spring_distribution_mean, sigma_springs);
+  std::random_device rd{};
+  std::mt19937 gen{rd()};
+  vector<Node *> shuffled_nodes;
+  shuffled_nodes.reserve(this->nodes.size());
+  std::copy(std::begin(this->nodes), std::end(this->nodes), std::back_inserter(shuffled_nodes));
+
+  MyUrand r(shuffled_nodes.size());
+  vl_shuffle(shuffled_nodes.begin(), shuffled_nodes.end(), r);
+
+  for (vector<Node *>::const_iterator i = shuffled_nodes.begin(); i != shuffled_nodes.end(); i++)
+  {
+    Vector rel_node = *(*i);
+    while(RANDOM() <= (exp(- ((*i)->connected_to_spring)/3) - 0.1)){
+      double cos_random_angle{fabs(d(gen))}; // draw of random angle
+      for (list<Node *>::iterator j = nodes.begin(); j != nodes.end(); j++)
+      {
+        Vector connected_node = *(*j);
+        if((*j)->connected_to_spring > 0){
+          if(!(RANDOM() <= exp(- ((*j)->connected_to_spring)/3.0))){
+            continue;
+          }
+        }
+        if ((rel_node - connected_node).Norm() < 0.001) { continue; }; // check to not connect same nodes
+
+        Vector pot_spring = rel_node - connected_node;
+        Vector normalised_pot_spring = pot_spring.Normalised();
+        double cos_angle_ref = fabs(InnerProduct(ref_vec, normalised_pot_spring));
+
+        if (fabs(cos_angle_ref - cos_random_angle) <= 0.1) 
+        {
+          if( isSpringAlready(*i, *j) ) { continue; }
+          Spring* s = new Spring(*i, *j, this);
+            AddSpringToCell(this, s);
+            (*j)->incrementConnected_to_spring();
+            (*i)->incrementConnected_to_spring();
+            continue;
+        }
+      }
+    }
+  }
+  
+}
+
+void CellBase::SetSpringsOnNodeIntoNetwork(Node* node, double spring_distribution_mean, double sigma_springs)
+{ 
+  Vector ref_vec = GetRefVecSprings();
+  // Normal distribution centered around the mean 0. The standard deviation is sigma_spring.
+  std::normal_distribution<double> d(spring_distribution_mean, sigma_springs);
+  std::random_device rd{};
+  std::mt19937 gen{rd()};
+  // Source - https://stackoverflow.com/a/33761498
+  // Posted by Barry, modified by community. See post 'Timeline' for change history
+  // Retrieved 2026-02-11, License - CC BY-SA 4.0
+  vector<Node *> shuffled_nodes;
+  shuffled_nodes.reserve(this->nodes.size() -1);
+  std::copy(std::begin(this->nodes), std::end(this->nodes)--, std::back_inserter(shuffled_nodes));
+
+  MyUrand r(shuffled_nodes.size());
+  vl_shuffle(shuffled_nodes.begin(), shuffled_nodes.end(), r);
+
+  Vector rel_node = *(node);
+
+  while(RANDOM() <= (exp(- (node->connected_to_spring)/3.0) - 0.1)){
+    double cos_random_angle{fabs(d(gen))}; // draw of random angle
+
+    for (vector<Node *>::const_iterator j = shuffled_nodes.begin(); j != shuffled_nodes.end(); j++)
+    {
+      if((*j)->isConnected_to_spring()){
+        if(RANDOM() <= exp(- ((*j)->connected_to_spring)/6.0)){
+          continue;
+        }
+      }
+      Vector connected_node = *(*j);
+      if ((*j)->index == node->index) { continue; }; // check to not connect same nodes
+      Vector pot_spring = rel_node - connected_node;
+      Vector normalised_pot_spring = pot_spring.Normalised();
+      double cos_angle_ref = fabs(InnerProduct(ref_vec, normalised_pot_spring));
+        
+      if (fabs(cos_angle_ref - cos_random_angle) <= 0.1) 
+      {
+        if( isSpringAlready(node, *j) ) { continue; }
+        Spring* s = new Spring(node, *j, this);
+          AddSpringToCell(this, s);
+          (*j)->incrementConnected_to_spring();
+          (node)->incrementConnected_to_spring();
+          continue;
+      }
+    }
+  }
+}
+
+void CellBase::resetSpringNetwork(Node* newNode, double spring_distribution_mean, double sigma_springs)
+{
+  
+  SetSpringsOnNodeIntoNetwork(newNode, spring_distribution_mean, sigma_springs);
+  for( auto node : nodes)
+  {
+    SetSpringsOnNodeIntoNetwork(node, spring_distribution_mean, sigma_springs);   
+  }
+}
+
+void CellBase::cleanUpNetwork(double angle1, double angle2, int maxNumSprings)
+{  
+  // have to check if the numerical values are good. should represent a +-20 degree around 90 degree
+    for(auto j = springs.begin(); j != springs.end();){
+        
+      if( !((*j)->checkSpringOrientation(angle1, angle2)) ){
+      (*j)->m_n1->decrementConnected_to_spring();
+      (*j)->m_n2->decrementConnected_to_spring();
+      j = springs.erase(j);
+      }
+      j++;
+    }
+  int integer {0};
+  for( auto node : nodes)
+  {
+    while(node->connected_to_spring > maxNumSprings) {
+      bool found_and_deleted = false;
+    
+      for (auto it = springs.begin(); it != springs.end(); ) {
+        if ((node == (*it)->m_n1) || (node == (*it)->m_n2)) { 
+          (*it)->m_n1->decrementConnected_to_spring();
+          (*it)->m_n2->decrementConnected_to_spring();
+          it = springs.erase(it); 
+          found_and_deleted = true;
+          break;
+        } else {
+          ++it;
+        }
+      }
+    // If no spring was found, exit while loop to move to next node
+    if (!found_and_deleted) {
+      break;
+    }
+  }    
+}
+}
+
+void CellBase::SetSpringOnNodeInsertion(Node* node, int numOfAverage)
+{ 
+  if(node->isConnected_to_spring()){
+    if(RANDOM() <= exp(- (node->connected_to_spring)/2)){
+      return;
+    }
+  }
+  if ( isNodeWithinBoundary(node, numOfAverage) ) {
+     return;
+     }
+  
+  Vector ref_vec = GetRefVecSprings();
+  // Normal distribution centered around the mean 0. The standard deviation is sigma_spring.
+  std::normal_distribution<double> d(spring_distribution_mean, sigma_springs);
+  std::random_device rd{};
+  std::mt19937 gen{rd()};
+  // Source - https://stackoverflow.com/a/33761498
+  // Posted by Barry, modified by community. See post 'Timeline' for change history
+  // Retrieved 2026-02-11, License - CC BY-SA 4.0
+  vector<Node *> shuffled_nodes;
+  shuffled_nodes.reserve(this->nodes.size() -1);
+  std::copy(std::begin(this->nodes), std::end(this->nodes)--, std::back_inserter(shuffled_nodes));
+
+  MyUrand r(shuffled_nodes.size());
+  vl_shuffle(shuffled_nodes.begin(), shuffled_nodes.end(), r);
+
+  Vector rel_node = *(node);
+  double random_angle{fabs(d(gen))}; // draw of random angle
+
+  for (vector<Node *>::const_iterator j = shuffled_nodes.begin(); j != shuffled_nodes.end(); j++)
+  {
+    if((*j)->isConnected_to_spring()){
+    if(RANDOM() <= exp(- ((*j)->connected_to_spring)/2)){
+      return;
+    }
+  }
+    
+    Vector connected_node = *(*j);
+    if ((*j)->index == node->index) { continue; }; // check to not connect same nodes
+    if ( isNodeWithinBoundary(*j, numOfAverage) ) { continue; }
+    /*
+    if ( node->index < (*j)->index )
+    {
+      if (any_of(this->springs.begin(),this->springs.end(), 
+        [j,node](Spring* spring) {
+          return ( spring->getNode1() == node && spring->getNode2() == *j );
+        }
+      )) { continue; }
+    }else{
+      if (any_of(this->springs.begin(),this->springs.end(), 
+        [j,node](Spring* spring) {
+          return ( spring->getNode1() == *j && spring->getNode2() == node );
+        }
+      )) { continue; }
+    }
+    */
+    Vector pot_spring = rel_node - connected_node;
+    Vector normalised_pot_spring = pot_spring.Normalised();
+    double cos_angle_ref = abs(InnerProduct(ref_vec, normalised_pot_spring));
+
+    if (abs(cos_angle_ref - random_angle) <= 0.1 &&
+       (*j)->connected_to_spring < 2 && node->connected_to_spring < 10 )
+    {
+      if (node->index > (*j)->index ){
+        Spring* s = new Spring(*j, node, this);
+        AddSpringToCell(this, s);
+        (*j)->incrementConnected_to_spring();
+        (node)->incrementConnected_to_spring();
+        continue;
+      }else {
+        Spring* s = new Spring(node, *j, this);
+        AddSpringToCell(this, s);
+        (*j)->incrementConnected_to_spring();
+        (node)->incrementConnected_to_spring();
+        continue;
+      }
+      
+    }
+  }
+  //}
+}
+
+/**
+ * @brief remove springs if their orientation is not within the wished angle bound and check than if 
+ *        nodes are still connected to a spring
+ */
+void CellBase::cleanUpSprings(double angle1, double angle2)
+{  
+  // have to check if the numerical values are good. should represent a +-20 degree around 90 degree
+    for(auto j = springs.begin(); j != springs.end();){
+        
+      if( !((*j)->checkSpringOrientation(angle1, angle2)) ){
+      (*j)->m_n1->decrementConnected_to_spring();
+      (*j)->m_n2->decrementConnected_to_spring();
+      j = springs.erase(j);
+      }
+      j++;
+    } 
+}
+
+/**
+ * @brief remove all springs
+ */
+void CellBase::removeSprings()
+{
+  for (auto it = springs.begin(); it != springs.end(); ) {
+    (*it)->m_n1->decrementConnected_to_spring();
+    (*it)->m_n2->decrementConnected_to_spring();
+    it = springs.erase(it);   // erase and move to next element
+  }
+}
+
+/**
+ * @brief Loops over the nodes and 
+ */
+void CellBase::resetSprings(int numOfAverage)
+{
+  for( auto node : nodes)
+  {
+    double sigmaSpringInitially { getSigmaSprings() };
+    
+    if (node->connected_to_spring < 1)
+    {
+      if( !isNodeWithinBoundary(node, numOfAverage) )
+      {
+        while(node->connected_to_spring < 1 && sigma_springs < sigmaSpringInitially + 0.2 ){
+        SetSpringOnNodeInsertion(node, numOfAverage);
+        if(sigma_springs < sigmaSpringInitially + 0.2){ sigma_springs += 0.05;} 
+        }
+        SetSigmaSprings(sigmaSpringInitially);
+        if(node->connected_to_spring < 1){
+          pair<Node*, Node*> upper_lower {findeOpposedNodes(node)};
+          Node* upper_node {get<0>(upper_lower)};
+          Node* lower_node {get<1>(upper_lower)};
+          if(!isNodeWithinBoundary(upper_node, numOfAverage))
+          {//if else just for right ordering of nodes in the spring
+            if(node->Index() < upper_node->Index()){
+            Spring* s = new Spring(node, upper_node, this);
+            AddSpringToCell(this, s);
+            }else{
+              Spring* s = new Spring(upper_node, node, this);
+              AddSpringToCell(this, s);
+            }
+            (upper_node)->incrementConnected_to_spring();
+            (node)->incrementConnected_to_spring();
+          }
+          if(!isNodeWithinBoundary(lower_node, numOfAverage))
+          {  //if else just for right ordering of nodes in the spring
+            if(node->Index() < lower_node->Index()){
+            Spring* s = new Spring(node, lower_node, this);
+            AddSpringToCell(this, s);
+            }else{
+              Spring* s = new Spring(lower_node, node, this);
+              AddSpringToCell(this, s);
+            }
+            (lower_node)->incrementConnected_to_spring();
+            (node)->incrementConnected_to_spring();
+          }    
+        }
+      }
+    }
+  }
+}
+
+/**
+ * @brief Findes opposing nodes to op_node, which are the closes to the y coordinate
+ * 
+ * @details Loops over the nodes skips nodes and skips nodes which x distance is smaller than 5. 
+ *          5 is more or less a random value. Then updates the lower and upper nodes wether they
+ *          are closer or not.
+ * @return Returns std::pair<Node*, Node*>. First entry is upper node second is lower node.
+ * 
+ */
+pair<Node*, Node*> CellBase::findeOpposedNodes(Node* op_node){
+  Node* upper_node = NULL;
+  Node* lower_node = NULL;
+  double op_node_x { op_node->x };
+  double op_node_y { op_node->y };
+  double best_upper_dy = 1e12;
+  double best_lower_dy = 1e12;
+  double minimal_x_distance { 5 };
+
+  for (Node* n : nodes) {
+    if (n == op_node) {
+      continue;
+    }
+
+    double dx = n->x - op_node_x;
+    if (fabs(dx) < minimal_x_distance) {
+      continue;
+    }
+
+    double dy = n->y - op_node_y;
+    if (dy > 0) {
+      if (dy < best_upper_dy) {
+        best_upper_dy = dy;
+        upper_node = n;
+      }
+    } else {
+      if (fabs(dy) < fabs(best_lower_dy)) {
+        best_lower_dy = dy;
+        lower_node = n;
+      }
+    }
+  }
+
+  return pair<Node*, Node*>(upper_node, lower_node);
+}
+
+/**
+ * @brief calculates the average of the  highest and lowest nodes. 
+ * 
+ * @par int numofAverage controls the number of nodes used to calculate the average.
+ *      double intervalY controls the range in which we would use either the average or
+ *      the max/min value
+ * 
+ * @return returns a std::pair<double,double> where the first value is the average
+ *         of the lowest nodes and the second value is the average of the highest
+ *         nodes. The average is replaced by min/max if min/max does not lie within
+ *         the range of intervalY.
+ */
+pair<double,double> CellBase::findAverageMinMaxY(int numOfAverage, double intervalY){
+
+  
+  if (nodes.empty()) {
+    return pair<double,double>(0.0, 0.0);
+  }
+
+  vector<double> yvals;
+  yvals.reserve(nodes.size());
+  for (Node* n : nodes) {
+    yvals.push_back(n->y);
+  }
+
+  sort(yvals.begin(), yvals.end());
+
+  int count = (int)yvals.size();
+  int ncount = min(numOfAverage, count);
+
+  double sum_low = 0.0;
+  for (int i = 0; i < ncount; i++) {
+    sum_low += yvals[i];
+  }
+
+  double sum_high = 0.0;
+  for (int i = 0; i < ncount; i++) {
+    sum_high += yvals[count - 1 - i];
+  }
+
+  double average_low  = sum_low / ncount;
+  double average_high = sum_high / ncount;
+  if( average_high + intervalY < yvals[count - 1] && average_low - intervalY > yvals[0] )
+   {return pair<double, double>(yvals[0], yvals[count - 1]);}
+  if( average_high + intervalY < yvals[count - 1] )
+   {return pair<double, double>(average_low, yvals[count - 1]);}
+  if( average_low - intervalY > yvals[0] )
+   {return pair<double, double>(yvals[0], average_high);}
+  return pair<double, double>(average_low, average_high);
+}
+
+/**
+ * @brief Calculates if the node is at the bottom or top and then checks if it 
+ *        is at the corner or not
+ * 
+ * @return returns true if node is at the bottom or top of the cell
+ *         and if node is a Null pointer
+ */
+bool CellBase::isNodeWithinBoundary(Node* node, int numOfAverage, double intervalY,
+                                       double intervalX)
+{
+  if(node != NULL)
+  {
+    pair<double,double> averageMinMax { findAverageMinMaxY(numOfAverage, intervalY) };
+    double minY { get<0>(averageMinMax) };
+    double maxY { get<1>(averageMinMax) };
+    //Vector minmaxX { getMinMaxPositionX() };
+    double ny { (node->y) };
+    //double nx { (node->x) };
+
+    if ( ((ny > (minY) - intervalY && ny < minY + intervalY) || 
+          (ny > maxY - intervalY && ny < maxY + intervalY )) 
+          // && !((nx > minmaxX.x - intervalX && nx < minmaxX.x + intervalX) || 
+          //(nx > minmaxX.y - intervalX && nx < minmaxX.y + intervalX))      
+        )
+      {
+        return true;
+      }else{
+        return false; 
+      }       
+  }
+  return true;
+}
+
+
+
 /* finis*/

@@ -40,10 +40,14 @@ class Matrix {
   void operator=(const Matrix &source); // assignment operator
 
   Vector operator*(const Vector &v) const; // matrix * vector
+  Matrix operator*(const Matrix &v) const; // matrix * matrix
+  Matrix operator+(const Matrix &v) const; // matrix + matrix
+  Matrix operator-(const Matrix &v) const; // matrix - matrix
   bool operator==(Matrix &v) const; // comparison
   double Det(void) const; // gives the "determinant" (| m |) of m
   Matrix Inverse(void) const; // gives the inverse of m
   void Rot2D(double theta); // make a matrix doing a 2D rotation over theta
+  double Trace();
   // data members 
   double **mat;
 

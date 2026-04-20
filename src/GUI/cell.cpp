@@ -32,7 +32,7 @@
 #include "nodeitem.h"
 #include "qcanvasarrow.h"
 #include "parameter.h"
-
+#include "spring.h"
 
 static const std::string _module_id("$Id$");
 
@@ -78,8 +78,8 @@ void Cell::DivideOverAxis(Vector axis)
 
   if (dead) return;
 
-  Vector centroid=Centroid();
-  double prev_cross_z=(axis * (centroid - *(nodes.back()) ) ).z ;
+  Vector centroid=Centroid(); // cell center
+  double prev_cross_z=(axis * (centroid - *(nodes.back()) ) ).z ; // irrelevant für mich ist nur z komponente
 
   ItList new_node_locations;
 
@@ -1130,6 +1130,28 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
   ConstructNeighborList();
   daughter->ConstructNeighborList();
 
+  /**
+  * Inherit cellulose spring properties and reset the springs
+  */
+  if( par.k[0] == 0){
+    removeSprings();
+    daughter->removeSprings();
+    if( isSpringPlaced() ) {
+      daughter->PlaceSprings();
+      daughter->SetSigmaSprings( getSigmaSprings() ); 
+      daughter->SetSpringDistributionMean( getSpringDistributionMean() );
+      daughter->setSpringBaseLength( getSpringBaseLength() );
+      daughter->SetRefVecSprings( GetRefVecSprings() );
+      while(daughter->springs.size() < 1){
+      daughter->SetSpringsNormalDistributedExcludeTopBottom(par.e);
+      }
+    };
+    //parent cell
+    while(springs.size() < 1 ){
+    SetSpringsNormalDistributedExcludeTopBottom(par.e);
+    }
+  }
+
   	/**
      * Here we reconnect the wall elements if they got lose ends, if both ends are lose then
      * the original wall has to be deleted.
@@ -1138,7 +1160,7 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
      */
 	bool n1Connected;
 	bool n2Connected;
-	checkCellLooseWallEnds(wall,n1Connected,n2Connected);
+  checkCellLooseWallEnds(wall,n1Connected,n2Connected);
 	Cell * cellWithOtherWalls = this;
 	Cell * cellWithSingleWalls = daughter;
 	if (walls.size() < daughter->walls.size()) {
@@ -1168,6 +1190,9 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
 	m->plugin->OnDivide(&parent_info, daughter, this);
 
 	daughter->div_counter=(++div_counter);
+
+
+
 }
 
 void Cell::findBeforeAfter(Node * node, Node ** before, Node**after) {
@@ -2106,8 +2131,29 @@ void Cell::DrawText(QGraphicsScene *c, const QString &text) const {
     
 }
 
+void Cell::DrawSprings(QGraphicsScene *c) const
+{
+  for( auto spring : springs)
+  {
+    Vector from { *spring->getNode1() };
+    Vector to { *spring->getNode2() };
 
-void Cell::DrawAxis(QGraphicsScene *c) const {
+    QGraphicsLineItem *line = new QGraphicsLineItem(0);
+    line->setPen(QPen(QColor(par.arrowcolor), 0.5));
+    line->setZValue(2);
+
+    line->setLine(((offset[0] + from.x) * factor),
+                  ((offset[1] + from.y) * factor),
+                  ((offset[0] + to.x) * factor),
+                  ((offset[1] + to.y) * factor));
+    line->setZValue(10);
+    c->addItem(line);
+    line->show();
+  }
+}
+
+void Cell::DrawAxis(QGraphicsScene *c) const
+{
 
   Vector long_axis;
   double width;

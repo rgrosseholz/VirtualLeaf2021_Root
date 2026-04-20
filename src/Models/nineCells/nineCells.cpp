@@ -28,31 +28,36 @@
 
 #include "wallbase.h"
 #include "cellbase.h"
-#include "tutorial1A.h"
+#include "nineCells.h"
 
 static const std::string _module_id("$Id$");
 
-QString Tutorial1A::ModelID(void) {
+QString TwoCells::ModelID(void)
+{
   // specify the name of your model here
-  return QString( "1A: Cell growth" );
+  return QString("Nine cells");
 }
 
 // return the number of chemicals your model uses
-int Tutorial1A::NChem(void) { return 0; }
+int TwoCells::NChem(void) { return 0; }
 
 // To be executed after cell division
-void Tutorial1A::OnDivide(ParentInfo *parent_info, CellBase *daughter1, CellBase *daughter2) {
+void TwoCells::OnDivide(ParentInfo *parent_info, CellBase *daughter1, CellBase *daughter2)
+{
   // rules to be executed after cell division go here
   // (e.g., cell differentiation rules)
 }
 
-void Tutorial1A::SetCellColor(CellBase *c, QColor *color) { 
+void TwoCells::SetCellColor(CellBase *c, QColor *color)
+{
   // add cell coloring rules here
-
 }
 
-void Tutorial1A::CellHouseKeeping(CellBase *c) {
+void TwoCells::CellHouseKeeping(CellBase *c)
+{
   // add cell behavioral rules here
+  
+  // cellulose spring rules
   c->EnlargeTargetArea(par->cell_expansion_rate);
 
   double base_element_length = 25;
@@ -63,49 +68,41 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
         } });
 
 
-    // cellulose spring activation
-  if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k 
-  {
-    c->PlaceSprings();
-    c->SetSigmaSprings( 0.1 ); 
-    c->SetSpringDistributionMean( 0 );
-    c->SetSpringNetwork(0.,par->e);
-    c->setSpringBaseLength(9);
-  } 
-
-    if(c->isSpringPlaced()){
-    c->cleanUpNetwork(par->mu, par->nu, 3);
-    for(auto node : c->getNodesList())
-     { c->SetSpringsOnNodeIntoNetwork(node, 0., par->e);}
-  }
-  //cell wall weakening happens here
-  if(par->k[0] == 0){
-
-    c->LoopWallElements([](auto wallElementInfo){
-      Vector from { *(wallElementInfo->getFrom()) };
-      Vector to { *(wallElementInfo->getTo()) };
-      Vector wallVector { to - from };
-      Vector growthDirection { 0, 1};
-      // if angle is between 75 - 105 degree return true
-      if ( 1.3 < wallVector.Angle(growthDirection) &&  1.9 > wallVector.Angle(growthDirection) ) 
-      { 
-        wallElementInfo->getWallElement()->setStiffness(1);
-      } else { 
-        wallElementInfo->getWallElement()->setStiffness(0.65);
-      }
+    //cell wall weakening happens here
+    double patho_chem_level = c->Chemical(0) / (0.5);
+    if (patho_chem_level > 1.2) {
+        patho_chem_level = 1.2;
+    }
+    double stiffness_inf = 2.5;
+    if(patho_chem_level>0.1 && c->CellType()!=2){
+        c->SetCellVeto(false);
+        stiffness_inf = 2.5 - (patho_chem_level);
+    c->LoopWallElements([stiffness_inf](auto wallElementInfo){
+        wallElementInfo->getWallElement()->setStiffness(stiffness_inf);
     });
-  }
+    }
+    else{
+        c->LoopWallElements([stiffness_inf](auto wallElementInfo){
+        wallElementInfo->getWallElement()->setStiffness(stiffness_inf);
+        });
+        c->SetCellVeto(true);
+    }
+
+
+
 }
 
-void Tutorial1A::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2) {
+void TwoCells::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2)
+{
   // add biochemical transport rules here
 }
-void Tutorial1A::WallDynamics(Wall *w, double *dw1, double *dw2) {
+void TwoCells::WallDynamics(Wall *w, double *dw1, double *dw2)
+{
   // add biochemical networks for reactions occuring at walls here
 }
-void Tutorial1A::CellDynamics(CellBase *c, double *dchem) { 
+void TwoCells::CellDynamics(CellBase *c, double *dchem)
+{
   // add biochemical networks for intracellular reactions here
 }
 
-
-//Q_EXPORT_PLUGIN2(tutorial1A, Tutorial1A)
+// Q_EXPORT_PLUGIN2(ninecells, nineCells)

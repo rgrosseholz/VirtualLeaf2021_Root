@@ -42,6 +42,7 @@
 #include "nodeitem.h"
 #include "simplugin.h"
 #include "forwardeuler.h"
+#include "spring.h"
 
 #include <QDebug>
 #include <set>
@@ -562,9 +563,10 @@ double b_cocient(const Vector& AC, const Vector& AB,const Vector& ACperp, const 
 //http://dx.doi.org/10.1016/j.cis.2014.01.018
 // radius of circle with center on line B-C and connecting at norm of the lines (A-B ode A-C)
 // and sharing one point with the other line. This we define the kissing circle
-double osculating_circle_radius(const Vector& B, const Vector& A, const Vector& C) {
-	Vector AC = (C-A).Normalised();
-	Vector AB = (B-A).Normalised();
+double osculating_circle_radius(const Vector &B, const Vector &A, const Vector &C)
+{
+  Vector AC = (C - A).Normalised() + Vector {0, TINY, 0}; //added to solve infinity problems
+  Vector AB = (B - A).Normalised() + Vector {TINY, 0, 0};
 
 	Vector ACpoint = A+AC;
 	Vector ABpoint = A+AB;
@@ -583,7 +585,11 @@ double osculating_circle_radius(const Vector& B, const Vector& A, const Vector& 
 
 }
 
-bool Mesh::findOtherSide(CellBase * c,Node * z1,Node * z2,Node ** w0,Node ** w1,Node ** w2,Node ** w3) {
+// iterator i comes from cellbase and sets the four nodes w0-w3. we then go through the nodes to find the matching
+// nodes to z1 and z2. boolen function but sets the w nodes such that w1,2 matches z1,2
+// lasse
+bool Mesh::findOtherSide(CellBase *c, Node *z1, Node *z2, Node **w0, Node **w1, Node **w2, Node **w3)
+{
 	list <Node *>::iterator i=c->nodes.begin();
 	* w0=*i;
 	* w1=*(++i);
@@ -592,8 +598,10 @@ bool Mesh::findOtherSide(CellBase * c,Node * z1,Node * z2,Node ** w0,Node ** w1,
 	Node * o0=*w0;
 	Node * o1=*w1;
 	Node * o2=*w2;
-	while (i!=c->nodes.end()) {
-		if ((*w1==z1 && *w2==z2)||(*w2==z1 && *w1==z2)) {
+  while (i != c->nodes.end())
+  {
+    if ((*w1 == z1 && *w2 == z2) || (*w2 == z1 && *w1 == z2))
+    {
 			return true;
 		}
 	    *w0=*w1;
@@ -602,21 +610,24 @@ bool Mesh::findOtherSide(CellBase * c,Node * z1,Node * z2,Node ** w0,Node ** w1,
 	    *w3=*(++i);
 	}
 	*w3=o0;
-	if((*w1==z1 && *w2==z2)||(*w2==z1 && *w1==z2)) {
+  if ((*w1 == z1 && *w2 == z2) || (*w2 == z1 && *w1 == z2))
+  {
 		return true;
 	}
 	*w0=*w1;
 	*w1=*w2;
 	*w2=*w3;
 	*w3=o1;
-	if((*w1==z1 && *w2==z2)||(*w2==z1 && *w1==z2)) {
+  if ((*w1 == z1 && *w2 == z2) || (*w2 == z1 && *w1 == z2))
+  {
 		return true;
 	}
 	*w0=*w1;
 	*w1=*w2;
 	*w2=*w3;
 	*w3=o2;
-	if((*w1==z1 && *w2==z2)||(*w2==z1 && *w1==z2)) {
+  if ((*w1 == z1 && *w2 == z2) || (*w2 == z1 && *w1 == z2))
+  {
 		return true;
 	}
 	*w0=NULL;
@@ -720,7 +731,7 @@ void Mesh::ReconfigurationWallElement(vector<CellWallCurve> & curves,CellBase* c
 		double length_dh = (
     		elastic_modulus * stiffness * c->GetWallStiffness() *
 			(
-			(s_base) *(
+			(s_base) *( 
 					 DSQR(s_aft/s_base - 1)
 					-DSQR(s_bef/s_base - 1)
 			) -
@@ -821,7 +832,27 @@ double Mesh::ReconfigurationWallElements(vector<CellWallCurve> & curves) {
 	return 0.0;
 }
 
-double Mesh::DisplaceNodes(void) {
+void Mesh::InitializeCellSprings()
+{
+  for (vector<Cell *>::iterator ii = cells.begin(); ii != cells.end(); ii++)
+  {
+    Cell *c = *ii;
+    if(!(c->place_springs) && c->Index()!=-1 )
+    {
+      c->SetRefVecSprings( Vector {0, 1, 0} );
+      c->PlaceSprings();
+      c->SetSigmaSprings( 0.15 ); 
+      c->SetSpringDistributionMean( 0 );
+      c->SetSprings();
+      //c->SetSpringsNormalDistributed();
+      //c->sortAndDeleteSprings();
+      par.bend_lambda = 1;
+    }
+  }
+}
+
+double Mesh::DisplaceNodes(void)
+{
 
   MyUrand r(shuffled_nodes.size());
   vl_shuffle(shuffled_nodes.begin(),shuffled_nodes.end(),r);
@@ -832,15 +863,26 @@ double Mesh::DisplaceNodes(void) {
 
   for_each( node_sets.begin(), node_sets.end(), mem_fn( &NodeSet::ResetDone ) );
 
-  for (vector<Node *>::const_iterator i=shuffled_nodes.begin(); i!=shuffled_nodes.end(); i++) {
+  // here I loop over all nodes in random order without considering their belonging to cells
+  // and calculate the change of energy due to the movment of the individual node. This energy
+  // is then accepted or not by the boltzmann criterium. If accepted it is added to the total energy.
+  // If the total energy change is negatic after looping over all nodes the moves are accepted.
+  // lasse
+
+  // i is a pointer to a node; const_iterator disallows modifying the node or vecor by modifing
+  // i, but allows modifing the object node by modifing node.
+  for (vector<Node *>::const_iterator i = shuffled_nodes.begin(); i != shuffled_nodes.end(); i++)
+  {
 
     //int n=shuffled_nodes[*i];
-    Node &node(**i);
+    Node &node {**i};
 
     // Do not allow displacement if fixed
-    if (node.fixed) continue;
+    if (node.fixed)
+      continue;
 
-    if (node.DeadP()) continue;
+    if (node.DeadP())
+      continue;
 
     // Attempt to move this cell in a random direction
     double rx=par.mc_stepsize*(RANDOM()-0.5); // was 100.
@@ -853,21 +895,24 @@ double Mesh::DisplaceNodes(void) {
        double rx = r * cos(th);
        double ry = r * sin(th);
     */
+
     Vector new_p(node.x+rx,node.y+ry,0);
     Vector old_p(node.x,node.y,0);
+    Vector delta_p(rx, ry, 0);
 
     /* if (node.boundary  && boundary_polygon->MoveSelfIntersectsP(n,  new_p )) {
     // reject if move of boundary results in self intersection
     continue;
     }*/
 
-
-    if (node.node_set) {
+    if (node.node_set)
+    {
       // move each node set only once
       if (!node.node_set->DoneP()) 
 	node.node_set->AttemptMove(rx,ry);
-
-    } else {
+    }
+    else
+    {
 
       // for all cells to which this node belongs:
       //   calculate energy difference
@@ -877,17 +922,38 @@ double Mesh::DisplaceNodes(void) {
       double length_dh=0.;
       double cell_length_dh=0.;
       double alignment_dh=0.;
+      double anisotropic_dh {0};
+      double cellulose_spring_dh {0};
+
+      // for (auto c : cells){
+      //    (c->index == 0) ? c->anisotropic_growth = true : c->anisotropic_growth = false;
+      // };
+
+      double &anisotropic_penality{par.d};
+      Vector anisotropic_growth_axis{0, 1};
 
       double old_l1=0.,old_l2=0.,new_l1=0.,new_l2=0.;
+      Vector old_vec1{0, 0, 0};
+      Vector old_vec2{0, 0, 0};
+      Vector new_vec1{0, 0, 0};
+      Vector new_vec2{0, 0, 0};
 
       double dh=0.;
 
-      for (list<Neighbor>::const_iterator cit=node.owners.begin(); cit!=node.owners.end(); cit++) {
+      if(node.index == 9){
+        old_l1 = TINY;
+      }
 
-	
+      for (list<Neighbor>::const_iterator cit = node.owners.begin(); cit != node.owners.end(); cit++)
+      {
+        // over what do we exactly loop here? nodes of current cell and adjacent nodes?
+        // lasse
+
+        
 	Cell &c=*((Cell *)(cit->cell));
-
-	if (c.MoveSelfIntersectsP(&node,  new_p )) {
+        
+         if (c.MoveSelfIntersectsP(&node, new_p))
+        {
 		
 	  // reject if move results in self intersection
 	  //
@@ -899,12 +965,15 @@ double Mesh::DisplaceNodes(void) {
 
 	// area - (area after displacement): see notes for derivation
 	
-	Vector i_min_1 = *(cit->nb1);
-	//Vector i_plus_1 = m->getNode(cit->nb2);
-    Vector i_plus_1 = *(cit->nb2);
+        Vector i_min_1  { *(cit->nb1) };
+
+        Vector i_plus_1  { *(cit->nb2) };
 
 	//if (cit->cell>=0) {
-	if (!cit->cell->BoundaryPolP()) {
+
+        // calculate: area_dh, cell_length_dh, alignment_dh, length_dh   lasse
+        if (!cit->cell->BoundaryPolP())
+        {
 	  double delta_A = 0.5 * ( ( new_p.x - old_p.x ) * (i_min_1.y - i_plus_1.y) +
 				   ( new_p.y - old_p.y ) * ( i_plus_1.x - i_min_1.x ) );
 
@@ -915,100 +984,53 @@ double Mesh::DisplaceNodes(void) {
 	  // expensive and not always needed
 	  // so we check the value of lambda_celllength
 
-	  if (/* par.lambda_celllength */  cit->cell->lambda_celllength) {
+          if (/* par.lambda_celllength */ cit->cell->lambda_celllength)
+          {
 
+            // this intgral stuff is the shoelace formula to calculate the area of a polygon
+            //
 	    double delta_ix = 
-	      (i_min_1.x + new_p.x)
-	      * (new_p.x * i_min_1.y- i_min_1.x * new_p.y) +
-	      (new_p.x + i_plus_1.x)
-	      * (i_plus_1.x * new_p.y- new_p.x * i_plus_1.y) -
-
-	      (i_min_1.x + old_p.x)
-	      * (old_p.x * i_min_1.y- i_min_1.x * old_p.y) -
-	      (old_p.x + i_plus_1.x)
-	      * (i_plus_1.x * old_p.y - old_p.x * i_plus_1.y);
-
+                (i_min_1.x + new_p.x) * (new_p.x * i_min_1.y - i_min_1.x * new_p.y) +
+                (new_p.x + i_plus_1.x) * (i_plus_1.x * new_p.y - new_p.x * i_plus_1.y) -
+                (i_min_1.x + old_p.x) * (old_p.x * i_min_1.y - i_min_1.x * old_p.y) -
+                (old_p.x + i_plus_1.x) * (i_plus_1.x * old_p.y - old_p.x * i_plus_1.y);
 
 	    double delta_iy =
-	      (i_min_1.y + new_p.y)
-	      * (new_p.x * i_min_1.y- i_min_1.x * new_p.y) +
-	      (new_p.y + i_plus_1.y)
-	      * (i_plus_1.x * new_p.y- new_p.x * i_plus_1.y) -
-
-	      (i_min_1.y + old_p.y)
-	      * (old_p.x * i_min_1.y- i_min_1.x * old_p.y) -
-	      (old_p.y + i_plus_1.y)
-	      * (i_plus_1.x * old_p.y - old_p.x * i_plus_1.y);
-
+                (i_min_1.y + new_p.y) * (new_p.x * i_min_1.y - i_min_1.x * new_p.y) +
+                (new_p.y + i_plus_1.y) * (i_plus_1.x * new_p.y - new_p.x * i_plus_1.y) -
+                (i_min_1.y + old_p.y) * (old_p.x * i_min_1.y - i_min_1.x * old_p.y) -
+                (old_p.y + i_plus_1.y) * (i_plus_1.x * old_p.y - old_p.x * i_plus_1.y);
 
 	    double delta_ixx = 
-	      (new_p.x*new_p.x+
-	       i_min_1.x*new_p.x+
-	       i_min_1.x*i_min_1.x ) *
+                (new_p.x * new_p.x + i_min_1.x * new_p.x + i_min_1.x * i_min_1.x) *
 	      (new_p.x*i_min_1.y - i_min_1.x*new_p.y) +
-
-	      (i_plus_1.x*i_plus_1.x+
-	       new_p.x*i_plus_1.x+
-	       new_p.x*new_p.x ) *
+                (i_plus_1.x * i_plus_1.x + new_p.x * i_plus_1.x + new_p.x * new_p.x) *
 	      (i_plus_1.x*new_p.y - new_p.x*i_plus_1.y) -
-
-	      (old_p.x*old_p.x+
-	       i_min_1.x*old_p.x+
-	       i_min_1.x*i_min_1.x ) *
+                (old_p.x * old_p.x + i_min_1.x * old_p.x + i_min_1.x * i_min_1.x) *
 	      (old_p.x*i_min_1.y - i_min_1.x*old_p.y) -
-
-	      (i_plus_1.x*i_plus_1.x+
-	       old_p.x*i_plus_1.x+
-	       old_p.x*old_p.x ) *
+                (i_plus_1.x * i_plus_1.x + old_p.x * i_plus_1.x + old_p.x * old_p.x) *
 	      (i_plus_1.x*old_p.y - old_p.x*i_plus_1.y);
 
 
 	    double delta_ixy =
-	      (i_min_1.x*new_p.y-
-	       new_p.x*i_min_1.y)*
-	      (new_p.x*(2*new_p.y+i_min_1.y)+
-	       i_min_1.x*(new_p.y+2*i_min_1.y)) +
-
-	      (new_p.x*i_plus_1.y-
-	       i_plus_1.x*new_p.y)*
-	      (i_plus_1.x*(2*i_plus_1.y+new_p.y)+
-	       new_p.x*(i_plus_1.y+2*new_p.y)) -
-
-	      (i_min_1.x*old_p.y-
-	       old_p.x*i_min_1.y)*
-	      (old_p.x*(2*old_p.y+i_min_1.y)+
-	       i_min_1.x*(old_p.y+2*i_min_1.y)) -
-
-	      (old_p.x*i_plus_1.y-
-	       i_plus_1.x*old_p.y)*
-	      (i_plus_1.x*(2*i_plus_1.y+old_p.y)+
-	       old_p.x*(i_plus_1.y+2*old_p.y));
-
+                (i_min_1.x * new_p.y - new_p.x * i_min_1.y) *
+                    (new_p.x * (2 * new_p.y + i_min_1.y) + i_min_1.x * (new_p.y + 2 * i_min_1.y)) +
+                (new_p.x * i_plus_1.y - i_plus_1.x * new_p.y) *
+                    (i_plus_1.x * (2 * i_plus_1.y + new_p.y) + new_p.x * (i_plus_1.y + 2 * new_p.y)) -
+                (i_min_1.x * old_p.y - old_p.x * i_min_1.y) *
+                    (old_p.x * (2 * old_p.y + i_min_1.y) + i_min_1.x * (old_p.y + 2 * i_min_1.y)) -
+                (old_p.x * i_plus_1.y - i_plus_1.x * old_p.y) *
+                    (i_plus_1.x * (2 * i_plus_1.y + old_p.y) + old_p.x * (i_plus_1.y + 2 * old_p.y));
 
 	    double delta_iyy = 
-	      (new_p.x*i_min_1.y-
-	       i_min_1.x*new_p.y)*
-	      (new_p.y*new_p.y+
-	       i_min_1.y*new_p.y+
-	       i_min_1.y*i_min_1.y ) + 
-
-	      (i_plus_1.x*new_p.y-
-	       new_p.x*i_plus_1.y)*
-	      (i_plus_1.y*i_plus_1.y+
-	       new_p.y*i_plus_1.y+
-	       new_p.y*new_p.y ) -
-
-	      (old_p.x*i_min_1.y-
-	       i_min_1.x*old_p.y)*
-	      (old_p.y*old_p.y+
-	       i_min_1.y*old_p.y+
-	       i_min_1.y*i_min_1.y ) -
-
-	      (i_plus_1.x*old_p.y-
-	       old_p.x*i_plus_1.y)*
-	      (i_plus_1.y*i_plus_1.y+
-	       old_p.y*i_plus_1.y+
-	       old_p.y*old_p.y );
+                (new_p.x * i_min_1.y - i_min_1.x * new_p.y) *
+                    (new_p.y * new_p.y + i_min_1.y * new_p.y + i_min_1.y * i_min_1.y) +
+                (i_plus_1.x * new_p.y - new_p.x * i_plus_1.y) *
+                    (i_plus_1.y * i_plus_1.y + new_p.y * i_plus_1.y + new_p.y * new_p.y) -
+                (old_p.x * i_min_1.y - i_min_1.x * old_p.y) *
+                    (old_p.y * old_p.y + i_min_1.y * old_p.y + i_min_1.y * i_min_1.y) -
+                (i_plus_1.x * old_p.y - old_p.x * i_plus_1.y) *
+                    (i_plus_1.y * i_plus_1.y + old_p.y * i_plus_1.y + old_p.y * old_p.y);
 
 	    delta_intgrl_list.push_back(DeltaIntgrl(delta_A,delta_ix,delta_iy,delta_ixx,delta_ixy,delta_iyy));
 
@@ -1048,8 +1070,9 @@ double Mesh::DisplaceNodes(void) {
 
 	    /* cerr << "alignment_dh  = " << alignment_dh << endl;
 	       cerr << "cellvec = " << c.cellvec << endl;*/
-
-	  } else {
+          }
+          else
+          {
 	    // if we have no length constraint, still need to update area
 	    delta_intgrl_list.push_back(DeltaIntgrl(delta_A,0,0,0,0,0));
 
@@ -1059,14 +1082,21 @@ double Mesh::DisplaceNodes(void) {
 	  old_l2=(old_p-i_plus_1).Norm();
 	  new_l1=(new_p-i_min_1).Norm();
 	  new_l2=(new_p-i_plus_1).Norm();
+          old_vec1 = old_p - i_min_1;
+          old_vec2 = old_p - i_plus_1;
+          new_vec1 = new_p - i_min_1;
+          new_vec2 = new_p - i_plus_1;
 
 	  static int count=0;
 	  // Insertion of nodes (cell wall yielding)
-	  if (!node.fixed) {
-	    if (old_l1 > par.yielding_threshold*Node::target_length && !cit->nb1->fixed) {
+          if (!node.fixed)
+          {
+            if (old_l1 > par.yielding_threshold * Node::target_length && !cit->nb1->fixed)
+            {
 	      node_insertion_queue.push( Edge(cit->nb1, &node) );
 	    }
-	    if (old_l2 > par.yielding_threshold*Node::target_length && !cit->nb2->fixed) {
+            if (old_l2 > par.yielding_threshold * Node::target_length && !cit->nb2->fixed)
+            {
 	      node_insertion_queue.push( Edge(&node, cit->nb2 ) );
 	    }
 	    count++;
@@ -1109,27 +1139,26 @@ double Mesh::DisplaceNodes(void) {
     double bl_minus_1 = 0.0;
     double bl_plus_1 = 0.0;
 
-    if (activateWallStiffnessHamiltonian()) {
+    if (activateWallStiffnessHamiltonian())
+    {
     	calculateWallStiffness(&c, *i, &w_w1, &w_w2, &bl_minus_1, &bl_plus_1);
     }
-    if (bl_minus_1>0 && bl_plus_1>0) {
-        w1 = cell_w * (w_w1);
-        w2 = cell_w * (w_w2);
-        //check if wall elements are defined and pick the appropriate length_dh
-
-            length_dh +=
-        		elastic_modulus * w1 *
-        		bl_minus_1 *(DSQR(new_l1/bl_minus_1 - 1)-DSQR(old_l1/bl_minus_1 - 1)) +
-                elastic_modulus * w2 *
-				bl_plus_1 *(DSQR(new_l2/bl_plus_1 - 1)-DSQR(old_l2/bl_plus_1 - 1));
-    }
-    else {
-    	length_dh +=2*Node::target_length * (
-    			w1*(old_l1 - new_l1) +
-    			w2*(old_l2 - new_l2) ) +
-        		w1*(DSQR(new_l1) - DSQR(old_l1)) +
-				w2*(DSQR(new_l2) - DSQR(old_l2));
-	}
+    if (bl_minus_1 > 0 && bl_plus_1 > 0)
+    {
+            
+      w1 = cell_w * (w_w1);
+      w2 = cell_w * (w_w2);
+      //check if wall elements are defined and pick the appropriate length_dh
+        length_dh +=
+        	elastic_modulus * w1 *
+      	  bl_minus_1 *(DSQR(new_l1/bl_minus_1 - 1)-DSQR(old_l1/bl_minus_1 - 1)) +
+          elastic_modulus * w2 *
+		      bl_plus_1 *(DSQR(new_l2/bl_plus_1 - 1)-DSQR(old_l2/bl_plus_1 - 1));
+    }else
+    {
+      length_dh += 2 * Node::target_length * (w1 * (old_l1 - new_l1) + w2 * (old_l2 - new_l2)) +
+  		w1*(DSQR(new_l1) - DSQR(old_l1)) + w2*(DSQR(new_l2) - DSQR(old_l2));
+	  }
 //    cout << node << "\t" << bl_minus_1 <<  "\t" << bl_plus_1 <<  "\t" << w_w1 <<  "\t" << w_w2 << "\n";
 	}
 
@@ -1137,40 +1166,152 @@ double Mesh::DisplaceNodes(void) {
 	// first implementation. Can probably be done more efficiently
 	// calculate osculating circle radius (gives local curvature)
 	// the ideal bending state is flat... (K=0)
-	if (abs(par.bend_lambda) > 0.01)	  {
+  if (abs(par.bend_lambda) > 0.01)
+  {
 	  // strong bending energy to resist "cleaving" by division planes
 	  double r1, r2;
 
 	  Vector before_a(i_min_1.x,i_min_1.y,0);
 	  Vector before_b(old_p.x, old_p.y,0);
 	  Vector before_c(i_plus_1.x, i_plus_1.y,0);
-	  r1 = osculating_circle_radius(before_a, before_b, before_c);
+  	  r1 = osculating_circle_radius(before_a, before_b, before_c);
 
 	  Vector after_a(i_min_1.x, i_min_1.y,0);
 	  Vector after_b(new_p.x, new_p.y,0);
 	  Vector after_c(i_plus_1.x, i_plus_1.y,0);
 	  r2 = osculating_circle_radius(after_a, after_b, after_c);
 
-	  if (r1<0 || r2<0) {
+          if (r1 < 0 || r2 < 0)
+          {
 	    MyWarning::warning("r1 = %f, r2 = %f",r1,r2);
 	  }
 	  bending_dh += DSQR(1/r2 - 1/r1);
 	}
+
+  // cellulose spring energy panality
+
+  if (c.isSpringPlaced())
+  {
+    for ( auto j = c.springs.begin(); j != c.springs.end();  ){ // loop over the springs
+              
+      if( (*j)->m_n1 == &node ) // if moved node is connected to a spring, calculate the energy
+      {    
+        //Here I take the connecting spring vector and calculate the energy panality similar to 
+                    //the cell wall panality
+        Vector n1 {(*j)->m_n1->getPos()};
+        Vector n2 {(*j)->m_n2->getPos()};
+        Vector oldSpringVec { (*j)->getSpringVector() };
+        Vector newSpringVec { (*j)->getSpringVector((n1 + delta_p), n2) };
+        double old_length { (oldSpringVec).Norm() };
+        double new_length { (newSpringVec).Norm() };
+        double springLength { c.getSpringBaseLength() };
+        double lambda_cellulose { par.d };
+        /* calculate energy with harmonic oszilator for spring length and spring orientation*/
+        cellulose_spring_dh += lambda_cellulose  *
+                               ( DSQR(new_length / springLength - 1)
+                              - DSQR(old_length / springLength - 1)) ;   
+        /*and now we want an angle constrain
+        Vector referenzVector { c.GetRefVecSprings() };
+        double oldAngle { referenzVector.Angle(oldSpringVec)};
+        double newAngle { referenzVector.Angle(newSpringVec)};
+        cellulose_spring_dh += lambda_cellulose * ( DSQR(newAngle / 1.57 - 1)
+                                - DSQR(oldAngle / 1.57 - 1)) ; // 1.57 is pi/2
+        cellulose_spring_dh+=TINY;
+        */          
+                  /* Now i want to follow the generalized hookean law. old code.
+                  Matrix cellulose_strain_tensor_old { (*j)->getCelluloseStrainMatrix(-rx, -ry) };
+                  Matrix cellulose_strain_tensor { (*j)->getCelluloseStrainMatrix(0, 0) };
+                
+                  cellulose_spring_dh += lambda_cellulose * (((cellulose_youngs_modulus*cellulose_strain_tensor)*cellulose_strain_tensor
+                        - (cellulose_youngs_modulus*cellulose_strain_tensor_old)*cellulose_strain_tensor_old).Trace()); 
+                  cellulose_spring_dh += TINY;
+                  */
+      } else if( (*j)->m_n2 == &node ) // if moved node is connected to a spring, calculate the energy
+      {     
+        Vector n1 {(*j)->m_n1->getPos()};
+        Vector n2 {(*j)->m_n2->getPos()};
+        Vector oldSpringVec { (*j)->getSpringVector() };
+        Vector newSpringVec { (*j)->getSpringVector(n1 , (n2 + delta_p)) };
+        double old_length { (oldSpringVec).Norm() };
+        double new_length { (newSpringVec).Norm() };
+        double springLength { c.getSpringBaseLength() };
+        double lambda_cellulose { par.d };
+         cellulose_spring_dh += lambda_cellulose * 
+                               ( DSQR(new_length / springLength - 1)
+                              - DSQR(old_length / springLength - 1)) ;  
+                  /* and now we want an angle constrain 
+                  Vector referenzVector { c.GetRefVecSprings() };
+                  double oldAngle { referenzVector.Angle(oldSpringVec)};
+                  double newAngle { referenzVector.Angle(newSpringVec)};
+                  cellulose_spring_dh += lambda_cellulose * ( DSQR(newAngle / 1.57 - 1)
+                                                              - DSQR(oldAngle / 1.57 - 1)) ; // 1.57 is pi/2
+                  cellulose_spring_dh+=TINY;
+                 */
+                  /* hier veraltete Springvector komponente
+                  Matrix cellulose_strain_tensor_old { (*j)->getCelluloseStrainMatrix(-rx, -ry) };
+                  Matrix cellulose_strain_tensor { (*j)->getCelluloseStrainMatrix(0, 0) };
+                  
+                  cellulose_spring_dh += lambda_cellulose * (((cellulose_youngs_modulus*cellulose_strain_tensor)*cellulose_strain_tensor
+                        - (cellulose_youngs_modulus*cellulose_strain_tensor_old)*cellulose_strain_tensor_old).Trace());
+                                  
+                  cellulose_spring_dh += TINY;
+                  */ 
       }
-      dh = 	area_dh + cell_length_dh +
-      par.lambda_length * length_dh + par.bend_lambda * bending_dh + par.alignment_lambda * alignment_dh;
+      ++j;
+    }
+    
+  }
+
+  // make anisotropic energy panality
+
+  double alignment_with_axis{DSQR(InnerProduct(anisotropic_growth_axis.Normalised(), old_p.Normalised()))};
+
+  if (c.anisotropic_growth)
+  {
+
+          // The InnerProduct penalizes if the change of the x and y is not
+          // along the direction of the growth axis
+          // lasse
+          // anisotropic_dh += DSQR( InnerProduct(anisotroic_growth_axis, new_p -
+          //                         old_p)) * anisotropic_penality ;
+          // anisotropic_dh += ( DSQR( rx ) - sgn(ry) * sgn( old_p.y - c.Centroid().y )
+          //                     * DSQR( ry )  ) * anisotropic_penality;
+          
+          /*
+          //Das hier ist die "eigentlich getestete" version
+           anisotropic_dh += ((anisotropic_growth_axis * delta_p).SqrNorm()
+                             - sgn(InnerProduct((old_p - c.Centroid()), delta_p))
+                             * DSQR(InnerProduct(anisotropic_growth_axis, delta_p)))
+                             * anisotropic_penality;
+          */
+          Matrix youngs_modulus{Vector{1, 0, 0}, Vector{0, 0, 0}, Vector{0, 0, 0}};   
+          Vector quadrat_delta_p {DSQR(delta_p.x), DSQR(delta_p.y)};
+          Vector young_delta_p { youngs_modulus * delta_p };
+          double anisoDH {InnerProduct(young_delta_p, delta_p)};
+          anisotropic_dh += anisoDH * par.d;
+          anisotropic_dh += InnerProduct(youngs_modulus * Vector{DSQR(delta_p.x), DSQR(delta_p.y)},
+                                        anisotropic_growth_axis) * anisotropic_penality;
+          
+        }
+         
+      }
+
+      dh = area_dh + cell_length_dh + par.lambda_length * length_dh +
+           par.bend_lambda * bending_dh + par.alignment_lambda * alignment_dh + cellulose_spring_dh
+           + anisotropic_dh;
 
          //(length_constraint_after - length_constraint_before);
 
-      if (dh < 0 || RANDOM()<exp((-dh)/par.T)) {
+  if (dh < 0 || RANDOM() < exp((-dh) / par.T))
+  {
 		updateAreasOfCells(&delta_intgrl_list, &node) ;
 
 		node.x = new_p.x;
 		node.y = new_p.y;
 
 		sum_dh += dh;
-      }
-    } 
+  }
+  } 
   next_node:
     delta_intgrl_list.clear();//dA_list.clear();
 
@@ -1388,6 +1529,16 @@ void Mesh::InsertNode(Edge &e) {
     c++;
   }
 
+  // Hier könnte auch einfach true stehen
+  if (RandomNumber(1) == 1){ 
+    for (auto owner : owners)
+    {
+      Cell* c { owner.getCell() };
+      if(c->Index() == -1 || !(c->place_springs)) {continue;}
+      c->cleanUpNetwork(par.mu, par.nu, 3);
+      c->resetSpringNetwork(new_node, 0., par.e);
+    }
+  }
   new_node->splittWallElementsBetween(e.first, e.second);
 }
 

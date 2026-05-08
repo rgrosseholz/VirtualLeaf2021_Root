@@ -256,20 +256,19 @@ class CellBase :  public QObject, public Vector
 
 
   // Here are the functions needed for anisotropic growth
-  inline void SetRefVecSprings(Vector ref_vec) {reference_springs = ref_vec;}
-  inline Vector GetRefVecSprings() {return reference_springs;}
-  inline void PlaceSprings() {place_springs= true;}
-  bool isSpringPlaced() {return place_springs;}
-  void SetSigmaSprings(double value) {sigma_springs = value;}
-  void SetSpringDistributionMean( double value ) { spring_distribution_mean = value; }
-  double getSigmaSprings() {return this->sigma_springs;};
-  double getSpringDistributionMean() { return this->spring_distribution_mean; };
-  void setSpringBaseLength(double length) { springBaseLength = length; };
-  double getSpringBaseLength() { return springBaseLength; };
-  list<Spring *> getSprings() { return springs; };
 
-  double averageSpringLength();
-  void SetSprings(void);
+  inline void PlaceTriangles() {place_triangles = true;}
+  bool isSpringPlaced() {return place_triangles;}
+  void setTargetTheta(double value) {target_theta = value;}
+  void setTargetBA(Vector BA) { target_BA = BA; };
+  void setTargetBC(Vector BC) { target_BC = BC; };
+  list<Triangle *> getTriangles() { return triangles; };
+
+  void addTriangleToCell( Triangle *t);
+  list<Triangle*> findActiveTriangles(Node* mov_node);
+
+  void setTriangles();
+  void updateTriangle();
   void SetSpringsNormalDistributedExcludeTopBottom(int numOfAverage);
   void SetSpringsNormalDistributed(void);
   void SetSpringNetwork(double spring_distribution_mean, double sigma_springs);
@@ -286,6 +285,7 @@ class CellBase :  public QObject, public Vector
   bool isNodeWithinBoundary(Node* node, int numOfAverage, double intervalY = 3.5,
                              double intervalX = 3.5);
   pair<Node*, Node*> findeOpposedNodes(Node* op_node);
+  Node* findeOpposedNode(Node* op_node, double minX_distance );
   
   pair<double,double> findAverageMinMaxY(int numOfAverage, double intervalY);
   Vector getMinMaxPositionX();
@@ -582,7 +582,7 @@ class CellBase :  public QObject, public Vector
   list<CellBase *> neighbors;
 
   list<Wall *> walls;
-  list<Spring *> springs;
+  list<Triangle *> triangles;
 
   double *chem;
   double *new_chem;
@@ -594,8 +594,10 @@ class CellBase :  public QObject, public Vector
   double lambda_celllength;
   double wall_stiffness; // Lebovka et al
   bool veto_reconfigurationling; // testing cellular veto
-  double sigma_springs; // sigma for the normal distribution describing spring orientation
-  double spring_distribution_mean;
+  double target_theta ; // theta for the target triangle
+  Vector target_BA ; // vector BA for target triangle
+  Vector target_BC ; // vector BC for target triangle
+  
 
   
 
@@ -606,15 +608,14 @@ class CellBase :  public QObject, public Vector
   bool at_boundary; 
   bool dead; 
   bool flag_for_divide;
-  bool place_springs { false }; // cell property: bool determining if springs are placed or not
+  bool place_triangles { false }; // cell property: bool determining if triangles are placed or not
 
   bool anisotropic_growth { false };
 
   Vector *division_axis;
-  Vector reference_springs { Vector {0, 1, 0} }; // cell property: reference vector for spring placement, orthogonal to spring direction!
-
+ 
   int cell_type;
-  double springBaseLength { 8 };
+  
   // for length constraint
   mutable double intgrl_xx, intgrl_xy, intgrl_yy, intgrl_x, intgrl_y;
 

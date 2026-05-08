@@ -63,7 +63,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="2" name="cell_expansion_rate"/>
+      <par val="10" name="cell_expansion_rate"/>
       
       
       <par val="10" name="cell_div_expansion_rate"/>
@@ -412,7 +412,7 @@
       <par val="0.25" name="vessel_expansion_rate"/>
       
       
-      <par val="200" name="d"/>
+      <par val="1e-6" name="d"/>
       
       
       <par val="0.15" name="e"/>
@@ -478,46 +478,14 @@
       <par name="k">
          
               
-         <valarray>
-            
-            
-        
-            
+         <valarray> 
             <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
+            <val v="12.41"/>
+        <val v="1.58"/>
+        <val v="2.83"/>
+        <val v="-0.027"/>
+        <val v="0.0024"/>
+        <val v="-0.0045"/>
             <val v="0"/>
             
             

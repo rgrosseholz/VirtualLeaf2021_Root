@@ -50,6 +50,15 @@ inline float SQR( float a ) {
   }
 }
 
+inline double Cubed( double a ) {
+
+  if (a == 0.0) {
+    return 0.0;
+  } else {
+    return a*a*a;
+  }
+}
+
 #endif
 
 /* finis */

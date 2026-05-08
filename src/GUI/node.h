@@ -167,7 +167,7 @@ class Node : public NodeBase {
   }
 
   Vector getPos() { 
-    return { x, y, z};
+    return Vector { x, y, z};
   }
 
   inline bool SamP(void) const { return sam; }

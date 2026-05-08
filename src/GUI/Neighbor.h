@@ -59,6 +59,8 @@ class Neighbor {
   void XMLAdd(QDomDocument &doc, QDomElement &e) const;
   void setPrevious(Node * nb);
   void setNext(Node * nb);
+  Node* get_nb1() { return nb1; };
+  Node* get_nb2() { return nb2; };
 
   ostream &print(ostream &os) const;
 

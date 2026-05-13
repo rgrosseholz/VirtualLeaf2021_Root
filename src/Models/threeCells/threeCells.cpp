@@ -62,26 +62,16 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   if(c->Index() == 1){
   c->EnlargeTargetArea(par->cell_expansion_rate / 10); }
 
-  // cellulose spring activation
-  if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k 
+      // cellulose activation
+  if(par->k[0] == 0 && !(c->isTrianglePlaced()) && c->Index()!=-1 ) // instead of celltype use k 
   {
-    //c->setAnisotropicGrowth(true);
-    c->PlaceSprings();
-    c->SetSigmaSprings( 0.15 ); 
-    c->SetSpringDistributionMean( 0 );
-    c->SetSpringNetwork(0.,0.21);
-    c->setSpringBaseLength(17);      
-    
-  }
-
-  if(c->isSpringPlaced()){
-    c->cleanUpNetwork(par->mu, par->nu, 3);
-    for(auto node : c->getNodesList())
-    {
-      if(RANDOM() <= (exp(- (node->getConnected_to_spring()/3.0)) - 0.1))
-      c->SetSpringsOnNodeIntoNetwork(node, 0., 0.21);
-    }
-  }
+    c->PlaceTriangles();
+    c->setTargetTheta(0); 
+    c->setTargetBA( Vector { 12,0,0} );
+    c->setTargetBC( Vector {0, 6, 0 });
+    c->setTriangles();
+  } 
+  
   //cell wall weakening happens here
   if(par->k[0] == 0){
 

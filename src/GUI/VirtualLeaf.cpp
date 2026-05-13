@@ -115,9 +115,9 @@ public:
 	  if (m.ShowMeshP()) {
 		  c->DrawNodes(&canvas);
 	  }
-//    if (m.ShowSprings()){
-//      c->DrawSprings(&canvas);
-//    }
+    if (m.ShowTriangles()){
+      c->DrawTriangles(&canvas);
+    }
     if (m.ShowBorderCellsP() || c->Boundary()==Cell::None) {
       if (!m.ShowBoundaryOnlyP() && !m.HideCellsP()) {
 	if (m.ShowToolTipsP()) {
@@ -164,8 +164,8 @@ void MainBase::Plot(int resize_stride)
   }
   
   mesh.LoopCells(DrawCell(),canvas,*this);
-//  if (ShowSprings())
-//    mesh.LoopCells([this](auto cell){cell->DrawSprings(&canvas);});
+  if (ShowTriangles())
+    mesh.LoopCells([this](auto cell){cell->DrawTriangles(&canvas);});
   if (ShowNodeNumbersP()) 
     mesh.LoopNodes([this](auto node){node->DrawIndex(&canvas);});
   if (ShowCellNumbersP()) 

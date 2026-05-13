@@ -17,7 +17,7 @@ Tutorial1A \
 #Tutorial4 \
 #Tutorial5 \
 #twoCells \ 
-#threeCells \
+threeCells \
 #5x2_Cells \
 #nineCells \
 #LateralRoot \

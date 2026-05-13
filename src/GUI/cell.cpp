@@ -2131,28 +2131,53 @@ void Cell::DrawText(QGraphicsScene *c, const QString &text) const {
     
 }
 
-/*
-void Cell::DrawTriangles(QGraphicsScene *c) const
+
+void Cell::DrawTriangles(QGraphicsScene *c) 
 {
-  for( auto spring : springs)
+  for(Triangle&  t : triangles)
   {
-    Vector from { *spring->getNode1() };
-    Vector to { *spring->getNode2() };
+    Vector fromA { t.getNodeA()->getPos() };
+    Vector toB { t.getNodeB()->getPos() };
+    Vector toC { t.getNodeC()->getPos() };
 
-    QGraphicsLineItem *line = new QGraphicsLineItem(0);
-    line->setPen(QPen(QColor(par.arrowcolor), 0.5));
-    line->setZValue(2);
+    QGraphicsLineItem *lineAB = new QGraphicsLineItem(0);
+    lineAB->setPen(QPen(QColor(par.arrowcolor), 0.1));
+    lineAB->setZValue(2);
 
-    line->setLine(((offset[0] + from.x) * factor),
-                  ((offset[1] + from.y) * factor),
-                  ((offset[0] + to.x) * factor),
-                  ((offset[1] + to.y) * factor));
-    line->setZValue(10);
-    c->addItem(line);
-    line->show();
+    lineAB->setLine(((offset[0] + fromA.x) * factor),
+                  ((offset[1] + fromA.y) * factor),
+                  ((offset[0] + toB.x) * factor),
+                  ((offset[1] + toB.y) * factor));
+    lineAB->setZValue(10);
+    c->addItem(lineAB);
+    lineAB->show();
+
+    QGraphicsLineItem *lineAC = new QGraphicsLineItem(0);
+    lineAC->setPen(QPen(QColor(par.arrowcolor), 0.1));
+    lineAC->setZValue(2);
+
+    lineAC->setLine(((offset[0] + fromA.x) * factor),
+                  ((offset[1] + fromA.y) * factor),
+                  ((offset[0] + toC.x) * factor),
+                  ((offset[1] + toC.y) * factor));
+    lineAC->setZValue(10);
+    c->addItem(lineAC);
+    lineAC->show();
+
+    QGraphicsLineItem *lineCB = new QGraphicsLineItem(0);
+    lineCB->setPen(QPen(QColor(par.arrowcolor), 0.1));
+    lineCB->setZValue(2);
+
+    lineCB->setLine(((offset[0] + toC.x) * factor),
+                  ((offset[1] + toC.y) * factor),
+                  ((offset[0] + toB.x) * factor),
+                  ((offset[1] + toB.y) * factor));
+    lineCB->setZValue(10);
+    c->addItem(lineCB);
+    lineCB->show();
   }
 }
-*/
+
 void Cell::DrawAxis(QGraphicsScene *c) const
 {
 

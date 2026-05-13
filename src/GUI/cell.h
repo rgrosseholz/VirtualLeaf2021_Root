@@ -140,7 +140,7 @@ class Cell : public CellBase
   void DrawMiddleLamella(QGraphicsScene *c, QString tooltip = "");
 
   void DrawAxis(QGraphicsScene *c) const;
-  void DrawSprings(QGraphicsScene *c) const;
+  void DrawTriangles(QGraphicsScene *c);
   void DrawStrain(QGraphicsScene *c) const;
   void DrawFluxes(QGraphicsScene *c, double arrowsize = 1.);
   void DrawWalls(QGraphicsScene *c) const;

@@ -410,41 +410,17 @@
       
       
       <par val="0.25" name="vessel_expansion_rate"/>
-      
-      
-      <par val="1e-6" name="d"/>
-      
-      
-      <par val="0.15" name="e"/>
-      
-      
-      <par val="0.8" name="f"/>
-      
-      
-      <par val="0.4" name="c"/>
-      
-      
-      <par val="0.4" name="mu"/>
-      
-      
-      <par val="0.4" name="nu"/>
-      
-      
-      <par val="0" name="rho0"/>
-      
-      
-      <par val="0" name="rho1"/>
-      
-      
-      <par val="0" name="c0"/>
-      
-      
-      <par val="0" name="gamma"/>
-      
-      
-      <par val="0" name="eps"/>
-      
-      
+      <par name="d" val="20"/>
+    <par name="e" val="1 "/>
+    <par name="f" val="0.0"/>
+    <par name="c" val="0.2"/>
+    <par name="mu" val="0.4"/>
+    <par name="nu" val="1"/>
+    <par name="rho0" val="0"/>
+    <par name="rho1" val="0"/>
+    <par name="c0" val="0"/>
+    <par name="gamma" val="0"/>
+    <par name="eps" val="0"/>
       <par val="0" name="betaN"/>
       
       
@@ -480,12 +456,12 @@
               
          <valarray> 
             <val v="0"/>
-            <val v="12.41"/>
-        <val v="1.58"/>
-        <val v="2.83"/>
-        <val v="-0.027"/>
-        <val v="0.0024"/>
-        <val v="-0.0045"/>
+            <val v="0"/>
+        <val v="0"/>
+        <val v="0"/>
+        <val v="0"/>
+        <val v="0"/>
+        <val v="0"/>
             <val v="0"/>
             
             

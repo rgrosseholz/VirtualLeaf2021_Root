@@ -839,7 +839,8 @@ Vector Mesh::calcStrain( Triangle* triangle, Vector deltaP = Vector {0,0,0}){
   if(AB.x >= 0){
     Vector BA_target { triangle->getTargetBA() };
     Vector targetP { BA_target - AB - deltaP};
-    double theta {BA_target.Angle(AB) - triangle->getTargetTheta()};
+    Vector e_x {1,0,0};
+    double theta {e_x.Angle(AB) - triangle->getTargetTheta()};
     if(targetP.y>0){
       //rotation clockwise (bc y -> -y)
       strain = Vector {targetP.x * cos(theta) -1, targetP.y * cos(theta) -1, 0.5*sin(theta)*(targetP.x - targetP.y)};
@@ -850,7 +851,8 @@ Vector Mesh::calcStrain( Triangle* triangle, Vector deltaP = Vector {0,0,0}){
   }else{
     Vector BA_target { -1* triangle->getTargetBA() }; // change of direction
     Vector targetP { BA_target - AB - deltaP};
-    double theta {BA_target.Angle(AB) - triangle->getTargetTheta()};
+    Vector e_x {1,0,0};
+    double theta {e_x.Angle(AB) - triangle->getTargetTheta()};
     if(targetP.y<0){
       //rotation clockwise (bc y -> -y)
       strain = Vector {targetP.x * cos(theta) -1, targetP.y * cos(theta) -1, 0.5*sin(theta)*(targetP.x - targetP.y)};
@@ -1487,6 +1489,7 @@ void Mesh::InsertNode(Edge &e) {
 
   for(auto owner : owners){
     if(! (owner.CellEquals(-1)) ){
+      owner.getCell()->triangles.clear();
       owner.getCell()->setTriangles();
     }
   }

@@ -832,137 +832,34 @@ double Mesh::ReconfigurationWallElements(vector<CellWallCurve> & curves) {
 	return 0.0;
 }
 
-void Mesh::InitializeCellSprings()
-{
-  for (vector<Cell *>::iterator ii = cells.begin(); ii != cells.end(); ii++)
-  {
-    Cell *c = *ii;
-    if(!(c->place_springs) && c->Index()!=-1 )
-    {
-      c->SetRefVecSprings( Vector {0, 1, 0} );
-      c->PlaceSprings();
-      c->SetSigmaSprings( 0.15 ); 
-      c->SetSpringDistributionMean( 0 );
-      c->SetSprings();
-      //c->SetSpringsNormalDistributed();
-      //c->sortAndDeleteSprings();
-      par.bend_lambda = 1;
-    }
-  }
-}
 
-/**
- * @brief Takes 6 Node* as input where n1-n4 will become the Node* to the neighbors of moving_node
- *        and opposed_Node. If opposed_node is also a neighbor of moving_node than only two neighbors 
- *        will be returned. n1 as neighbor of moving_node and n2 as neighbor of opposed_node.
- * 
- * @return Updates node pointers. Can return Nullpointer. This should happen if opposed_node and 
- *         moving_node are neighbors. Returns them sorted n1 is opposing n3 and n2 is oppsing n4.
- *         If n3 and n4 are not defined n1 and n2 are opposing.
- */
-void Mesh::setNeighbours(Node* moving_node, Node* opposed_Node, Cell* c, Node*& n1, Node*& n2, Node*& n3, Node*& n4){
-  for (auto owner : moving_node->owners)
-  {
-    if(owner.CellEquals(c->Index())){
-      if(owner.nb1->y > owner.nb2->y){
-        n1 = owner.nb1 ;
-        n2 = owner.nb2 ; 
-      }else{
-        n2 = owner.nb1 ;
-        n1 = owner.nb2 ;
-      }
-    }
-  }
-  if(n1 == opposed_Node){
-    for (auto owner : opposed_Node->owners)
-    {
-      if(owner.CellEquals(c->Index())){
-       if( owner.nb1 == moving_node)
-       {    
-          n1 = n2;
-          n2 = owner.nb2;
-       }else if(owner.nb2 == moving_node){
-          n1 = n2;
-          n2 = owner.nb1;
-       }
-      }  
-    }
-  }else if(n2 == opposed_Node){
-    for (auto owner : opposed_Node->owners)
-    {
-      if(owner.CellEquals(c->Index())){
-       if( owner.nb1 == moving_node)
-       {    
-          n2 = owner.nb2;
-       }else if(owner.nb2 == moving_node){
-          n2 = owner.nb1;
-       }
-      }  
+Vector Mesh::calcStrain( Triangle* triangle, Vector deltaP = Vector {0,0,0}){
+  Vector strain;
+  Vector AB {triangle->getNodeA()->getPos() - triangle->getNodeB()->getPos() };
+  if(AB.x >= 0){
+    Vector BA_target { triangle->getTargetBA() };
+    Vector targetP { BA_target - AB - deltaP};
+    double theta {BA_target.Angle(AB) - triangle->getTargetTheta()};
+    if(targetP.y>0){
+      //rotation clockwise (bc y -> -y)
+      strain = Vector {targetP.x * cos(theta) -1, targetP.y * cos(theta) -1, 0.5*sin(theta)*(targetP.x - targetP.y)};
+    }else{
+      //rotation conterclockwise (bc y -> -y)
+      strain = Vector {targetP.x * cos(theta) -1, targetP.y * cos(theta) -1, 0.5*sin(theta)*(targetP.y - targetP.x)};  
     }
   }else{
-    for (auto owner : opposed_Node->owners)
-    {
-      if(owner.CellEquals(c->Index())){
-        if( fabs(n1->y - owner.nb1->y) < fabs(n1->y - owner.nb2->y))
-        {    
-          n3 = owner.nb1;
-          n4 = owner.nb2;
-        }else{
-          n3 = owner.nb2;
-          n4 = owner.nb1;
-        } 
-      }
+    Vector BA_target { -1* triangle->getTargetBA() }; // change of direction
+    Vector targetP { BA_target - AB - deltaP};
+    double theta {BA_target.Angle(AB) - triangle->getTargetTheta()};
+    if(targetP.y<0){
+      //rotation clockwise (bc y -> -y)
+      strain = Vector {targetP.x * cos(theta) -1, targetP.y * cos(theta) -1, 0.5*sin(theta)*(targetP.x - targetP.y)};
+    }else{
+      //rotation conterclockwise (bc y -> -y)
+      strain = Vector {targetP.x * cos(theta) -1, targetP.y * cos(theta) -1, 0.5*sin(theta)*(targetP.y - targetP.x)};  
     }
   }
-}
-
-/**
- * @brief Takes 4 Node* as input where n1-n2 will become the Node* to the neighbors of moving_node.
- *        If opposed_node is also a neighbor of moving_node than only one neighbor 
- *        will be returned. n1 as neighbor of moving_node and not opposed_node.
- * 
- * @return Updates node pointers. Can return Nullpointer. This should happen if opposed_node and 
- *         moving_node are neighbors.
- */
-void Mesh::getMovingNodeNeighbours(Node* moving_node, Node* opposed_Node, Cell* c, Node*& n1, Node*& n2){
-  for (auto owner : moving_node->owners)
-  {
-    if(owner.CellEquals(c->Index())){
-      n1 = owner.nb1 ;
-       n2 = owner.nb2 ;
-    }
-  }
-  if(n1 == opposed_Node){
-    n1 = n2;
-    n2 = NULL;
-  }else if(n2 == opposed_Node){
-    n2 = NULL;
-  }
-}
-
-void Mesh::stiffnessEnergyOfSquare(Node* node, Node* op_node, Node* nb1
-                                  , double dx, double dy, double& cellulose_spring_dh
-                                  , double C11, double C12, double C22, double C33){
-  double Lx { (node->getPos() - nb1->getPos()).Norm() };
-  double Ly { (node->getPos() - op_node->getPos()).Norm() };
-  double I = C11 * Cubed(dx) * (Cubed(Ly + dy) - Cubed(Ly))
-              / ( 3 * DSQR(Lx) * DSQR(Ly) );
-  double II = C22 * Cubed(dy) * (Cubed(Lx + dx) - Cubed(Lx))
-              / ( 3 * DSQR(Lx) * DSQR(Ly) );
-  double III = C12 * dx * dy * (DSQR(Ly + dy) - DSQR(Ly))
-               * (DSQR(Lx + dx) - DSQR(Lx)) / ( 2 * DSQR(Lx) * DSQR(Ly) );
-  cellulose_spring_dh+= I * (1 + C33/C11) + II * (1 + C33/C22) + III * (0.5 + C33/C12);
-}
-
-double Mesh::calcStiffnesEnergyPart(Vector ref, Vector PS, Matrix C){
-  double s11 { PS.x/ref.x };
-  double s22 { PS.y/ref.y };
-  double s12 { PS.Angle(ref) };
-  Matrix strain { Vector { s11 * cos(s12), - s11 * sin(s12), 0 }
-              , Vector { s22 * sin(s12), s22 * cos(s12), 0 }, Vector { 0,0,0 } };
-  Vector ogPs {strain * ref};
-  double energy { ((C*strain)* strain).Trace() };
-  return energy;
+  return strain;
 }
 
 double Mesh::DisplaceNodes(void)
@@ -1304,120 +1201,21 @@ double Mesh::DisplaceNodes(void)
 
   // cellulose spring energy panality
 
-  if (c.isSpringPlaced())
+  if (c.isTrianglePlaced())
   {
-    Node* n1 {NULL};
-    Node* n2 {NULL};
-    Node* n3 {NULL};
-    Node* n4 {NULL};
-    Node* op_node {c.findeOpposedNode(&node, 4)};
-    Vector nodePos { node.getPos() };
-    
-    if(op_node){
-      setNeighbours(&node, op_node, &c, n1, n2, n3, n4);
-      Matrix C {par.d * Vector {par.k[1], par.k[2],0}
-                , par.d * Vector {par.k[2], par.k[3], 0} 
-                , par.d * Vector {par.k[4],par.k[5], par.k[6]} };
-      if(n3 == NULL && n4 == NULL){
-        Vector S {0.25*( node.getPos() + op_node->getPos() + n1->getPos() + n2->getPos() ) };
-        Vector S1 { S + 0.25*delta_p };
-        double le {7};
-        if( node.x < op_node->x){
-          if(n1->y > node.y){
-            double E1 { calcStiffnesEnergyPart(Vector {le,le} + node.getPos(), S - node.getPos(), C) };
-            double E2 { calcStiffnesEnergyPart(Vector {-le,le} + op_node->getPos(), S - op_node->getPos(), C) };
-            double E3 { calcStiffnesEnergyPart(Vector {le,-le} + n1->getPos(), S - n1->getPos(), C) };
-            double E4 { calcStiffnesEnergyPart(Vector {-le,-le} + n2->getPos(), S - n2->getPos(), C) };
-            double E12 { calcStiffnesEnergyPart(Vector {le,le} + node.getPos(), S1 - node.getPos(), C) };
-            double E22 { calcStiffnesEnergyPart(Vector {-le,le}+ op_node->getPos(), S1 - op_node->getPos(), C) };
-            double E32 { calcStiffnesEnergyPart(Vector {le,-le} + n1->getPos(), S1 - n1->getPos(), C) };
-            double E42 { calcStiffnesEnergyPart(Vector {-le,-le} + n2->getPos(), S1 - n2->getPos(), C) };
-            cellulose_spring_dh += E12 - E1 + E22 - E2 + E32 - E3 + E42 - E4;
-            cellulose_spring_dh += TINY;
-          }else{
-            double E1 { calcStiffnesEnergyPart(Vector {le,-le} + node.getPos() , S - node.getPos(), C) };
-            double E2 { calcStiffnesEnergyPart(Vector {-le,-le}+ op_node->getPos(), S - op_node->getPos(), C) };
-            double E3 { calcStiffnesEnergyPart(Vector {le,le} + n1->getPos(), S - n1->getPos(), C) };
-            double E4 { calcStiffnesEnergyPart(Vector {-le,le}, S - n2->getPos(), C) };
-            double E12 { calcStiffnesEnergyPart(Vector {le,-le} + node.getPos(), S1 - node.getPos(), C) };
-            double E22 { calcStiffnesEnergyPart(Vector {-le,-le}+ op_node->getPos(), S1 - op_node->getPos(), C) };
-            double E32 { calcStiffnesEnergyPart(Vector {le,le} + n1->getPos(), S1 - n1->getPos(), C) };
-            double E42 { calcStiffnesEnergyPart(Vector {-le,le} + n2->getPos(), S1 - n2->getPos(), C) };
-            cellulose_spring_dh += E12 - E1 + E22 - E2 + E32 - E3 + E42 - E4;
-            cellulose_spring_dh += TINY;
-          }
-        }else{
-          if(n1->y > node.y){
-            double E1 { calcStiffnesEnergyPart(Vector {-le,le} + node.getPos() , S - node.getPos(), C) };
-            double E2 { calcStiffnesEnergyPart(Vector {le,le} + op_node->getPos(), S - op_node->getPos(), C) };
-            double E3 { calcStiffnesEnergyPart(Vector {-le,-le} + n1->getPos(), S - n1->getPos(), C) };
-            double E4 { calcStiffnesEnergyPart(Vector {le,-le} + n2->getPos(), S - n2->getPos(), C) };
-            double E12 { calcStiffnesEnergyPart(Vector {-le,le} + node.getPos(), S1 - node.getPos(), C) };
-            double E22 { calcStiffnesEnergyPart(Vector {le,le}+ op_node->getPos(), S1 - op_node->getPos(), C) };
-            double E32 { calcStiffnesEnergyPart(Vector {-le,-le} + n1->getPos(), S1 - n1->getPos(), C) };
-            double E42 { calcStiffnesEnergyPart(Vector {le,-le} + n2->getPos(), S1 - n2->getPos(), C) };
-            cellulose_spring_dh += E12 - E1 + E22 - E2 + E32 - E3 + E42 - E4;
-            cellulose_spring_dh += TINY;
-          }else{
-            double E1 { calcStiffnesEnergyPart(Vector {-le,-le} + node.getPos() , S - node.getPos(), C) };
-            double E2 { calcStiffnesEnergyPart(Vector {le,-le}+ op_node->getPos(), S - op_node->getPos(), C) };
-            double E3 { calcStiffnesEnergyPart(Vector {-le,le} + n1->getPos(), S - n1->getPos(), C) };
-            double E4 { calcStiffnesEnergyPart(Vector {le,le} + n2->getPos(), S - n2->getPos(), C) };
-            double E12 { calcStiffnesEnergyPart(Vector {-le,-le} + node.getPos(), S1 - node.getPos(), C) };
-            double E22 { calcStiffnesEnergyPart(Vector {le,-le}+ op_node->getPos(), S1 - op_node->getPos(), C) };
-            double E32 { calcStiffnesEnergyPart(Vector {-le,le} + n1->getPos(), S1 - n1->getPos(), C) };
-            double E42 { calcStiffnesEnergyPart(Vector {le,le} + n2->getPos(), S1 - n2->getPos(), C) };
-            cellulose_spring_dh += E12 - E1 + E22 - E2 + E32 - E3 + E42 - E4;
-            cellulose_spring_dh += TINY;
-          }
-        }
-      }else{
-        Vector S1 {0.25*( node.getPos() + op_node->getPos() + n1->getPos() + n2->getPos() ) };
-        Vector S12 { S1 + 0.25*delta_p };
-        Vector S2 {0.25*( node.getPos() + op_node->getPos() + n3->getPos() + n4->getPos() ) };
-        Vector S22 { S2 + 0.25*delta_p };
-        double le {7};
-        if(node.x < op_node->x){
-          double E1 { calcStiffnesEnergyPart(Vector {le,-le} + node.getPos(), S1 - node.getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {-le,-le}+ op_node->getPos(), S1 - op_node->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {le,le} + n1->getPos(), S1 - n1->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {-le,le} + n2->getPos(), S1 - n2->getPos(), C) };
-          double E2 { calcStiffnesEnergyPart(Vector {le,-le} + node.getPos(), S12 - node.getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {-le,-le}+ op_node->getPos(), S12 - op_node->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {le,le} + n1->getPos(), S12 - n1->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {-le,le} + n2->getPos(), S12 - n2->getPos(), C) };
-          double E3 { calcStiffnesEnergyPart(Vector {le,le} + node.getPos(), S2 - node.getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {-le,le}+ op_node->getPos(), S2 - op_node->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {le,-le} + n3->getPos(), S2 - n3->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {-le,-le} + n4->getPos(), S2 - n4->getPos(), C) };
-          double E4 { calcStiffnesEnergyPart(Vector {le,le} + node.getPos(), S22 - node.getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {-le,le}+ op_node->getPos(), S22 - op_node->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {le,-le} + n3->getPos(), S22 - n3->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {-le,-le} + n4->getPos(), S22 - n4->getPos(), C) };
-          cellulose_spring_dh += E2 - E1 + E4 - E3;
-          cellulose_spring_dh += TINY;
-      }else{
-          double E1 { calcStiffnesEnergyPart(Vector {-le,-le} + node.getPos(), S1 - node.getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {le,-le}+ op_node->getPos(), S1 - op_node->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {-le,le} + n1->getPos(), S1 - n1->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {le,le} + n2->getPos(), S1 - n2->getPos(), C) };
-          double E2 { calcStiffnesEnergyPart(Vector {-le,-le} + node.getPos(), S12 - node.getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {le,-le}+ op_node->getPos(), S12 - op_node->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {-le,le} + n1->getPos(), S12 - n1->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {le,le} + n2->getPos(), S12 - n2->getPos(), C) };
-          double E3 { calcStiffnesEnergyPart(Vector {-le,le} + node.getPos(), S2 - node.getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {le,le}+ op_node->getPos(), S2 - op_node->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {-le,-le} + n3->getPos(), S2 - n3->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {le,-le} + n4->getPos(), S2 - n4->getPos(), C) };
-          double E4 { calcStiffnesEnergyPart(Vector {-le,le} + node.getPos(), S22 - node.getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {le,le}+ op_node->getPos(), S22 - op_node->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {-le,-le} + n3->getPos(), S22 - n3->getPos(), C) +
-                    calcStiffnesEnergyPart(Vector {le,-le} + n4->getPos(), S22 - n4->getPos(), C) };
-          cellulose_spring_dh += E2 - E1 + E4 - E3;
-          cellulose_spring_dh += TINY;
-      }
+    list<Triangle*> activeTriangles { c.findActiveTriangles(&node) };
+    if(activeTriangles.front()){
+      for(auto t:activeTriangles){
+        Matrix C { Vector { par.e, par.f,0}, Vector { par.f, par.c, 0}, Vector {0,0,0} };
+        Vector strain1 { calcStrain(t) };
+        double H1 { InnerProduct( (C*strain1), strain1 ) };
+        Vector strain2 { calcStrain(t, delta_p)};
+        double H2 { InnerProduct( (C*strain2), strain2 ) };
+        cellulose_spring_dh += par.d * (H2 - H1);
+         cellulose_spring_dh += TINY;
       }
     }
+    cellulose_spring_dh += TINY;
   }
 
   // make anisotropic energy panality
@@ -1685,6 +1483,12 @@ void Mesh::InsertNode(Edge &e) {
     
     }
     c++;
+  }
+
+  for(auto owner : owners){
+    if(! (owner.CellEquals(-1)) ){
+      owner.getCell()->setTriangles();
+    }
   }
 
   new_node->splittWallElementsBetween(e.first, e.second);

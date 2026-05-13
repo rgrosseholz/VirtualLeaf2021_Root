@@ -148,17 +148,7 @@ class Node : public NodeBase {
 
   inline bool Marked(void) const { return marked; }
 
-  void setConnected_to_spring(int connections) { connected_to_spring = connections;}
-  int getConnected_to_spring() { return connected_to_spring;}
-  void incrementConnected_to_spring() { connected_to_spring++;}
-  void decrementConnected_to_spring() { if( connected_to_spring > 0 )  connected_to_spring--;}
-  // returns true if node has spring connection
-  bool isConnected_to_spring(){
-    if( connected_to_spring == 0) { return false;
-    }else{
-      return true;
-    }
-  }
+  list<Neighbor> getOwners(){ return owners;}
 
   inline void setPos( Vector p ) { 
     x = p.x;

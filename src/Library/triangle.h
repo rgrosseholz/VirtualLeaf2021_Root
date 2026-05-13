@@ -13,13 +13,11 @@
 #include "vector.h"
 #include "wall.h"
 #include "warning.h"
-#include "node.h"
 
 
+class CellBase;
+class Node;
 class Triangle{
-
-    friend class Cell;
-    friend class CellBase;
     friend class Mesh;
     // m stands for class member
     Node* m_A;  // first node A of the triangle. Node A is the moving Node.
@@ -56,7 +54,7 @@ public:
 
     Vector getTargetBA() { return m_target_BA;}
     Vector getTargetBC() { return m_target_BC;}
-    Vector getTargetTheta() { return m_target_theta;}
+    double getTargetTheta() { return m_target_theta;}
 
     void setNodeA(Node* A) { m_A = A; };
     void setNodeB(Node* B) { m_B = B; };
@@ -65,10 +63,6 @@ public:
     void setTargetBA(Vector BA) { m_target_BA = BA; };
     void setTargetBC(Vector BC) { m_target_BC = BC; };
     void setTargetTheta(double theta) {m_target_theta = theta; };
-
-    Triangle findTriangle(Node* moving_node, Cell& c);
-
-
 };
 #endif
 

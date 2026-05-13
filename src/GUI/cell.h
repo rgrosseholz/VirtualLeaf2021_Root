@@ -34,7 +34,7 @@
 #include "warning.h"
 #include "cellbase.h"
 #include "Neighbor.h"
-//#include "cell.h"
+
 
 #include <QGraphicsScene>
 #include <qcolor.h>

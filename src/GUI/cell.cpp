@@ -32,7 +32,7 @@
 #include "nodeitem.h"
 #include "qcanvasarrow.h"
 #include "parameter.h"
-#include "spring.h"
+#include "triangle.h"
 
 static const std::string _module_id("$Id$");
 
@@ -1132,7 +1132,7 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
 
   /**
   * Inherit cellulose spring properties and reset the springs
-  */
+  
   if( par.k[0] == 0){
     removeSprings();
     daughter->removeSprings();
@@ -1151,7 +1151,7 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
     SetSpringsNormalDistributedExcludeTopBottom(par.e);
     }
   }
-
+*/
   	/**
      * Here we reconnect the wall elements if they got lose ends, if both ends are lose then
      * the original wall has to be deleted.
@@ -2131,7 +2131,8 @@ void Cell::DrawText(QGraphicsScene *c, const QString &text) const {
     
 }
 
-void Cell::DrawSprings(QGraphicsScene *c) const
+/*
+void Cell::DrawTriangles(QGraphicsScene *c) const
 {
   for( auto spring : springs)
   {
@@ -2151,7 +2152,7 @@ void Cell::DrawSprings(QGraphicsScene *c) const
     line->show();
   }
 }
-
+*/
 void Cell::DrawAxis(QGraphicsScene *c) const
 {
 

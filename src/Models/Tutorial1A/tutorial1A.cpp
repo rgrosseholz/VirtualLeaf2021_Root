@@ -63,14 +63,14 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
         } });
 
 
-    // cellulose spring activation
-  if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k 
+    // cellulose activation
+  if(par->k[0] == 0 && !(c->isTrianglePlaced()) && c->Index()!=-1 ) // instead of celltype use k 
   {
-    c->PlaceSprings();
-    c->SetSigmaSprings( 0.1 ); 
-    c->SetSpringDistributionMean( 0 );
-   // c->SetSpringNetwork(0.,par->e);
-    c->setSpringBaseLength(9);
+    c->PlaceTriangles();
+    c->setTargetTheta(0); 
+    c->setTargetBA( Vector { 12,0,0} );
+    c->setTargetBC( Vector {0, 6, 0 });
+    c->setTriangles();
   } 
 
   //cell wall weakening happens here

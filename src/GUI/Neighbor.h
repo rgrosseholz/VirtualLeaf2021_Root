@@ -43,7 +43,6 @@ class Neighbor {
   friend class Mesh;
   friend class Node;
   friend class FigureEditor;
-
   Cell *cell;
   Node *nb1, *nb2;
 

@@ -32,14 +32,19 @@
 #include <QString>
 #include <QDebug>
 
-#include "vector.h"
-#include "parameter.h"
+#include "assert.h"
 #include "cellwallcurve.h"
 #include "nodebase.h"
+#include "Neighbor.h"
+#include "parameter.h"
+#include "triangle.h"
+#include "vector.h"
 #include "wall.h"
 #include "warning.h"
-#include "assert.h"
 #include "wallelementinfo.h"
+
+
+
 
 
 //#include "wallelementinfo.h"
@@ -54,7 +59,6 @@ class NodeSet;
 class WallElementInfo;
 class WallElement;
 class NodeBase;
-class Spring;
 class CellWallCurve;
 
 struct ParentInfo {
@@ -98,7 +102,6 @@ class CellBase :  public QObject, public Vector
   friend class WallElement;
   friend class WallElementInfo;
   friend class SimPluginInterface;
-  friend class Spring;
   friend class CellWallCurve;
 
  public:
@@ -258,17 +261,19 @@ class CellBase :  public QObject, public Vector
   // Here are the functions needed for anisotropic growth
 
   inline void PlaceTriangles() {place_triangles = true;}
-  bool isSpringPlaced() {return place_triangles;}
+  bool isTrianglePlaced() {return place_triangles;}
   void setTargetTheta(double value) {target_theta = value;}
   void setTargetBA(Vector BA) { target_BA = BA; };
   void setTargetBC(Vector BC) { target_BC = BC; };
-  list<Triangle *> getTriangles() { return triangles; };
+  //list<Triangle> getTriangles() { return triangles; };
 
-  void addTriangleToCell( Triangle *t);
+  void addTriangleToCell( Triangle& t);
   list<Triangle*> findActiveTriangles(Node* mov_node);
 
   void setTriangles();
   void updateTriangle();
+
+  
   void SetSpringsNormalDistributedExcludeTopBottom(int numOfAverage);
   void SetSpringsNormalDistributed(void);
   void SetSpringNetwork(double spring_distribution_mean, double sigma_springs);
@@ -277,7 +282,7 @@ class CellBase :  public QObject, public Vector
   void cleanUpNetwork(double angle1, double angle2, int maxNumSprings);
   bool isSpringAlready(Node* node1, Node* node2);
   void SetSpringOnNodeInsertion(Node* newNode, int numOfAverage);
-  void AddSpringToCell (CellBase *c, Spring *s);
+
   void CheckSprings(void);
   void cleanUpSprings(double angle1, double angle2);
   void removeSprings();
@@ -567,8 +572,6 @@ class CellBase :  public QObject, public Vector
   inline double NewChem(int c) const { return new_chem[c]; }
 
   list<Node *> nodes;
-  Spring* getSpring(void) const;
-  Spring *s1;
   void ConstructNeighborList(void);
   long wall_list_index (Wall *elem) const;
 
@@ -582,7 +585,7 @@ class CellBase :  public QObject, public Vector
   list<CellBase *> neighbors;
 
   list<Wall *> walls;
-  list<Triangle *> triangles;
+  list< Triangle > triangles;
 
   double *chem;
   double *new_chem;

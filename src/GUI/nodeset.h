@@ -30,7 +30,6 @@
 #include <list>
 #include <iterator>
 #include "node.h"
-
 class NodeSet : public list<Node *> {
 
  public:

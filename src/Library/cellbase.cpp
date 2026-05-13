@@ -38,7 +38,6 @@
 #include "qcanvasarrow.h"
 #endif
 #include "nodeset.h"
-
 #include "cellbase.h"
 #include "wall.h"
 #include "random.h"
@@ -96,10 +95,10 @@ CellBase::CellBase(QObject *parent) :
   cell_type = 0;
   flag_for_divide = false;
   division_axis = 0;
-  place_springs = false;
-  sigma_springs = 0.0;
-  spring_distribution_mean = 0.0;
-  reference_springs = 0;
+  place_triangles = false;
+  target_theta = 0.0;
+  target_BA = {0,0,0};
+  target_BC = {0,0,0};
   
 }
 
@@ -187,7 +186,7 @@ CellBase::CellBase(const CellBase &src) :  QObject(), Vector(src)
   division_axis = src.division_axis;
   place_triangles = src.place_triangles;
   target_theta = src.target_theta;
-  target_BA = src.target_BA
+  target_BA = src.target_BA;
   target_BC = src.target_BC;
 
 }
@@ -753,71 +752,6 @@ Vector CellBase::getMinMaxPositionY()
   
 };
 
-
-/**
- * @brief remove all springs
- */
-void CellBase::removeSprings()
-{
-  for (auto it = springs.begin(); it != springs.end(); ) {
-    (*it)->m_n1->decrementConnected_to_spring();
-    (*it)->m_n2->decrementConnected_to_spring();
-    it = springs.erase(it);   // erase and move to next element
-  }
-}
-
-/**
- * @brief Loops over the nodes and 
- */
-void CellBase::resetSprings(int numOfAverage)
-{
-  for( auto node : nodes)
-  {
-    double sigmaSpringInitially { getSigmaSprings() };
-    
-    if (node->connected_to_spring < 1)
-    {
-      if( !isNodeWithinBoundary(node, numOfAverage) )
-      {
-        while(node->connected_to_spring < 1 && sigma_springs < sigmaSpringInitially + 0.2 ){
-        SetSpringOnNodeInsertion(node, numOfAverage);
-        if(sigma_springs < sigmaSpringInitially + 0.2){ sigma_springs += 0.05;} 
-        }
-        SetSigmaSprings(sigmaSpringInitially);
-        if(node->connected_to_spring < 1){
-          pair<Node*, Node*> upper_lower {findeOpposedNodes(node)};
-          Node* upper_node {get<0>(upper_lower)};
-          Node* lower_node {get<1>(upper_lower)};
-          if(!isNodeWithinBoundary(upper_node, numOfAverage))
-          {//if else just for right ordering of nodes in the spring
-            if(node->Index() < upper_node->Index()){
-            Spring* s = new Spring(node, upper_node, this);
-            AddSpringToCell(this, s);
-            }else{
-              Spring* s = new Spring(upper_node, node, this);
-              AddSpringToCell(this, s);
-            }
-            (upper_node)->incrementConnected_to_spring();
-            (node)->incrementConnected_to_spring();
-          }
-          if(!isNodeWithinBoundary(lower_node, numOfAverage))
-          {  //if else just for right ordering of nodes in the spring
-            if(node->Index() < lower_node->Index()){
-            Spring* s = new Spring(node, lower_node, this);
-            AddSpringToCell(this, s);
-            }else{
-              Spring* s = new Spring(lower_node, node, this);
-              AddSpringToCell(this, s);
-            }
-            (lower_node)->incrementConnected_to_spring();
-            (node)->incrementConnected_to_spring();
-          }    
-        }
-      }
-    }
-  }
-}
-
 /**
  * @brief Findes opposing node to op_node, which is the closes to the y coordinate
  *        and the x distance not smaller than minX_distance
@@ -836,20 +770,13 @@ Node* CellBase::findeOpposedNode(Node* op_node, double minX_distance){
   double best_dy = 1e12;
 
   for (Node* n : nodes) {
-    if (n == op_node) {
-      continue;
-    }
-
-    
-
+    if (n == op_node) continue;
     double dy = fabs(n->y - op_node_y);
-    if (dy < best_dy) {
-      best_dy = dy;
-      double dx = fabs(n->x - op_node_x);
-      if (dx < best_dx) {
+    double dx = fabs(n->x - op_node_x);
+    if (dy < best_dy || (dy <= best_dy && dx < best_dx)) {
+        best_dy = dy;
         best_dx = dx;
         opposing_node = n;
-      } 
     }
   }
   if(best_dx < minX_distance)
@@ -860,13 +787,13 @@ Node* CellBase::findeOpposedNode(Node* op_node, double minX_distance){
   }
 }
 
-void CellBase::addTriangleToCell( Triangle *t)
+void CellBase::addTriangleToCell( Triangle& t )
 {
   triangles.push_back(t);
 }
 
 /**
- * @brief Clears and sets triangles in cell.
+ * @brief Sets triangles in cell.
  * 
  * @details Loops over all Nodes in the cell. This is Node A in the triangle.
  * Tries to find an opposing node, if found this is Node B of the triangle.
@@ -878,23 +805,38 @@ void CellBase::addTriangleToCell( Triangle *t)
  */
 void CellBase::setTriangles()
 {
-  triangles.clear();
-
   for( auto n:nodes ){
-    Node* n_B { findeOpposedNode(n, target_length * 1.5) }; // target_lenth sollte eig base length sein!
+    Node* n_B { findeOpposedNode(n, 6 * 1.5) }; // 6 sollte eig base length sein! ist abstand in  model 1A
     if(n_B != NULL){
-      for( auto owner:n_B->owners){
-        if(owner.CellEquals(this->Index())){
-          Node* n_C1 {owner.get_nb1()};
-          Node* n_C2 {owner.get_nb2()};
+      for (list<Node *>::iterator i=nodes.begin(); i!=nodes.end(); i++) {
+        if( *i == n_B ){
+          //copied assignment of neigbors from cell.cpp from function ConstructConnections 
+          Node *previous;
+           if (i!=nodes.begin()) {
+              list<Node *>::iterator previous_iterator=i;
+              previous_iterator--;
+              previous=*previous_iterator;
+            } else {
+              previous=nodes.back();
+            }
+            Node *next;
+            list<Node *>::iterator next_iterator=i;
+            next_iterator++;
+            if (next_iterator==nodes.end()) {
+              next=nodes.front();
+            } else {
+              next=*next_iterator;
+            }
+          Node* n_C1 {previous};
+          Node* n_C2 {next};
 
           if(n != n_C1){
-            Triangle t{ n, n_B, n_C1, owner.getCell(), target_BA, target_BC, target_theta};
-            addTriangleToCell( &t );
+            Triangle t{ n, n_B, n_C1, this, target_BA, target_BC, target_theta};
+            addTriangleToCell( t );
           }
           if(n != n_C2){
-            Triangle t{ n, n_B, n_C2, owner.getCell(), target_BA, target_BC, target_theta};
-            addTriangleToCell( &t );
+            Triangle t{ n, n_B, n_C2, this, target_BA, target_BC, target_theta};
+            addTriangleToCell( t );
           }
         }
       }
@@ -910,9 +852,9 @@ void CellBase::setTriangles()
  */
 list<Triangle*> CellBase::findActiveTriangles(Node* mov_node){
   list<Triangle*> current_triangles;
-  for( auto t : triangles){
-    if( t->getNodeA() == mov_node ){
-      current_triangles.push_back(t);
+  for( Triangle& t : triangles){
+    if( t.getNodeA() == mov_node ){
+      current_triangles.push_back(&t);
     }
   }
   return current_triangles;

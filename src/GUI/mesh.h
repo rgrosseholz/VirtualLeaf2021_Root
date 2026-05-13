@@ -296,16 +296,8 @@ class Mesh {
   void CompatibilityLevel(int compatibility_level) {this->compatibility_level=compatibility_level;}
   bool activateWallStiffnessHamiltonian() {return (this->compatibility_level & WALL_STIFFNESS_HAMILTONIAN) != 0;}
   bool activateWallReconfigurationing() {return (this->compatibility_level & WALL_SLIDING) != 0;}
-  void InitializeCellSprings();
 
-  
-  void setNeighbours(Node* moving_node, Node* opposed_Node, Cell* c, Node*& n1, Node*& n2, Node*& n3, Node*& n4);
-  void getMovingNodeNeighbours(Node* moving_node, Node* opposed_Node, Cell* c, Node*& n1, Node*& n2);
-
-  void stiffnessEnergyOfSquare(Node* node, Node* op_node, Node* nb1
-                                  , double dx, double dy, double& cellulose_spring_dh
-                                  , double C11, double C12, double C22, double C33);
-  double calcStiffnesEnergyPart(Vector delta_p, Vector PS, Matrix C);
+  Vector calcStrain( Triangle* triangle, Vector deltaP);
 
   void BoundingBox(Vector &LowerLeft, Vector &UpperRight);
   int NEqs(void) {     int nwalls = walls.size();

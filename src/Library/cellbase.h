@@ -262,9 +262,9 @@ class CellBase :  public QObject, public Vector
 
   inline void PlaceTriangles() {place_triangles = true;}
   bool isTrianglePlaced() {return place_triangles;}
-  void setTargetTheta(double value) {target_theta = value;}
-  void setTargetBA(Vector BA) { target_BA = BA; };
-  void setTargetBC(Vector BC) { target_BC = BC; };
+  // setter and getter for targetLengthAB of the triangles
+  void setTargetLengthABofTriangle(double lengthAB) { targetLengthTriangleAB = lengthAB; }
+  double getTargetLengthABofTriangle() { return targetLengthTriangleAB; }
   //list<Triangle> getTriangles() { return triangles; };
 
   void addTriangleToCell( Triangle& t);
@@ -597,9 +597,7 @@ class CellBase :  public QObject, public Vector
   double lambda_celllength;
   double wall_stiffness; // Lebovka et al
   bool veto_reconfigurationling; // testing cellular veto
-  double target_theta ; // theta for the target triangle
-  Vector target_BA ; // vector BA for target triangle
-  Vector target_BC ; // vector BC for target triangle
+  double targetLengthTriangleAB;
   
 
   

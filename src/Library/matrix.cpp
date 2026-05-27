@@ -204,6 +204,16 @@ void Matrix::Rot2D(double theta)
   mat[0][2] = mat[1][2] = mat[2][0] = mat[2][1] = mat[2][2] = 0.;
 }
 
+void Matrix::ClockwiseRot2D(double theta)
+{ 
+  // make this matrix a rotation matrix over theta
+  // see http://mathworld.wolfram.com/RotationMatrix.html
+
+  mat[0][0] = cos(theta); mat[0][1]=-sin(theta);
+  mat[1][0] = sin(theta); mat[1][1]=cos(theta);
+  mat[0][2] = mat[1][2] = mat[2][0] = mat[2][1] = mat[2][2] = 0.;
+}
+
 double Matrix::Trace(){
   return mat[0][0] + mat[1][1] + mat[2][2];
 }

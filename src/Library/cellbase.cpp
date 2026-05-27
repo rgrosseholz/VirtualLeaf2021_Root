@@ -96,9 +96,7 @@ CellBase::CellBase(QObject *parent) :
   flag_for_divide = false;
   division_axis = 0;
   place_triangles = false;
-  target_theta = 0.0;
-  target_BA = {0,0,0};
-  target_BC = {0,0,0};
+  targetLengthTriangleAB = 0.0;
   
 }
 
@@ -185,9 +183,7 @@ CellBase::CellBase(const CellBase &src) :  QObject(), Vector(src)
   flag_for_divide = src.flag_for_divide;
   division_axis = src.division_axis;
   place_triangles = src.place_triangles;
-  target_theta = src.target_theta;
-  target_BA = src.target_BA;
-  target_BC = src.target_BC;
+  targetLengthTriangleAB = src.targetLengthTriangleAB;
 
 }
 
@@ -798,8 +794,9 @@ void CellBase::addTriangleToCell( Triangle& t )
  * @details Loops over all Nodes in the cell. This is Node A in the triangle.
  * Tries to find an opposing node, if found this is Node B of the triangle.
  * Then takes neighbors of Node B. If they are non equal to node A they become
- * Node C of the triangle. Each looped Node can get 0,1 or 2 triangles with them 
- * in position A.
+ * Node C of the triangle. If Nodes A, B and C exist a triangle is created.
+ * The direction of the target vectors for BA and AC are adjusted.
+ * Each looped Node can get 0,1 or 2 triangles with them in position A.
  * 
  * @return Returns void, but updates the triangles List of the cell. 
  */
@@ -831,12 +828,22 @@ void CellBase::setTriangles()
           Node* n_C2 {next};
 
           if(n != n_C1){
-            Triangle t{ n, n_B, n_C1, this, target_BA, target_BC, target_theta};
-            addTriangleToCell( t );
+            if( n->x > n_B->x){
+              Triangle t { n, n_B, n_C1, this };
+              addTriangleToCell( t );
+            }else{
+              Triangle t { n, n_B, n_C1, this };
+              addTriangleToCell( t );
+            }
           }
           if(n != n_C2){
-            Triangle t{ n, n_B, n_C2, this, target_BA, target_BC, target_theta};
-            addTriangleToCell( t );
+            if( n->x > n_B->x){
+              Triangle t { n, n_B, n_C2, this };
+              addTriangleToCell( t );
+            }else{
+              Triangle t { n, n_B, n_C2, this };
+              addTriangleToCell( t );
+            }
           }
         }
       }
@@ -846,7 +853,7 @@ void CellBase::setTriangles()
 
 
 /**
- * @brief findes triangles where Node A equals mov_node
+ * @brief finds triangles where Node A equals mov_node
  * 
  * @return returns list<Triangle*> with all Triangles where Node A equals mov_node
  */

@@ -112,11 +112,11 @@
     <par name="constituous_expansion_limit" val="16"/>
     <par name="vessel_inh_level" val="1"/>
     <par name="vessel_expansion_rate" val="0.25"/>
-    <par name="d" val="10"/>
-    <par name="e" val="1 "/>
-    <par name="f" val="0.0"/>
+    <par name="d" val="5000000"/>
+    <par name="e" val="1"/>
+    <par name="f" val="0.3"/>
     <par name="c" val="0.2"/>
-    <par name="mu" val="0.4"/>
+    <par name="mu" val="0.1"/>
     <par name="nu" val="1"/>
     <par name="rho0" val="0"/>
     <par name="rho1" val="0"/>

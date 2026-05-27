@@ -59,19 +59,18 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   // add cell behavioral rules here
   
 
-  if(c->Index() == 1){
-  c->EnlargeTargetArea(par->cell_expansion_rate / 10); }
+  //if(c->Index() == 1){
+  c->EnlargeTargetArea(par->cell_expansion_rate / 10);
+  // }
 
       // cellulose activation
   if(par->k[0] == 0 && !(c->isTrianglePlaced()) && c->Index()!=-1 ) // instead of celltype use k 
   {
     c->PlaceTriangles();
-    c->setTargetTheta(0); 
-    c->setTargetBA( Vector { 12,0,0} );
-    c->setTargetBC( Vector {0, 6, 0 });
+    c->setTargetLengthABofTriangle(15);
     c->setTriangles();
   } 
-  
+
   //cell wall weakening happens here
   if(par->k[0] == 0){
 

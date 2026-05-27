@@ -47,6 +47,7 @@ class Matrix {
   double Det(void) const; // gives the "determinant" (| m |) of m
   Matrix Inverse(void) const; // gives the inverse of m
   void Rot2D(double theta); // make a matrix doing a 2D rotation over theta
+  void ClockwiseRot2D (double theta);
   double Trace();
   // data members 
   double **mat;

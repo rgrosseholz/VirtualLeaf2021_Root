@@ -67,9 +67,7 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
   if(par->k[0] == 0 && !(c->isTrianglePlaced()) && c->Index()!=-1 ) // instead of celltype use k 
   {
     c->PlaceTriangles();
-    c->setTargetTheta(0); 
-    c->setTargetBA( Vector { 12,0,0} );
-    c->setTargetBC( Vector {0, 6, 0 });
+    c->setTargetLengthABofTriangle(10);
     c->setTriangles();
   } 
 

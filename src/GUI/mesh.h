@@ -297,8 +297,8 @@ class Mesh {
   bool activateWallStiffnessHamiltonian() {return (this->compatibility_level & WALL_STIFFNESS_HAMILTONIAN) != 0;}
   bool activateWallReconfigurationing() {return (this->compatibility_level & WALL_SLIDING) != 0;}
 
-  Vector calcStrain( Triangle* triangle, Vector deltaP);
-
+  Vector getStrain(Triangle* triangle, Cell& cell, Vector deltaA);
+  double deltaE_triangle ( Triangle* triangle, Cell& cell, Matrix C, Vector deltaA);
   void BoundingBox(Vector &LowerLeft, Vector &UpperRight);
   int NEqs(void) {     int nwalls = walls.size();
     int ncells =cells.size();

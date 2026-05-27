@@ -832,36 +832,26 @@ double Mesh::ReconfigurationWallElements(vector<CellWallCurve> & curves) {
 	return 0.0;
 }
 
-
-Vector Mesh::calcStrain( Triangle* triangle, Vector deltaP = Vector {0,0,0}){
-  Vector strain;
-  Vector AB {triangle->getNodeA()->getPos() - triangle->getNodeB()->getPos() };
-  if(AB.x >= 0){
-    Vector BA_target { triangle->getTargetBA() };
-    Vector targetP { BA_target - AB - deltaP};
-    Vector e_x {1,0,0};
-    double theta {e_x.Angle(AB) - triangle->getTargetTheta()};
-    if(targetP.y>0){
-      //rotation clockwise (bc y -> -y)
-      strain = Vector {targetP.x * cos(theta) -1, targetP.y * cos(theta) -1, 0.5*sin(theta)*(targetP.x - targetP.y)};
-    }else{
-      //rotation conterclockwise (bc y -> -y)
-      strain = Vector {targetP.x * cos(theta) -1, targetP.y * cos(theta) -1, 0.5*sin(theta)*(targetP.y - targetP.x)};  
-    }
-  }else{
-    Vector BA_target { -1* triangle->getTargetBA() }; // change of direction
-    Vector targetP { BA_target - AB - deltaP};
-    Vector e_x {1,0,0};
-    double theta {e_x.Angle(AB) - triangle->getTargetTheta()};
-    if(targetP.y<0){
-      //rotation clockwise (bc y -> -y)
-      strain = Vector {targetP.x * cos(theta) -1, targetP.y * cos(theta) -1, 0.5*sin(theta)*(targetP.x - targetP.y)};
-    }else{
-      //rotation conterclockwise (bc y -> -y)
-      strain = Vector {targetP.x * cos(theta) -1, targetP.y * cos(theta) -1, 0.5*sin(theta)*(targetP.y - targetP.x)};  
-    }
-  }
+Vector Mesh::getStrain( Triangle* triangle, Cell& cell, Vector deltaA = Vector {0,0,0}){
+  Vector A { triangle->getNodeA()->getPos() + deltaA };
+  Vector B { triangle->getNodeB()->getPos() };
+  Vector C { triangle->getNodeC()->getPos() };
+  Vector target_A { triangle->getTargetA( cell.getTargetLengthABofTriangle()) };
+  Vector deltaP { target_A - A };
+  double area { (B.y-C.y)*(A.x-C.x)+(C.x-B.x)*(A.y-C.y) };
+  Vector strain { ((B.y-C.y)*deltaP.x)/(6*area),
+                  (C.x-B.x)*deltaP.y/(6*area),
+                  ((B.y-C.y)*deltaP.y + (C.x-B.x)*deltaP.x)/(12*area) } ;
   return strain;
+}
+
+double Mesh::deltaE_triangle ( Triangle* triangle, Cell& cell, Matrix C, Vector deltaA){
+  Vector strain0 { Mesh::getStrain(triangle, cell) };
+  Vector strain1 { Mesh::getStrain(triangle, cell, deltaA) };
+  double energy0 { InnerProduct((C*strain0),strain0) };
+  double energy1 { InnerProduct((C*strain1),strain1) };
+  double energy { energy1 - energy0 };
+  return energy;
 }
 
 double Mesh::DisplaceNodes(void)
@@ -1207,14 +1197,13 @@ double Mesh::DisplaceNodes(void)
   {
     list<Triangle*> activeTriangles { c.findActiveTriangles(&node) };
     if(activeTriangles.front()){
-      for(auto t:activeTriangles){
-        Matrix C { Vector { par.e, par.f,0}, Vector { par.f, par.c, 0}, Vector {0,0,0} };
-        Vector strain1 { calcStrain(t) };
-        double H1 { InnerProduct( (C*strain1), strain1 ) };
-        Vector strain2 { calcStrain(t, delta_p)};
-        double H2 { InnerProduct( (C*strain2), strain2 ) };
-        cellulose_spring_dh += par.d * (H2 - H1);
-         cellulose_spring_dh += TINY;
+      for(auto* t:activeTriangles){
+        Matrix C { Vector { par.e, par.f,0}, Vector { par.f, par.c, 0}, Vector {0,0,par.mu} };
+        
+        cellulose_spring_dh += par.d * deltaE_triangle(t, c, C, delta_p);
+        cellulose_spring_dh += TINY;
+
+
       }
     }
     cellulose_spring_dh += TINY;
@@ -1222,7 +1211,7 @@ double Mesh::DisplaceNodes(void)
 
   // make anisotropic energy panality
 
-  double alignment_with_axis{DSQR(InnerProduct(anisotropic_growth_axis.Normalised(), old_p.Normalised()))};
+  //double alignment_with_axis{DSQR(InnerProduct(anisotropic_growth_axis.Normalised(), old_p.Normalised()))};
 
   if (c.anisotropic_growth)
   {

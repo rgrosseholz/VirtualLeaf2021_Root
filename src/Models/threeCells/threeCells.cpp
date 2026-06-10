@@ -60,14 +60,15 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   
 
   //if(c->Index() == 1){
-  c->EnlargeTargetArea(par->cell_expansion_rate / 10);
-  // }
+  c->EnlargeTargetArea(par->cell_expansion_rate);
+  //}
 
       // cellulose activation
-  if(par->k[0] == 0 && !(c->isTrianglePlaced()) && c->Index()!=-1 ) // instead of celltype use k 
+  if(par->k[0] == 0 && !(c->isTrianglePlaced()) && c->Index() != -1 ) // instead of celltype use k 
   {
+    double width {c->Length(NULL, &width)};
     c->PlaceTriangles();
-    c->setTargetLengthABofTriangle(15);
+    c->setTargetLengthABofTriangle(width);
     c->setTriangles();
   } 
 

@@ -25,7 +25,6 @@
 #include <QtGui>
 #include <QString>
 #include "simplugin.h"
-#include "cellbase.h"
 
 class five_x_two_Cells : public QObject, SimPluginInterface {
 	Q_OBJECT
@@ -55,7 +54,7 @@ public:
 	// return number of chemicals
 	virtual int NChem(void);
 	
-	virtual QString DefaultLeafML(void) { return QString("2x3_cells.xml"); }
+	virtual QString DefaultLeafML(void) { return QString("control_root2_Z18_surrounded2.xml"); }
 	
 };
 

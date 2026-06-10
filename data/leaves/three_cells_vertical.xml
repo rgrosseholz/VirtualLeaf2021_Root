@@ -15,7 +15,7 @@
       <par val="red" name="textcolor"/>
       
       
-      <par val="1" name="cellnumsize"/>
+      <par val="2" name="cellnumsize"/>
       
       
       <par val="2" name="nodenumsize"/>
@@ -45,7 +45,7 @@
       <par val="500" name="xml_storage_stride"/>
       
       
-      <par val="lateral_root" name="datadir"/>
+      <par val="threeCells_vertical" name="datadir"/>
       
       
       <par val="1" name="T"/>
@@ -63,7 +63,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="10" name="cell_expansion_rate"/>
+      <par val="1" name="cell_expansion_rate"/>
       
       
       <par val="10" name="cell_div_expansion_rate"/>
@@ -410,11 +410,11 @@
       
       
       <par val="0.25" name="vessel_expansion_rate"/>
-      <par name="d" val="20"/>
-    <par name="e" val="1 "/>
-    <par name="f" val="0.0"/>
-    <par name="c" val="0.2"/>
-    <par name="mu" val="0.4"/>
+    <par name="d" val="2800000"/>
+    <par name="e" val="2"/>
+    <par name="f" val="0.8"/>
+    <par name="c" val="1e-6"/>
+    <par name="mu" val="0.9"/>
     <par name="nu" val="1"/>
     <par name="rho0" val="0"/>
     <par name="rho1" val="0"/>

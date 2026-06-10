@@ -832,7 +832,7 @@ double Mesh::ReconfigurationWallElements(vector<CellWallCurve> & curves) {
 	return 0.0;
 }
 
-Vector Mesh::getStrain( Triangle* triangle, Cell& cell, Vector deltaA = Vector {0,0,0}){
+double Mesh::getStrainEnergy( Triangle* triangle, Cell& cell, Matrix& Y, Vector deltaA = Vector {0,0,0}){
   Vector A { triangle->getNodeA()->getPos() + deltaA };
   Vector B { triangle->getNodeB()->getPos() };
   Vector C { triangle->getNodeC()->getPos() };
@@ -842,14 +842,13 @@ Vector Mesh::getStrain( Triangle* triangle, Cell& cell, Vector deltaA = Vector {
   Vector strain { ((B.y-C.y)*deltaP.x)/(6*area),
                   (C.x-B.x)*deltaP.y/(6*area),
                   ((B.y-C.y)*deltaP.y + (C.x-B.x)*deltaP.x)/(12*area) } ;
-  return strain;
+ double energy {  InnerProduct((Y*strain),strain) };
+ return energy;
 }
 
-double Mesh::deltaE_triangle ( Triangle* triangle, Cell& cell, Matrix C, Vector deltaA){
-  Vector strain0 { Mesh::getStrain(triangle, cell) };
-  Vector strain1 { Mesh::getStrain(triangle, cell, deltaA) };
-  double energy0 { InnerProduct((C*strain0),strain0) };
-  double energy1 { InnerProduct((C*strain1),strain1) };
+double Mesh::deltaE_triangle ( Triangle* triangle, Cell& cell, Matrix& Y, Vector deltaA){
+  double energy0 { Mesh::getStrainEnergy(triangle, cell, Y) };
+  double energy1 { Mesh::getStrainEnergy(triangle, cell, Y, deltaA) };
   double energy { energy1 - energy0 };
   return energy;
 }
@@ -1202,8 +1201,6 @@ double Mesh::DisplaceNodes(void)
         
         cellulose_spring_dh += par.d * deltaE_triangle(t, c, C, delta_p);
         cellulose_spring_dh += TINY;
-
-
       }
     }
     cellulose_spring_dh += TINY;

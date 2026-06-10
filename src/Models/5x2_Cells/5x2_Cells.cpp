@@ -28,8 +28,8 @@
 
 #include "wallbase.h"
 #include "cellbase.h"
-#include "spring.h"
 #include "5x2_Cells.h"
+#include "node.h"
 
 static const std::string _module_id("$Id$");
 
@@ -57,25 +57,21 @@ void five_x_two_Cells::SetCellColor(CellBase *c, QColor *color)
 void five_x_two_Cells::CellHouseKeeping(CellBase *c)
 {
    // add cell behavioral rules here
-  
+  if( c->Index() != 23 && c->Index() != 22 && c->Index() != 18 && c->Index() != 17
+      && c->Index() != 10 && c->Index() != 19 && c->Index() != 8 && c->Index() != 15
+      && c->Index() != 16 && c->Index() != 20 && c->Index() != 21){
+  c->EnlargeTargetArea(par->cell_expansion_rate);
+  }
 
-  
-  c->EnlargeTargetArea(par->cell_expansion_rate / 10); 
-
-  // cellulose spring activation
-  if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k 
+      // cellulose activation
+  if(par->k[0] == 0 && !(c->isTrianglePlaced()) && c->Index() != -1 ) // instead of celltype use k 
   {
-    c->PlaceSprings();
-    c->SetSigmaSprings( 0.15 ); 
-    c->SetSpringDistributionMean( 0 );
-    c->SetSpringsNormalDistributedExcludeTopBottom(par->e);
-    c->setSpringBaseLength(17);      
-  }
+    double width {c->Length(NULL, &width)};
+    c->PlaceTriangles();
+    c->setTargetLengthABofTriangle(width);
+    c->setTriangles();
+  } 
 
-  if(par->k[0] == 0){
-    c->cleanUpSprings(par->mu, par->nu);
-    c->resetSprings(par->e);
-  }
   //cell wall weakening happens here
   if(par->k[0] == 0){
 

@@ -803,7 +803,7 @@ void CellBase::addTriangleToCell( Triangle& t )
 void CellBase::setTriangles()
 {
   for( auto n:nodes ){
-    Node* n_B { findeOpposedNode(n, 6 * 1.5) }; // 6 sollte eig base length sein! ist abstand in  model 1A
+    Node* n_B { findeOpposedNode(n, 9) }; // 6 sollte eig base length sein! ist abstand in  model 1A
     if(n_B != NULL){
       for (list<Node *>::iterator i=nodes.begin(); i!=nodes.end(); i++) {
         if( *i == n_B ){
@@ -826,8 +826,8 @@ void CellBase::setTriangles()
             }
           Node* n_C1 {previous};
           Node* n_C2 {next};
-
-          if(n != n_C1){
+          // 3 as min y distance for triangle placement so that they do not lie in a line
+          if(n != n_C1 && fabs(n->y - n_C1->y) > 3){
             if( n->x > n_B->x){
               Triangle t { n, n_B, n_C1, this };
               addTriangleToCell( t );
@@ -836,7 +836,7 @@ void CellBase::setTriangles()
               addTriangleToCell( t );
             }
           }
-          if(n != n_C2){
+          if(n != n_C2 && fabs(n->y - n_C2->y) > 3){
             if( n->x > n_B->x){
               Triangle t { n, n_B, n_C2, this };
               addTriangleToCell( t );

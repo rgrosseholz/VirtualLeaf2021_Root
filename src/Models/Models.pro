@@ -18,8 +18,8 @@ Tutorial1A \
 #Tutorial5 \
 #twoCells \ 
 threeCells \
-#5x2_Cells \
-#nineCells \
+5x2_Cells \
+nineCells \
 #LateralRoot \
 #MyModel \
 #CellOutlines \

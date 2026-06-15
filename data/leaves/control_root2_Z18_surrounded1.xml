@@ -63,7 +63,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="3" name="cell_expansion_rate"/>
+      <par val="1" name="cell_expansion_rate"/>
       
       
       <par val="10" name="cell_div_expansion_rate"/>
@@ -410,7 +410,7 @@
       
       
       <par val="0.25" name="vessel_expansion_rate"/>
-         <par name="d" val="2000000"/>
+      <par name="d" val="1500000"/>
     <par name="e" val="1.5"/>
     <par name="f" val="0.8"/>
     <par name="c" val="1e-6"/>
@@ -574,7 +574,7 @@
    
   
    
-   <nodes n="72">
+   <nodes n="76">
       <node nr="0" x="114.28097" y="144.38926" sam="false" boundary="true" fixed="false"/>
       <node nr="1" x="121.07243" y="145.45752000000002" sam="false" boundary="true" fixed="false"/>
       <node nr="2" x="126.77166" y="146.26948000000002" sam="false" boundary="true" fixed="false"/>
@@ -601,54 +601,58 @@
       <node nr="23" x="113.15918" y="168.35128" sam="false" boundary="false" fixed="false"/>
       <node nr="24" x="119.95065000000001" y="168.83563" sam="false" boundary="false" fixed="false"/>
       <node nr="25" x="126.43711" y="169.29822000000001" sam="false" boundary="false" fixed="false"/>
-      <node nr="26" x="134.20058" y="144.69251" sam="false" boundary="true" fixed="false"/>
-      <node nr="27" x="134.38411" y="151.07246" sam="false" boundary="false" fixed="false"/>
-      <node nr="28" x="134.61462" y="157.98757" sam="false" boundary="false" fixed="false"/>
-      <node nr="29" x="134.57368" y="164.14141999999998" sam="false" boundary="false" fixed="false"/>
-      <node nr="30" x="134.702" y="169.39188" sam="false" boundary="false" fixed="false"/>
-      <node nr="31" x="135.06081999999998" y="176.7192" sam="false" boundary="false" fixed="false"/>
-      <node nr="32" x="134.92890999999997" y="182.29496" sam="false" boundary="true" fixed="true"/>
-      <node nr="33" x="126.34334999999997" y="181.21131" sam="false" boundary="true" fixed="true"/>
-      <node nr="34" x="126.95151999999997" y="175.69837" sam="false" boundary="false" fixed="false"/>
-      <node nr="35" x="78.458529" y="167.80464999999998" sam="false" boundary="false" fixed="false"/>
-      <node nr="36" x="86.527379" y="168.08592" sam="false" boundary="false" fixed="false"/>
-      <node nr="37" x="94.575613" y="168.22194" sam="false" boundary="false" fixed="false"/>
-      <node nr="38" x="63.182714" y="166.99611" sam="false" boundary="false" fixed="false"/>
-      <node nr="39" x="63.07069" y="172.73245" sam="false" boundary="false" fixed="false"/>
-      <node nr="40" x="62.97816" y="178.74856" sam="false" boundary="true" fixed="true"/>
-      <node nr="41" x="69.73929100000001" y="178.87263" sam="false" boundary="true" fixed="true"/>
-      <node nr="42" x="78.18703500000001" y="179.02766" sam="false" boundary="true" fixed="true"/>
-      <node nr="43" x="85.55282100000001" y="179.09315999999998" sam="false" boundary="true" fixed="true"/>
-      <node nr="44" x="93.35705100000001" y="179.16255999999998" sam="false" boundary="true" fixed="true"/>
-      <node nr="45" x="94.21885800000001" y="174.05673" sam="false" boundary="false" fixed="false"/>
-      <node nr="46" x="69.946299" y="167.49633999999998" sam="false" boundary="false" fixed="false"/>
-      <node nr="47" x="70.194755" y="140.20169" sam="false" boundary="true" fixed="false"/>
-      <node nr="48" x="63.692673" y="140.33437" sam="false" boundary="true" fixed="false"/>
-      <node nr="49" x="62.312563" y="146.77497" sam="false" boundary="true" fixed="false"/>
-      <node nr="50" x="69.563159" y="146.79147" sam="false" boundary="false" fixed="false"/>
-      <node nr="51" x="63.053247000000006" y="156.50072999999998" sam="false" boundary="false" fixed="false"/>
-      <node nr="52" x="69.443129" y="155.37767999999997" sam="false" boundary="false" fixed="false"/>
-      <node nr="53" x="103.76859999999999" y="168.2359" sam="false" boundary="false" fixed="false"/>
-      <node nr="54" x="142.19592" y="163.94522" sam="false" boundary="true" fixed="true"/>
-      <node nr="55" x="142.13762" y="171.0386" sam="false" boundary="true" fixed="true"/>
-      <node nr="56" x="142.11921999999998" y="176.44072" sam="false" boundary="true" fixed="true"/>
-      <node nr="57" x="142.34973" y="183.35583" sam="false" boundary="true" fixed="true"/>
-      <node nr="58" x="141.88261" y="145.12058000000002" sam="false" boundary="true" fixed="true"/>
-      <node nr="59" x="141.88961" y="151.43325000000002" sam="false" boundary="true" fixed="true"/>
-      <node nr="60" x="141.87121" y="156.83537" sam="false" boundary="true" fixed="true"/>
-      <node nr="61" x="55.302106" y="156.92843" sam="false" boundary="true" fixed="true"/>
-      <node nr="62" x="55.285668" y="177.65968" sam="false" boundary="true" fixed="true"/>
-      <node nr="63" x="55.541324" y="171.46728000000002" sam="false" boundary="true" fixed="true"/>
-      <node nr="64" x="55.608804000000006" y="163.44112" sam="false" boundary="true" fixed="true"/>
-      <node nr="65" x="55.242946" y="136.07522" sam="false" boundary="true" fixed="true"/>
-      <node nr="66" x="63.308589000000005" y="136.54639" sam="false" boundary="true" fixed="true"/>
-      <node nr="67" x="55.222590999999994" y="151.40355999999997" sam="false" boundary="true" fixed="true"/>
-      <node nr="68" x="55.09501099999999" y="144.87834999999998" sam="false" boundary="true" fixed="false"/>
-      <node nr="69" x="102.32315000000001" y="179.82760999999996" sam="false" boundary="true" fixed="true"/>
-      <node nr="70" x="110.38190000000002" y="180.42489999999995" sam="false" boundary="true" fixed="true"/>
-      <node nr="71" x="119.31924000000002" y="180.50439999999995" sam="false" boundary="true" fixed="true"/>
+      <node nr="26" x="132.36136" y="145.85125" sam="false" boundary="true" fixed="false"/>
+      <node nr="27" x="136.60171" y="145.94125" sam="false" boundary="true" fixed="false"/>
+      <node nr="28" x="136.24179999999998" y="151.08077" sam="false" boundary="false" fixed="false"/>
+      <node nr="29" x="136.52515999999997" y="157.99121" sam="false" boundary="false" fixed="false"/>
+      <node nr="30" x="132.58504999999997" y="157.63189" sam="false" boundary="false" fixed="false"/>
+      <node nr="31" x="136.47484" y="164.14090000000002" sam="false" boundary="false" fixed="false"/>
+      <node nr="32" x="136.63258" y="169.38781" sam="false" boundary="false" fixed="false"/>
+      <node nr="33" x="132.23439" y="169.27699" sam="false" boundary="false" fixed="false"/>
+      <node nr="34" x="137.07368" y="176.71018" sam="false" boundary="false" fixed="false"/>
+      <node nr="35" x="136.91152" y="182.28218" sam="false" boundary="true" fixed="true"/>
+      <node nr="36" x="131.89802" y="181.76777" sam="false" boundary="true" fixed="true"/>
+      <node nr="37" x="126.35725000000001" y="181.19926" sam="false" boundary="true" fixed="true"/>
+      <node nr="38" x="127.10488000000001" y="175.69004" sam="false" boundary="false" fixed="false"/>
+      <node nr="39" x="78.458529" y="167.80464999999998" sam="false" boundary="false" fixed="false"/>
+      <node nr="40" x="86.527379" y="168.08592" sam="false" boundary="false" fixed="false"/>
+      <node nr="41" x="94.575613" y="168.22194" sam="false" boundary="false" fixed="false"/>
+      <node nr="42" x="63.182714" y="166.99611" sam="false" boundary="false" fixed="false"/>
+      <node nr="43" x="63.07069" y="172.73245" sam="false" boundary="false" fixed="false"/>
+      <node nr="44" x="62.97816" y="178.74856" sam="false" boundary="true" fixed="true"/>
+      <node nr="45" x="69.73929100000001" y="178.87263" sam="false" boundary="true" fixed="true"/>
+      <node nr="46" x="78.18703500000001" y="179.02766" sam="false" boundary="true" fixed="true"/>
+      <node nr="47" x="85.55282100000001" y="179.09315999999998" sam="false" boundary="true" fixed="true"/>
+      <node nr="48" x="93.35705100000001" y="179.16255999999998" sam="false" boundary="true" fixed="true"/>
+      <node nr="49" x="94.21885800000001" y="174.05673" sam="false" boundary="false" fixed="false"/>
+      <node nr="50" x="69.946299" y="167.49633999999998" sam="false" boundary="false" fixed="false"/>
+      <node nr="51" x="70.194755" y="140.20169" sam="false" boundary="true" fixed="false"/>
+      <node nr="52" x="63.692673" y="140.33437" sam="false" boundary="true" fixed="false"/>
+      <node nr="53" x="62.377622" y="147.16532" sam="false" boundary="false" fixed="false"/>
+      <node nr="54" x="69.530629" y="147.14932000000002" sam="false" boundary="false" fixed="false"/>
+      <node nr="55" x="63.053247000000006" y="156.50072999999998" sam="false" boundary="false" fixed="false"/>
+      <node nr="56" x="69.443129" y="155.37767999999997" sam="false" boundary="false" fixed="false"/>
+      <node nr="57" x="103.76859999999999" y="168.2359" sam="false" boundary="false" fixed="false"/>
+      <node nr="58" x="144.22008" y="163.94522" sam="false" boundary="true" fixed="true"/>
+      <node nr="59" x="144.16178" y="171.0386" sam="false" boundary="true" fixed="true"/>
+      <node nr="60" x="144.14337999999998" y="176.44072" sam="false" boundary="true" fixed="true"/>
+      <node nr="61" x="144.37389" y="183.35583" sam="false" boundary="true" fixed="true"/>
+      <node nr="62" x="143.90677" y="145.12058000000002" sam="false" boundary="true" fixed="true"/>
+      <node nr="63" x="143.91377" y="151.43325000000002" sam="false" boundary="true" fixed="true"/>
+      <node nr="64" x="143.89536999999999" y="156.83537" sam="false" boundary="true" fixed="true"/>
+      <node nr="65" x="55.302106" y="156.92843" sam="false" boundary="true" fixed="true"/>
+      <node nr="66" x="55.285668" y="177.65968" sam="false" boundary="true" fixed="true"/>
+      <node nr="67" x="55.541324" y="171.46728000000002" sam="false" boundary="true" fixed="true"/>
+      <node nr="68" x="55.608804000000006" y="163.44112" sam="false" boundary="true" fixed="true"/>
+      <node nr="69" x="55.242946" y="136.07522" sam="false" boundary="true" fixed="true"/>
+      <node nr="70" x="63.308589000000005" y="136.54639" sam="false" boundary="true" fixed="false"/>
+      <node nr="71" x="55.222590999999994" y="151.40356" sam="false" boundary="true" fixed="true"/>
+      <node nr="72" x="55.09501099999999" y="144.87835" sam="false" boundary="true" fixed="true"/>
+      <node nr="73" x="102.32315000000001" y="179.82760999999996" sam="false" boundary="true" fixed="true"/>
+      <node nr="74" x="110.38190000000002" y="180.42489999999995" sam="false" boundary="true" fixed="true"/>
+      <node nr="75" x="119.31924000000002" y="180.50439999999995" sam="false" boundary="true" fixed="true"/>
    </nodes>
-   <cells n="20" magnfication="1" nchem="0" offsetx="0" offsety="0" base_area="163.4902728239624">
+   <cells n="20" magnfication="1" nchem="0" offsetx="0" offsety="0" base_area="166.8555448378924">
       <cell boundary="0" cell_type="0" target_area="146.1195811277501" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="0" source="false" pin_fixed="false" area="146.1195811277501" fixed="false" div_counter="0">
          <node n="0"/>
          <node n="1"/>
@@ -661,7 +665,7 @@
          <wall w="0"/>
          <wall w="1"/>
          <wall w="2"/>
-         <wall w="37"/>
+         <wall w="38"/>
       </cell>
       <cell boundary="0" cell_type="0" target_area="129.1734971729399" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="1" source="false" pin_fixed="false" area="129.1734971729399" fixed="false" div_counter="0">
          <node n="8"/>
@@ -673,7 +677,7 @@
          <wall w="3"/>
          <wall w="4"/>
          <wall w="5"/>
-         <wall w="38"/>
+         <wall w="39"/>
       </cell>
       <cell boundary="0" cell_type="0" target_area="145.82686849477534" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="2" source="false" pin_fixed="false" area="145.82686849477534" fixed="false" div_counter="0">
          <node n="12"/>
@@ -702,7 +706,7 @@
          <wall w="3"/>
          <wall w="9"/>
          <wall w="10"/>
-         <wall w="39"/>
+         <wall w="40"/>
       </cell>
       <cell boundary="0" cell_type="0" target_area="85.31184291989986" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="4" source="false" pin_fixed="false" area="85.31184291989986" fixed="false" div_counter="0">
          <node n="20"/>
@@ -728,23 +732,27 @@
          <wall w="15"/>
          <wall w="16"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="88.79802616590013" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="6" source="false" pin_fixed="false" area="88.79802616590013" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="0" target_area="108.02318189114997" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="6" source="false" pin_fixed="false" area="108.02318189114997" fixed="false" div_counter="0">
          <node n="2"/>
          <node n="26"/>
          <node n="27"/>
          <node n="28"/>
+         <node n="29"/>
+         <node n="30"/>
          <node n="4"/>
          <node n="3"/>
          <wall w="0"/>
          <wall w="17"/>
          <wall w="18"/>
-         <wall w="40"/>
+         <wall w="41"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="89.8303280678499" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="7" source="false" pin_fixed="false" area="89.8303280678499" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="0" target_area="111.86038091089996" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="7" source="false" pin_fixed="false" area="111.86038091089996" fixed="false" div_counter="0">
          <node n="4"/>
-         <node n="28"/>
-         <node n="29"/>
          <node n="30"/>
+         <node n="29"/>
+         <node n="31"/>
+         <node n="32"/>
+         <node n="33"/>
          <node n="25"/>
          <node n="22"/>
          <wall w="12"/>
@@ -754,83 +762,86 @@
          <wall w="20"/>
          <wall w="21"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="102.62119338425003" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="8" source="false" pin_fixed="false" area="102.62119338425003" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="0" target_area="126.52793286354986" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="8" source="false" pin_fixed="false" area="126.52793286354986" fixed="false" div_counter="0">
          <node n="25"/>
-         <node n="30"/>
-         <node n="31"/>
-         <node n="32"/>
          <node n="33"/>
+         <node n="32"/>
          <node n="34"/>
+         <node n="35"/>
+         <node n="36"/>
+         <node n="37"/>
+         <node n="38"/>
          <wall w="21"/>
          <wall w="22"/>
          <wall w="23"/>
-         <wall w="41"/>
+         <wall w="42"/>
       </cell>
       <cell boundary="0" cell_type="0" target_area="186.06365148120977" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="9" source="false" pin_fixed="false" area="186.06365148120977" fixed="false" div_counter="0">
          <node n="14"/>
          <node n="15"/>
          <node n="16"/>
-         <node n="37"/>
-         <node n="36"/>
-         <node n="35"/>
+         <node n="41"/>
+         <node n="40"/>
+         <node n="39"/>
          <wall w="7"/>
          <wall w="24"/>
          <wall w="25"/>
          <wall w="26"/>
       </cell>
       <cell boundary="0" cell_type="0" target_area="348.7995261396103" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="10" source="false" pin_fixed="false" area="348.7995261396103" fixed="false" div_counter="0">
-         <node n="38"/>
+         <node n="42"/>
+         <node n="50"/>
+         <node n="39"/>
+         <node n="40"/>
+         <node n="41"/>
+         <node n="49"/>
+         <node n="48"/>
+         <node n="47"/>
          <node n="46"/>
-         <node n="35"/>
-         <node n="36"/>
-         <node n="37"/>
          <node n="45"/>
          <node n="44"/>
          <node n="43"/>
-         <node n="42"/>
-         <node n="41"/>
-         <node n="40"/>
-         <node n="39"/>
          <wall w="25"/>
          <wall w="27"/>
          <wall w="28"/>
          <wall w="29"/>
-         <wall w="42"/>
+         <wall w="43"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="103.73691001966486" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="11" source="false" pin_fixed="false" area="103.73691001966486" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="0" target_area="107.50086038779" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="11" source="false" pin_fixed="false" area="107.50086038779" fixed="false" div_counter="0">
          <node n="12"/>
-         <node n="50"/>
-         <node n="49"/>
-         <node n="48"/>
-         <node n="47"/>
+         <node n="54"/>
+         <node n="53"/>
+         <node n="52"/>
+         <node n="51"/>
          <node n="11"/>
          <wall w="4"/>
          <wall w="30"/>
-         <wall w="43"/>
+         <wall w="31"/>
+         <wall w="44"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="137.94763345774973" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="12" source="false" pin_fixed="false" area="137.94763345774973" fixed="false" div_counter="0">
-         <node n="49"/>
-         <node n="50"/>
+      <cell boundary="0" cell_type="0" target_area="133.53299951245458" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="12" source="false" pin_fixed="false" area="133.53299951245458" fixed="false" div_counter="0">
+         <node n="53"/>
+         <node n="54"/>
          <node n="12"/>
          <node n="14"/>
-         <node n="52"/>
-         <node n="51"/>
+         <node n="56"/>
+         <node n="55"/>
          <wall w="6"/>
-         <wall w="30"/>
          <wall w="31"/>
          <wall w="32"/>
+         <wall w="33"/>
       </cell>
       <cell boundary="0" cell_type="0" target_area="177.50955540995506" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="13" source="false" pin_fixed="false" area="177.50955540995506" fixed="false" div_counter="0">
-         <node n="51"/>
-         <node n="52"/>
+         <node n="55"/>
+         <node n="56"/>
          <node n="14"/>
-         <node n="35"/>
-         <node n="46"/>
-         <node n="38"/>
+         <node n="39"/>
+         <node n="50"/>
+         <node n="42"/>
          <wall w="24"/>
          <wall w="29"/>
-         <wall w="32"/>
          <wall w="33"/>
+         <wall w="34"/>
       </cell>
       <cell boundary="0" cell_type="0" target_area="264.92533505163954" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="14" source="false" pin_fixed="false" area="264.92533505163954" fixed="false" div_counter="0">
          <node n="17"/>
@@ -838,129 +849,132 @@
          <node n="6"/>
          <node n="20"/>
          <node n="23"/>
-         <node n="53"/>
-         <node n="37"/>
+         <node n="57"/>
+         <node n="41"/>
          <node n="16"/>
          <wall w="8"/>
          <wall w="10"/>
          <wall w="13"/>
          <wall w="14"/>
          <wall w="26"/>
-         <wall w="34"/>
-      </cell>
-      <cell boundary="0" cell_type="0" target_area="137.64653548185018" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="15" source="false" pin_fixed="false" area="137.64653548185018" fixed="false" div_counter="0">
-         <node n="29"/>
-         <node n="54"/>
-         <node n="55"/>
-         <node n="56"/>
-         <node n="57"/>
-         <node n="32"/>
-         <node n="31"/>
-         <node n="30"/>
-         <wall w="20"/>
-         <wall w="22"/>
          <wall w="35"/>
-         <wall w="44"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="143.0865355643999" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="16" source="false" pin_fixed="false" area="143.0865355643999" fixed="false" div_counter="0">
-         <node n="26"/>
+      <cell boundary="0" cell_type="0" target_area="138.73364553759984" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="15" source="false" pin_fixed="false" area="138.73364553759984" fixed="false" div_counter="0">
+         <node n="31"/>
          <node n="58"/>
          <node n="59"/>
          <node n="60"/>
-         <node n="54"/>
-         <node n="29"/>
-         <node n="28"/>
-         <node n="27"/>
-         <wall w="17"/>
-         <wall w="19"/>
-         <wall w="35"/>
+         <node n="61"/>
+         <node n="35"/>
+         <node n="34"/>
+         <node n="32"/>
+         <wall w="20"/>
+         <wall w="22"/>
+         <wall w="36"/>
          <wall w="45"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="163.66636313356005" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="17" source="false" pin_fixed="false" area="163.66636313356005" fixed="false" div_counter="0">
-         <node n="61"/>
-         <node n="51"/>
-         <node n="38"/>
-         <node n="39"/>
-         <node n="40"/>
+      <cell boundary="0" cell_type="0" target_area="139.3924809437502" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="16" source="false" pin_fixed="false" area="139.3924809437502" fixed="false" div_counter="0">
+         <node n="27"/>
          <node n="62"/>
          <node n="63"/>
          <node n="64"/>
-         <wall w="27"/>
-         <wall w="33"/>
+         <node n="58"/>
+         <node n="31"/>
+         <node n="29"/>
+         <node n="28"/>
+         <wall w="17"/>
+         <wall w="19"/>
          <wall w="36"/>
          <wall w="46"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="154.44140627379494" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="18" source="false" pin_fixed="false" area="154.44140627379494" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="0" target_area="163.66636313356005" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="17" source="false" pin_fixed="false" area="163.66636313356005" fixed="false" div_counter="0">
          <node n="65"/>
+         <node n="55"/>
+         <node n="42"/>
+         <node n="43"/>
+         <node n="44"/>
          <node n="66"/>
-         <node n="49"/>
-         <node n="51"/>
-         <node n="61"/>
          <node n="67"/>
          <node n="68"/>
-         <wall w="31"/>
-         <wall w="36"/>
+         <wall w="27"/>
+         <wall w="34"/>
+         <wall w="37"/>
          <wall w="47"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="382.19641971453353" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="19" source="false" pin_fixed="false" area="382.19641971453353" fixed="false" div_counter="0">
-         <node n="37"/>
+      <cell boundary="0" cell_type="0" target_area="158.942870095065" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="18" source="false" pin_fixed="false" area="158.942870095065" fixed="false" div_counter="0">
+         <node n="69"/>
+         <node n="70"/>
+         <node n="52"/>
          <node n="53"/>
+         <node n="55"/>
+         <node n="65"/>
+         <node n="71"/>
+         <node n="72"/>
+         <wall w="30"/>
+         <wall w="32"/>
+         <wall w="37"/>
+         <wall w="48"/>
+      </cell>
+      <cell boundary="0" cell_type="0" target_area="383.09607626633385" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="19" source="false" pin_fixed="false" area="383.09607626633385" fixed="false" div_counter="0">
+         <node n="41"/>
+         <node n="57"/>
          <node n="23"/>
          <node n="24"/>
          <node n="25"/>
-         <node n="34"/>
-         <node n="33"/>
-         <node n="71"/>
-         <node n="70"/>
-         <node n="69"/>
-         <node n="44"/>
-         <node n="45"/>
+         <node n="38"/>
+         <node n="37"/>
+         <node n="75"/>
+         <node n="74"/>
+         <node n="73"/>
+         <node n="48"/>
+         <node n="49"/>
          <wall w="15"/>
          <wall w="23"/>
          <wall w="28"/>
-         <wall w="34"/>
-         <wall w="48"/>
+         <wall w="35"/>
+         <wall w="49"/>
       </cell>
-      <boundary_polygon boundary="0" cell_type="0" target_area="3269.8054564792483" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="-1" source="false" pin_fixed="false" area="3269.8054564792483" fixed="false" div_counter="0">
+      <boundary_polygon boundary="0" cell_type="0" target_area="3337.1108967578484" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="-1" source="false" pin_fixed="false" area="3337.1108967578484" fixed="false" div_counter="0">
          <node n="0"/>
          <node n="1"/>
          <node n="2"/>
          <node n="26"/>
-         <node n="58"/>
-         <node n="59"/>
-         <node n="60"/>
-         <node n="54"/>
-         <node n="55"/>
-         <node n="56"/>
-         <node n="57"/>
-         <node n="32"/>
-         <node n="33"/>
-         <node n="71"/>
-         <node n="70"/>
-         <node n="69"/>
-         <node n="44"/>
-         <node n="43"/>
-         <node n="42"/>
-         <node n="41"/>
-         <node n="40"/>
+         <node n="27"/>
          <node n="62"/>
          <node n="63"/>
          <node n="64"/>
+         <node n="58"/>
+         <node n="59"/>
+         <node n="60"/>
          <node n="61"/>
+         <node n="35"/>
+         <node n="36"/>
+         <node n="37"/>
+         <node n="75"/>
+         <node n="74"/>
+         <node n="73"/>
+         <node n="48"/>
+         <node n="47"/>
+         <node n="46"/>
+         <node n="45"/>
+         <node n="44"/>
+         <node n="66"/>
          <node n="67"/>
          <node n="68"/>
          <node n="65"/>
-         <node n="66"/>
-         <node n="49"/>
-         <node n="48"/>
-         <node n="47"/>
+         <node n="71"/>
+         <node n="72"/>
+         <node n="69"/>
+         <node n="70"/>
+         <node n="52"/>
+         <node n="51"/>
          <node n="11"/>
          <node n="10"/>
          <node n="9"/>
          <node n="19"/>
       </boundary_polygon>
    </cells>
-   <walls n="91">
+   <walls n="95">
       <wall length="10.804269118655892" c1="0" c2="6" index="0" n1="2" n2="4" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
@@ -1029,131 +1043,135 @@
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="13.301540101005266" c1="6" c2="16" index="17" n1="26" n2="28" wall_type="normal" viz_flux="0">
+      <wall length="12.068353561442365" c1="6" c2="16" index="17" n1="27" n2="29" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="7.527484463012874" c1="6" c2="7" index="18" n1="28" n2="4" wall_type="normal" viz_flux="0">
+      <wall length="9.427006418359188" c1="6" c2="7" index="18" n1="29" n2="4" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="6.1539861802005795" c1="7" c2="16" index="19" n1="28" n2="29" wall_type="normal" viz_flux="0">
+      <wall length="6.149895868915201" c1="7" c2="16" index="19" n1="29" n2="31" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="5.2520278211372835" c1="7" c2="15" index="20" n1="29" n2="30" wall_type="normal" viz_flux="0">
+      <wall length="5.249280565534657" c1="7" c2="15" index="20" n1="31" n2="32" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="8.265420673365627" c1="7" c2="8" index="21" n1="30" n2="25" wall_type="normal" viz_flux="0">
+      <wall length="10.196904801869703" c1="7" c2="8" index="21" n1="32" n2="25" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="12.91342060408374" c1="8" c2="15" index="22" n1="30" n2="32" wall_type="normal" viz_flux="0">
+      <wall length="12.910003057521408" c1="8" c2="15" index="22" n1="32" n2="35" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="11.96717373460388" c1="8" c2="19" index="23" n1="33" n2="25" wall_type="normal" viz_flux="0">
+      <wall length="11.986324392795364" c1="8" c2="19" index="23" n1="37" n2="25" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="11.308884143902068" c1="9" c2="13" index="24" n1="14" n2="35" wall_type="normal" viz_flux="0">
+      <wall length="11.308884143902068" c1="9" c2="13" index="24" n1="14" n2="39" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="16.12313419940208" c1="9" c2="10" index="25" n1="35" n2="37" wall_type="normal" viz_flux="0">
+      <wall length="16.12313419940208" c1="9" c2="10" index="25" n1="39" n2="41" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="11.528153697075677" c1="9" c2="14" index="26" n1="37" n2="16" wall_type="normal" viz_flux="0">
+      <wall length="11.528153697075677" c1="9" c2="14" index="26" n1="41" n2="16" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="11.754255275227974" c1="10" c2="17" index="27" n1="38" n2="40" wall_type="normal" viz_flux="0">
+      <wall length="11.754255275227974" c1="10" c2="17" index="27" n1="42" n2="44" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="11.023737229880481" c1="10" c2="19" index="28" n1="44" n2="37" wall_type="normal" viz_flux="0">
+      <wall length="11.023737229880481" c1="10" c2="19" index="28" n1="48" n2="41" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="15.299869712784389" c1="10" c2="13" index="29" n1="35" n2="38" wall_type="normal" viz_flux="0">
+      <wall length="15.299869712784389" c1="10" c2="13" index="29" n1="39" n2="42" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="15.879722827169605" c1="11" c2="12" index="30" n1="49" n2="12" wall_type="normal" viz_flux="0">
+      <wall length="6.9563810300400455" c1="11" c2="18" index="30" n1="52" n2="53" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="9.753923331944721" c1="12" c2="18" index="31" n1="49" n2="51" wall_type="normal" viz_flux="0">
+      <wall length="15.772804473561997" c1="11" c2="12" index="31" n1="53" n2="12" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="15.663632805091446" c1="12" c2="13" index="32" n1="51" n2="14" wall_type="normal" viz_flux="0">
+      <wall length="9.359826334325033" c1="12" c2="18" index="32" n1="53" n2="55" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="10.49617849736223" c1="13" c2="17" index="33" n1="51" n2="38" wall_type="normal" viz_flux="0">
+      <wall length="15.663632805091446" c1="12" c2="13" index="33" n1="55" n2="14" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="18.584286397111455" c1="14" c2="19" index="34" n1="37" n2="23" wall_type="normal" viz_flux="0">
+      <wall length="10.49617849736223" c1="13" c2="17" index="34" n1="55" n2="42" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="7.624764721458628" c1="15" c2="16" index="35" n1="29" n2="54" wall_type="normal" viz_flux="0">
+      <wall length="18.584286397111455" c1="14" c2="19" index="35" n1="41" n2="23" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="7.762932055085957" c1="17" c2="18" index="36" n1="61" n2="51" wall_type="normal" viz_flux="0">
+      <wall length="7.7477114892076315" c1="15" c2="16" index="36" n1="31" n2="58" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="12.63174118106271" c1="0" c2="-1" index="37" n1="2" n2="0" wall_type="normal" viz_flux="0">
+      <wall length="7.762932055085957" c1="17" c2="18" index="37" n1="65" n2="55" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="17.636464100744945" c1="1" c2="-1" index="38" n1="11" n2="9" wall_type="normal" viz_flux="0">
+      <wall length="12.63174118106271" c1="0" c2="-1" index="38" n1="2" n2="0" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="18.663414526223555" c1="3" c2="-1" index="39" n1="9" n2="0" wall_type="normal" viz_flux="0">
+      <wall length="17.636464100744945" c1="1" c2="-1" index="39" n1="11" n2="9" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="7.594451049766542" c1="6" c2="-1" index="40" n1="2" n2="26" wall_type="normal" viz_flux="0">
+      <wall length="18.663414526223555" c1="3" c2="-1" index="40" n1="9" n2="0" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="8.653677705813871" c1="8" c2="-1" index="41" n1="32" n2="33" wall_type="normal" viz_flux="0">
+      <wall length="9.846629473091479" c1="6" c2="-1" index="41" n1="2" n2="27" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="30.382051474318864" c1="10" c2="-1" index="42" n1="40" n2="44" wall_type="normal" viz_flux="0">
+      <wall length="10.609681001769092" c1="8" c2="-1" index="42" n1="35" n2="37" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="21.16200499988422" c1="11" c2="-1" index="43" n1="11" n2="49" wall_type="normal" viz_flux="0">
+      <wall length="30.382051474318864" c1="10" c2="-1" index="43" n1="44" n2="48" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="26.910988498556208" c1="15" c2="-1" index="44" n1="54" n2="32" wall_type="normal" viz_flux="0">
+      <wall length="14.57519758110387" c1="11" c2="-1" index="44" n1="11" n2="52" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="26.526033725554115" c1="16" c2="-1" index="45" n1="26" n2="54" wall_type="normal" viz_flux="0">
+      <wall length="26.953931979107608" c1="15" c2="-1" index="45" n1="58" n2="35" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="28.51320223547729" c1="17" c2="-1" index="46" n1="61" n2="40" wall_type="normal" viz_flux="0">
+      <wall length="26.183099772762276" c1="16" c2="-1" index="46" n1="27" n2="58" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="39.212626088426575" c1="18" c2="-1" index="47" n1="49" n2="61" wall_type="normal" viz_flux="0">
+      <wall length="28.51320223547729" c1="17" c2="-1" index="47" n1="65" n2="44" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="33.068870018574565" c1="19" c2="-1" index="48" n1="44" n2="33" wall_type="normal" viz_flux="0">
+      <wall length="32.74306800847748" c1="18" c2="-1" index="48" n1="52" n2="65" wall_type="normal" viz_flux="0">
+         <transporters1/>
+         <transporters2/>
+      </wall>
+      <wall length="33.08150619214917" c1="19" c2="-1" index="49" n1="48" n2="37" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>

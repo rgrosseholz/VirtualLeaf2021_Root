@@ -66,8 +66,10 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
     // cellulose activation
   if(par->k[0] == 0 && !(c->isTrianglePlaced()) && c->Index()!=-1 ) // instead of celltype use k 
   {
+    double width {0};
+    c->Length(NULL, &width);
     c->PlaceTriangles();
-    c->setTargetLengthABofTriangle(10);
+    c->setTargetLengthABofTriangle(width);
     c->setTriangles();
   } 
 

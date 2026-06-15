@@ -290,7 +290,7 @@ class CellBase :  public QObject, public Vector
   bool isNodeWithinBoundary(Node* node, int numOfAverage, double intervalY = 3.5,
                              double intervalX = 3.5);
   pair<Node*, Node*> findeOpposedNodes(Node* op_node);
-  Node* findeOpposedNode(Node* op_node, double minX_distance );
+  Node* findeOpposedNode(Node* op_node, double minX_distance, double minY_distance );
   
   pair<double,double> findAverageMinMaxY(int numOfAverage, double intervalY);
   Vector getMinMaxPositionX();

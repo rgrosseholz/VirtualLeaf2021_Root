@@ -592,7 +592,7 @@
       <node nr="14" x="116.58753999999999" y="133.97762000000003" sam="false" boundary="true" fixed="false"/>
    </nodes>
    <cells n="3" magnfication="1" nchem="0" offsetx="0" offsety="0" base_area="119.46972642259169">
-      <cell boundary="0" cell_type="0" target_area="200.39158708605001" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="0" source="false" pin_fixed="false" area="93.39158708605001" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="0" target_area="119.39158708605001" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="0" source="false" pin_fixed="false" area="93.39158708605001" fixed="false" div_counter="0">
          <node n="0"/>
          <node n="5"/>
          <node n="4"/>
@@ -601,7 +601,7 @@
          <node n="1"/>
          <wall w="0"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="206.43676439312495" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="1" source="false" pin_fixed="false" area="146.43676439312495" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="0" target_area="146.43676439312495" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="1" source="false" pin_fixed="false" area="146.43676439312495" fixed="false" div_counter="0">
          <node n="4"/>
          <node n="9"/>
          <node n="8"/>
@@ -611,7 +611,7 @@
          <wall w="0"/>
          <wall w="1"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="148.5808277886001" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="2" source="false" pin_fixed="false" area="118.5808277886001" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="0" target_area="118.5808277886001" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="2" source="false" pin_fixed="false" area="118.5808277886001" fixed="false" div_counter="0">
          <node n="9"/>
          <node n="14"/>
          <node n="13"/>

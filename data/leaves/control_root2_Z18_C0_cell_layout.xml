@@ -63,7 +63,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="3" name="cell_expansion_rate"/>
+      <par val="1" name="cell_expansion_rate"/>
       
       
       <par val="10" name="cell_div_expansion_rate"/>

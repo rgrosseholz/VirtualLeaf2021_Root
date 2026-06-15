@@ -64,9 +64,13 @@ void five_x_two_Cells::CellHouseKeeping(CellBase *c)
   }
 
       // cellulose activation
-  if(par->k[0] == 0 && !(c->isTrianglePlaced()) && c->Index() != -1 ) // instead of celltype use k 
+  if(par->k[0] == 0 && !(c->isTrianglePlaced()) && c->Index() != -1 
+    &&  c->Index() != 23 && c->Index() != 22 && c->Index() != 18 && c->Index() != 17
+      && c->Index() != 10 && c->Index() != 19 && c->Index() != 8 && c->Index() != 15
+      && c->Index() != 16 && c->Index() != 20 && c->Index() != 21 ) // instead of celltype use k 
   {
-    double width {c->Length(NULL, &width)};
+    double width {0};
+    c->Length(NULL, &width);
     c->PlaceTriangles();
     c->setTargetLengthABofTriangle(width);
     c->setTriangles();

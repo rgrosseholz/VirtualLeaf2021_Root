@@ -66,7 +66,8 @@ void TwoCells::CellHouseKeeping(CellBase *c)
       // cellulose activation
   if(par->k[0] == 0 && !(c->isTrianglePlaced()) && c->Index() != -1 ) // instead of celltype use k 
   {
-    double width {c->Length(NULL, &width)};
+    double width {0};
+    c->Length(NULL, &width);
     c->PlaceTriangles();
     c->setTargetLengthABofTriangle(width);
     c->setTriangles();

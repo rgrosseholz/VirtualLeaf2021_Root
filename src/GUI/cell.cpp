@@ -1130,28 +1130,24 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
   ConstructNeighborList();
   daughter->ConstructNeighborList();
 
-  /**
-  * Inherit cellulose spring properties and reset the springs
+
+ // Inherit cellulose triangle properties and reset the triangles
   
   if( par.k[0] == 0){
-    removeSprings();
-    daughter->removeSprings();
-    if( isSpringPlaced() ) {
-      daughter->PlaceSprings();
-      daughter->SetSigmaSprings( getSigmaSprings() ); 
-      daughter->SetSpringDistributionMean( getSpringDistributionMean() );
-      daughter->setSpringBaseLength( getSpringBaseLength() );
-      daughter->SetRefVecSprings( GetRefVecSprings() );
-      while(daughter->springs.size() < 1){
-      daughter->SetSpringsNormalDistributedExcludeTopBottom(par.e);
-      }
+    double width { getTargetLengthABofTriangle() };
+    triangles.clear();
+    daughter->triangles.clear();
+    if( isTrianglePlaced() ) {
+    daughter->PlaceTriangles();
+    daughter->setTargetLengthABofTriangle(width);
+    daughter->setTriangles();
     };
     //parent cell
-    while(springs.size() < 1 ){
-    SetSpringsNormalDistributedExcludeTopBottom(par.e);
-    }
+    PlaceTriangles();
+    setTargetLengthABofTriangle(width);
+    setTriangles();
   }
-*/
+
   	/**
      * Here we reconnect the wall elements if they got lose ends, if both ends are lose then
      * the original wall has to be deleted.

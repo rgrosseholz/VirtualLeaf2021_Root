@@ -51,19 +51,26 @@ void Tutorial1B::SetCellColor(CellBase *c, QColor *color) {
 
 void Tutorial1B::CellHouseKeeping(CellBase *c) {
   // add cell behavioral rules here
-	c->EnlargeTargetArea(par->cell_expansion_rate/5);
-	
-  // cellulose spring activation
-  if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k for no
+  c->EnlargeTargetArea(par->cell_expansion_rate);
+
+  double base_element_length = 25;
+  c->LoopWallElements([base_element_length](auto wallElementInfo)
+                      {
+        if(std::isnan(wallElementInfo->getWallElement()->getBaseLength())){
+        wallElementInfo->getWallElement()->setBaseLength(base_element_length);
+        } });
+
+
+    // cellulose activation
+  if(par->k[0] == 0 && !(c->isTrianglePlaced()) && c->Index()!=-1 ) // instead of celltype use k 
   {
-      c->PlaceSprings();
-      c->SetSigmaSprings( 0.1 ); 
-      c->SetSpringDistributionMean( 0 );
-      c->SetSpringsNormalDistributedExcludeTopBottom(par->e);
-      c->setSpringBaseLength(9);
-      par->bend_lambda = 1;
-      
-  }
+    double width {0};
+    c->Length(NULL, &width);
+    c->PlaceTriangles();
+    c->setTargetLengthABofTriangle(width);
+    c->setTriangles();
+  } 
+
   //cell wall weakening happens here
   if(par->k[0] == 0){
 

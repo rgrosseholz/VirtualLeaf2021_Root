@@ -942,10 +942,6 @@ double Mesh::DisplaceNodes(void)
 
       double dh=0.;
 
-      if(node.index == 9){
-        old_l1 = TINY;
-      }
-
       for (list<Neighbor>::const_iterator cit = node.owners.begin(); cit != node.owners.end(); cit++)
       {
         // over what do we exactly loop here? nodes of current cell and adjacent nodes?
@@ -1197,9 +1193,17 @@ double Mesh::DisplaceNodes(void)
     list<Triangle*> activeTriangles { c.findActiveTriangles(&node) };
     if(activeTriangles.front()){
       for(auto* t:activeTriangles){
-        Matrix C { Vector { par.e, par.f,0}, Vector { par.f, par.c, 0}, Vector {0,0,par.mu} };
+        double lambda_cellulose;
+        Matrix C;
+        if (c.CellType() == 1 || c.CellType() == 2){
+          lambda_cellulose = par.gamma; 
+          C = Matrix { Vector { par.nu, par.rho0,0}, Vector { par.rho0, par.rho1, 0}, Vector {0,0,par.c0} };
+        }else {
+          lambda_cellulose = par.d;
+          C = Matrix { Vector { par.e, par.f,0}, Vector { par.f, par.c, 0}, Vector {0,0,par.mu} };
+        }
         
-        cellulose_spring_dh += par.d * deltaE_triangle(t, c, C, delta_p);
+        cellulose_spring_dh += lambda_cellulose * deltaE_triangle(t, c, C, delta_p);
         cellulose_spring_dh += TINY;
       }
     }
@@ -1474,7 +1478,7 @@ void Mesh::InsertNode(Edge &e) {
   }
 
   for(auto owner : owners){
-    if(! (owner.CellEquals(-1)) ){
+    if(owner.cell->isTrianglePlaced() ){
       owner.getCell()->triangles.clear();
       owner.getCell()->setTriangles();
     }

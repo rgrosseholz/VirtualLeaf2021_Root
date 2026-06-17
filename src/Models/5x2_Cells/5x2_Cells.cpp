@@ -52,54 +52,70 @@ void five_x_two_Cells::OnDivide(ParentInfo *parent_info, CellBase *daughter1, Ce
 void five_x_two_Cells::SetCellColor(CellBase *c, QColor *color)
 {
   // add cell coloring rules here
-}
+  if( c->CellType() == 0 ){
+    color->setRgb(0,0,0.8);
+  }
+  
+  if( c->CellType() == 1 ){
+    color->setRgb(0,0.8,0);
+  }
+
+  if( c->CellType() == 2 ){ 
+    color->setRgb(0.8,0,0);
+  }
+
+} 
 
 void five_x_two_Cells::CellHouseKeeping(CellBase *c)
 {
    // add cell behavioral rules here
-  if( c->Index() != 23 && c->Index() != 22 && c->Index() != 18 && c->Index() != 17
-      && c->Index() != 10 && c->Index() != 19 && c->Index() != 8 && c->Index() != 15
-      && c->Index() != 16 && c->Index() != 20 && c->Index() != 21){
-  c->EnlargeTargetArea(par->cell_expansion_rate);
+  if( c->CellType() == 1 ){
+    double yCoordinate { (c->Centroid()).y };
+    if ( yCoordinate < 120 ){
+      c->SetCellType( 2 );
+    }
   }
 
-      // cellulose activation
-  if(par->k[0] == 0 && !(c->isTrianglePlaced()) && c->Index() != -1 
-    &&  c->Index() != 23 && c->Index() != 22 && c->Index() != 18 && c->Index() != 17
-      && c->Index() != 10 && c->Index() != 19 && c->Index() != 8 && c->Index() != 15
-      && c->Index() != 16 && c->Index() != 20 && c->Index() != 21 ) // instead of celltype use k 
+  if( c->CellType() == 0){
+    c->EnlargeTargetArea(par->cell_expansion_rate * 0.14);
+  }
+
+  if( c->CellType() == 1){
+    c->EnlargeTargetArea(par->cell_expansion_rate);
+  } 
+
+  if( c->CellType() == 2){
+    c->EnlargeTargetArea(1.2 * par->cell_expansion_rate);
+  }
+  
+  c->LoopWallElements([](auto wallElementInfo){
+    Vector from { *(wallElementInfo->getFrom()) };
+    Vector to { *(wallElementInfo->getTo()) };
+    Vector wallVector { to - from };
+    Vector growthDirection { 0, 1};
+    // if angle is between 75 - 105 degree return true
+    if ( 1.3 < wallVector.Angle(growthDirection) &&  1.9 > wallVector.Angle(growthDirection) ) 
+    { 
+      wallElementInfo->getWallElement()->setStiffness(1);
+    } else { 
+      wallElementInfo->getWallElement()->setStiffness(0.65);
+    }
+  });
+
+    // cellulose activation
+  if(!(c->isTrianglePlaced()) && c->Index() != -1)
   {
     double width {0};
     c->Length(NULL, &width);
     c->PlaceTriangles();
-    c->setTargetLengthABofTriangle(width);
+    c->setTargetLengthABofTriangle(width - 1);
     c->setTriangles();
   } 
-
-  //cell wall weakening happens here
-  if(par->k[0] == 0){
-
-    c->LoopWallElements([](auto wallElementInfo){
-      Vector from { *(wallElementInfo->getFrom()) };
-      Vector to { *(wallElementInfo->getTo()) };
-      Vector wallVector { to - from };
-      Vector growthDirection { 0, 1};
-      // if angle is between 75 - 105 degree return true
-      if ( 1.3 < wallVector.Angle(growthDirection) &&  1.9 > wallVector.Angle(growthDirection) ) 
-      { 
-        wallElementInfo->getWallElement()->setStiffness(1.5);
-      } else { 
-        wallElementInfo->getWallElement()->setStiffness(1);
-      }
-    });
-  }
-
-  double base_element_length = 25;
-  c->LoopWallElements([base_element_length](auto wallElementInfo)
-                      {
-        if(std::isnan(wallElementInfo->getWallElement()->getBaseLength())){
-        wallElementInfo->getWallElement()->setBaseLength(base_element_length);
-        } });
+  
+  //division
+  if (c->Area() > par->rel_cell_div_threshold * c->BaseArea() && c->CellType() == 1) {
+		c->Divide();
+	}
 }
 
 void five_x_two_Cells::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2)

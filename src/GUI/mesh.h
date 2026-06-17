@@ -256,6 +256,8 @@ class Mesh {
     	    	it2->check_overlap(*element);
     	    	anyActive = anyActive || !(it2->isDeacivated());
     		}
+          element->getCell()->setTriangles();
+          element->getOtherCell()->setTriangles();
     	    element->reset();
     	    if (!anyActive) {
     	    	break;

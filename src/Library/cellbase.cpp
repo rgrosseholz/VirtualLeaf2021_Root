@@ -802,6 +802,7 @@ void CellBase::addTriangleToCell( Triangle& t )
  */
 void CellBase::setTriangles()
 {
+  triangles.clear();
   for( list<Node *>::iterator n=nodes.begin(); n!=nodes.end(); n++ ){
     Node* n_B { findeOpposedNode((*n), 6, 2) }; // 6 sollte eig base length sein! ist abstand in  model 1A
     Node *neighbor1;

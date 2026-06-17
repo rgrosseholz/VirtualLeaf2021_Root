@@ -610,7 +610,7 @@ class CellBase :  public QObject, public Vector
   bool dead; 
   bool flag_for_divide;
   bool place_triangles { false }; // cell property: bool determining if triangles are placed or not
-
+  
   bool anisotropic_growth { false };
 
   Vector *division_axis;

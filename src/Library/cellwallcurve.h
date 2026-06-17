@@ -85,6 +85,7 @@ public:
 	void setCell(CellBase * aCell) ;
 	void setOtherCell(CellBase * aCell) ;
 	CellBase * getCell() {return cell;};
+	CellBase * getOtherCell() {return other_cell;};
 	NodeBase* getFrom()  ;
 	NodeBase* getOver() ;
 	NodeBase* getTo() ;

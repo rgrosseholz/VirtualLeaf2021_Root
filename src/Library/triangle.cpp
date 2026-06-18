@@ -10,15 +10,24 @@
 #include "random.h"
 #include "pi.h"
 #include "triangle.h"
+/**
+ * @brief returns target Vector for Vector A
+ * @details Adds target distance x to B_x if(B_x < A_x), else substract it. 
+ *          Adds target distance y to average of A_y and B_y if(B_x < A_x),
+ *             else substracts it. 
+ */
 
-Vector Triangle::getTargetA(double targetDistanceAB){
+Vector Triangle::getTargetA(Vector targetAB ){
     double targetA_x;
-    if(m_A->x-m_B->x>0){
-        targetA_x = m_B->x + targetDistanceAB;
+    double targetA_y;
+    if(m_A->x > m_B->x){
+        targetA_x = m_B->x + targetAB.x;
+        targetA_y =  m_B->y + targetAB.y;
     }else{
-        targetA_x = m_B->x - targetDistanceAB;
+        targetA_x = m_B->x - targetAB.x;
+        targetA_y = m_B->y - targetAB.y;
     }
-    Vector targetA { targetA_x, 0.5*(m_A->y + m_B->y) };
+    Vector targetA { targetA_x, targetA_y };
     return targetA;
 }
 /* finis*/

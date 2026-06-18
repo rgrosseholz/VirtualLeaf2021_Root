@@ -69,7 +69,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     double width {0};
     c->Length(NULL, &width);
     c->PlaceTriangles();
-    c->setTargetLengthABofTriangle(width);
+    c->setTargetVectorABofTriangle( Vector{width,0,0} );
     c->setTriangles();
   } 
 

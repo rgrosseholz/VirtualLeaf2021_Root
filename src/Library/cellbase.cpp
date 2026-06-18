@@ -96,7 +96,7 @@ CellBase::CellBase(QObject *parent) :
   flag_for_divide = false;
   division_axis = 0;
   place_triangles = false;
-  targetLengthTriangleAB = 0.0;
+  targetVectorTriangleAB = {0,0,0};
   
 }
 
@@ -183,7 +183,7 @@ CellBase::CellBase(const CellBase &src) :  QObject(), Vector(src)
   flag_for_divide = src.flag_for_divide;
   division_axis = src.division_axis;
   place_triangles = src.place_triangles;
-  targetLengthTriangleAB = src.targetLengthTriangleAB;
+  targetVectorTriangleAB = src.targetVectorTriangleAB;
 
 }
 
@@ -804,7 +804,7 @@ void CellBase::setTriangles()
 {
   triangles.clear();
   for( list<Node *>::iterator n=nodes.begin(); n!=nodes.end(); n++ ){
-    Node* n_B { findeOpposedNode((*n), 6, 2) }; // 6 sollte eig base length sein! ist abstand in  model 1A
+    Node* n_B { findeOpposedNode((*n), 6, 6) }; // 6 sollte eig base length sein! ist abstand in  model 1A
     Node *neighbor1;
     if (n!=nodes.begin()) {
       list<Node *>::iterator previous_n_iterator=n;

@@ -45,7 +45,7 @@ public:
     Node* getNodeC() { return m_C; };
     CellBase* getCell() { return m_cell; };
 
-    Vector getTargetA(double targetDistanceAB);
+    Vector getTargetA(Vector targetAB);
 
     void setNodeA(Node* A) { m_A = A; };
     void setNodeB(Node* B) { m_B = B; };

@@ -69,7 +69,7 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
     double width {0};
     c->Length(NULL, &width);
     c->PlaceTriangles();
-    c->setTargetLengthABofTriangle(width);
+    c->setTargetVectorABofTriangle( Vector {width, par->nu} );
     c->setTriangles();
   } 
 

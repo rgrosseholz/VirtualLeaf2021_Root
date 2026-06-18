@@ -117,7 +117,7 @@
     <par name="f" val="0.8"/>
     <par name="c" val="1e-6"/>
     <par name="mu" val="0.9"/>
-    <par name="nu" val="1"/>
+    <par name="nu" val="1.5"/>
     <par name="rho0" val="0"/>
     <par name="rho1" val="0"/>
     <par name="c0" val="0"/>

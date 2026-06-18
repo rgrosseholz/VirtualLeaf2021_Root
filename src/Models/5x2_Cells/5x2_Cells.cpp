@@ -108,7 +108,7 @@ void five_x_two_Cells::CellHouseKeeping(CellBase *c)
     double width {0};
     c->Length(NULL, &width);
     c->PlaceTriangles();
-    c->setTargetLengthABofTriangle(width - 1);
+    c->setTargetVectorABofTriangle(Vector { width - 1, 0 });
     c->setTriangles();
   } 
   

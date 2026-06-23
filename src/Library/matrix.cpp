@@ -101,6 +101,20 @@ ostream &operator<<(ostream &os, Matrix &v) {
 }
 
 
+Matrix operator*(double scalar, const Matrix &m)
+{
+    Matrix result;
+    
+    // Multiply each element by the scalar
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            result.mat[i][j] = m.mat[i][j] * scalar;
+        }
+    }
+    
+    return result;
+}
+
 Vector Matrix::operator*(const Vector &v) const
 {
   // matrix * vector

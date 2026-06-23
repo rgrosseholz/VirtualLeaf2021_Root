@@ -25,7 +25,7 @@
 #include "simplugin.h"
 
 #include "parameter.h"
-
+#include "matrix.h"
 #include "wallbase.h"
 #include "cellbase.h"
 #include "tutorial1A.h"
@@ -71,6 +71,9 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
     c->PlaceTriangles();
     c->setTargetVectorABofTriangle( Vector {width, par->nu} );
     c->setTriangles();
+    // set mechanical properties
+    c->setStiffnessMatrix( par->d * Matrix { Vector { par->e,par->f,0},
+                   Vector { par->f,par->c,0}, Vector {0,0,par->mu }});
   } 
 
   //cell wall weakening happens here

@@ -28,14 +28,14 @@
 
 #include "wallbase.h"
 #include "cellbase.h"
-#include "nineCells.h"
+#include "root.h"
 
 static const std::string _module_id("$Id$");
 
 QString TwoCells::ModelID(void)
 {
   // specify the name of your model here
-  return QString("Nine cells");
+  return QString("Root");
 }
 
 // return the number of chemicals your model uses
@@ -60,22 +60,63 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   // cellulose spring rules
   c->EnlargeTargetArea(par->cell_expansion_rate);
 
-  if(par->k[0] == 0 && !(c->isTrianglePlaced()) && c->Index() != -1 ) // instead of celltype use k 
+  if(!(c->isTrianglePlaced()) && c->Index() != -1 && c->CellType() == 0 ) // instead of celltype use k 
   {
     double width {0};
     c->Length(NULL, &width);
     c->PlaceTriangles();
     c->setTargetVectorABofTriangle( Vector{width,0,0} );
-    c->setTriangles();
+    c->setTriangles(width - 2.5, 3);
+    // set mechanical properties
+    c->setStiffnessMatrix( par->d * Matrix { Vector { par->e,par->f,0},
+                   Vector { par->f,par->c,0}, Vector {0,0,par->mu }});
   }
 
-  double base_element_length = 25;
-  c->LoopWallElements([base_element_length](auto wallElementInfo)
-                      {
-        if(std::isnan(wallElementInfo->getWallElement()->getBaseLength())){
-        wallElementInfo->getWallElement()->setBaseLength(base_element_length);
-        } });
+  if(!(c->isTrianglePlaced()) && c->CellType() == 1 ) // instead of celltype use k 
+  {
+    double width {0};
+    c->Length(NULL, &width);
+    c->PlaceTriangles();
+    c->setTargetVectorABofTriangle( Vector{width,0,0} );
+    c->setTriangles(width - 2.5, 4);
+    // set mechanical properties
+    c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
+                   Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
+  }
 
+  if(!(c->isTrianglePlaced()) && c->CellType() == 2 ) // instead of celltype use k 
+  {
+    double width {0};
+    c->Length(NULL, &width);
+    c->PlaceTriangles();
+    c->setTargetVectorABofTriangle( Vector{width,0,0} );
+    c->setTriangles(width - 2.5, 4);
+    // set mechanical properties
+    c->setStiffnessMatrix( par->k[5] * Matrix { Vector { par->k[6],par->k[7],0},
+                   Vector { par->k[7],par->k[8],0}, Vector {0,0,par->k[9] }});
+  }
+
+  if(!(c->isTrianglePlaced()) && c->CellType() == 3 ) // instead of celltype use k 
+  {
+    double width {0};
+    c->Length(NULL, &width);
+    c->PlaceTriangles();
+    c->setTargetVectorABofTriangle( Vector{width,0,0} );
+    c->setTriangles(width - 2.5, 4);
+    // set mechanical properties
+    c->setStiffnessMatrix( par->k1 * Matrix { Vector { par->k2,par->r,0},
+                   Vector { par->r,par->kr,0}, Vector {0,0,par->km }});
+  }
+
+  if ( ( c->Index() == 1 || c->Index() == 2 || c->Index() == 7 ||
+        c->Index() == 12 || c->Index() == 13 || c->Index() == 14 ||
+        c->Index() == 15 || c->Index() == 16 || c->Index() == 36 ||
+        c->Index() == 41 || c->Index() == 35 ) && 
+      c->Area() > par->rel_cell_div_threshold * c->BaseArea() 
+      )
+  {
+		  c->Divide();
+	}
 
     //cell wall weakening happens here
   if(par->k[0] == 0){
@@ -112,4 +153,4 @@ void TwoCells::CellDynamics(CellBase *c, double *dchem)
   // add biochemical networks for intracellular reactions here
 }
 
-// Q_EXPORT_PLUGIN2(ninecells, nineCells)
+// Q_EXPORT_PLUGIN2(root, root)

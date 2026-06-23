@@ -54,7 +54,7 @@
       <par val="100" name="lambda_length"/>
       
       
-      <par val="4" name="yielding_threshold"/>
+      <par val="2.5" name="yielding_threshold"/>
       
       
       <par val="0" name="lambda_celllength"/>
@@ -63,7 +63,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="3" name="cell_expansion_rate"/>
+      <par val="1" name="cell_expansion_rate"/>
       
       
       <par val="10" name="cell_div_expansion_rate"/>
@@ -115,82 +115,26 @@
          
               
          <valarray>
-            
-            
-        
-            
-            <val v="1e-06"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
+         // stiffness cell_type 1 
+            <val v="2e6"/> \\lambda
+            <val v="5.5"/> \\ xx
+            <val v="0.8"/>  \\ xy
+            <val v="1e-6"/> \\ yy
+            <val v="0.8"/> \\ x + y
+
+            // stiffness cell_type 2 
+            <val v="2e6"/> \\lambda
+            <val v="1e3"/> \\ xx
+            <val v="0.8"/>  \\ xy
+            <val v="1e-6"/> \\ yy
+            <val v="0.8"/> \\ x + y
+
+            // stiffness cell_type 3 epidermis
+            <val v="2e6"/> \\lambda
+            <val v="1e12"/> \\ xx
+            <val v="2.8"/>  \\ xy
+            <val v="1e-6"/> \\ yy
+            <val v="2.8"/> \\ x + y
                  
          </valarray>
          
@@ -204,82 +148,26 @@
          
               
          <valarray>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="1"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
+          // stiffness cell_type 1 
+            <val v="2e6"/> \\lambda
+            <val v="5.5"/> \\ xx
+            <val v="0.8"/>  \\ xy
+            <val v="1e-6"/> \\ yy
+            <val v="0.8"/> \\ x + y
+
+            // stiffness cell_type 2 
+            <val v="2e6"/> \\lambda
+            <val v="1e3"/> \\ xx
+            <val v="0.8"/>  \\ xy
+            <val v="1e-6"/> \\ yy
+            <val v="0.8"/> \\ x + y
+
+            // stiffness cell_type 3 epidermis
+            <val v="2e6"/> \\lambda
+            <val v="1e12"/> \\ xx
+            <val v="2.8"/>  \\ xy
+            <val v="1e-6"/> \\ yy
+            <val v="2.8"/> \\ x + y
                  
          </valarray>
          
@@ -411,150 +299,61 @@
       
       <par val="0.25" name="vessel_expansion_rate"/>
       
+      // stiffness cell_type 0
+      <par name="d" val="3.0e6"/> \\ lambda
       
-      <par val="0" name="d"/>
+      <par name="e" val="10.5"/> \\ xx
+      <par name="f" val="0.8"/> \\ xy 
+      <par name="c" val="0.5"/> \\ yy
+      <par name="mu" val="0.9"/> \\ x + y
+
+      // stiffness cell_type 1
+      <par val="2e6" name="nu"/>  \\ lambda
+      <par val="1.5" name="rho0"/>  \\ xx
+      <par val="0.8" name="rho1"/> \\ xy
+      <par val="1e-6" name="c0"/> \\ yy 
+      <par val="0.7" name="gamma"/> \\ x + y
+
+      // stiffness cell_type 2    
+      <par val="2e6" name="eps"/>  \\ lambda
+      <par val="3.5" name="betaN"/> \\ xx 
+      <par val="0.8" name="gammaN"/> \\ xy 
+      <par val="1e-6" name="betaD"/> \\ yy 
+      <par val="0.7" name="gammaD"/> \\ x + y
       
-      
-      <par val="0" name="e"/>
-      
-      
-      <par val="0" name="f"/>
-      
-      
-      <par val="0" name="c"/>
-      
-      
-      <par val="0" name="mu"/>
-      
-      
-      <par val="0" name="nu"/>
-      
-      
-      <par val="0" name="rho0"/>
-      
-      
-      <par val="0" name="rho1"/>
-      
-      
-      <par val="0" name="c0"/>
-      
-      
-      <par val="0" name="gamma"/>
-      
-      
-      <par val="0" name="eps"/>
-      
-      
-      <par val="0" name="betaN"/>
-      
-      
-      <par val="0" name="gammaN"/>
-      
-      
-      <par val="0" name="betaD"/>
-      
-      
-      <par val="0" name="gammaD"/>
-      
-      
-      <par val="0" name="betaR"/>
-      
-      
-      <par val="0" name="gammaR"/>
-      
-      
-      <par val="0" name="tau"/>
-      
-      
-      <par val="0" name="kt"/>
-      
-      
-      <par val="0" name="kc"/>
+      // stiffness cell_type 3      
+      <par val="2e6" name="betaR"/> \\ lambda 
+      <par val="10.5" name="gammaR"/> \\ xx 
+      <par val="0.8" name="tau"/>  \\ xy 
+      <par val="1e-6" name="kt"/> \\ yy 
+      <par val="0.7" name="kc"/> \\ x + y
       
       
       <par val="0" name="krs"/>
       
       
       <par name="k">
-         
-              
          <valarray>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
+            // stiffness cell_type 1 
+            <val v="2e6"/> \\lambda
+            <val v="5.5"/> \\ xx
+            <val v="0.8"/>  \\ xy
+            <val v="1e-6"/> \\ yy
+            <val v="0.8"/> \\ x + y
+
+            // stiffness cell_type 2 
+            <val v="2e6"/> \\lambda
+            <val v="1e3"/> \\ xx
+            <val v="0.8"/>  \\ xy
+            <val v="1e-6"/> \\ yy
+            <val v="0.8"/> \\ x + y
+
+            // stiffness cell_type 3 epidermis
+            <val v="2e6"/> \\lambda
+            <val v="1e12"/> \\ xx
+            <val v="2.8"/>  \\ xy
+            <val v="1e-6"/> \\ yy
+            <val v="2.8"/> \\ x + y
                  
          </valarray>
          
@@ -617,10 +416,10 @@
       <node nr="27" x="96.503486" y="102.51258" sam="false" boundary="false" fixed="false"/>
       <node nr="28" x="102.06913" y="105.23232999999999" sam="false" boundary="false" fixed="false"/>
       <node nr="29" x="102.07213" y="99.58007699999999" sam="false" boundary="false" fixed="false"/>
-      <node nr="30" x="96.587528" y="87.752849" sam="false" boundary="true" fixed="false"/>
+      <node nr="30" x="96.587528" y="87.752849" sam="false" boundary="true" fixed="true"/>
       <node nr="31" x="96.578528" y="93.277727" sam="false" boundary="false" fixed="false"/>
       <node nr="32" x="101.91926000000001" y="93.694147" sam="false" boundary="false" fixed="false"/>
-      <node nr="33" x="101.92126" y="87.875658" sam="false" boundary="true" fixed="false"/>
+      <node nr="33" x="101.92126" y="87.875658" sam="false" boundary="true" fixed="true"/>
       <node nr="34" x="107.11452" y="138.01757" sam="false" boundary="true" fixed="false"/>
       <node nr="35" x="107.43592" y="131.59704000000002" sam="false" boundary="false" fixed="false"/>
       <node nr="36" x="113.08152" y="122.96752999999997" sam="false" boundary="false" fixed="false"/>
@@ -631,8 +430,8 @@
       <node nr="41" x="113.26508" y="99.19078700000001" sam="false" boundary="false" fixed="false"/>
       <node nr="42" x="108.02879" y="99.12808700000001" sam="false" boundary="false" fixed="false"/>
       <node nr="43" x="113.07686" y="93.553097" sam="false" boundary="false" fixed="false"/>
-      <node nr="44" x="113.08185999999999" y="88.06711" sam="false" boundary="true" fixed="false"/>
-      <node nr="45" x="107.84558" y="88.01003" sam="false" boundary="true" fixed="false"/>
+      <node nr="44" x="113.08185999999999" y="88.06711" sam="false" boundary="true" fixed="true"/>
+      <node nr="45" x="107.84558" y="88.01003" sam="false" boundary="true" fixed="true"/>
       <node nr="46" x="91.111682" y="127.6895" sam="false" boundary="false" fixed="false"/>
       <node nr="47" x="91.102682" y="132.55137" sam="false" boundary="false" fixed="false"/>
       <node nr="48" x="91.093682" y="137.79464" sam="false" boundary="true" fixed="false"/>
@@ -668,15 +467,15 @@
       <node nr="78" x="75.391367" y="108.16387999999999" sam="false" boundary="false" fixed="false"/>
       <node nr="79" x="70.196378" y="101.90807" sam="false" boundary="false" fixed="false"/>
       <node nr="80" x="70.093834" y="110.12559999999999" sam="false" boundary="false" fixed="false"/>
-      <node nr="81" x="91.102592" y="87.63821" sam="false" boundary="true" fixed="false"/>
+      <node nr="81" x="91.102592" y="87.63821" sam="false" boundary="true" fixed="true"/>
       <node nr="82" x="91.093592" y="94.547337" sam="false" boundary="false" fixed="false"/>
-      <node nr="83" x="85.865159" y="87.424063" sam="false" boundary="true" fixed="false"/>
+      <node nr="83" x="85.865159" y="87.424063" sam="false" boundary="true" fixed="true"/>
       <node nr="84" x="85.856159" y="94.333195" sam="false" boundary="false" fixed="false"/>
-      <node nr="85" x="80.573321" y="87.350282" sam="false" boundary="true" fixed="false"/>
+      <node nr="85" x="80.573321" y="87.350282" sam="false" boundary="true" fixed="true"/>
       <node nr="86" x="80.564321" y="94.25941700000001" sam="false" boundary="false" fixed="false"/>
-      <node nr="87" x="75.475341" y="87.212622" sam="false" boundary="true" fixed="false"/>
+      <node nr="87" x="75.475341" y="87.212622" sam="false" boundary="true" fixed="true"/>
       <node nr="88" x="75.466341" y="94.121747" sam="false" boundary="false" fixed="false"/>
-      <node nr="89" x="70.27135" y="87.157541" sam="false" boundary="true" fixed="false"/>
+      <node nr="89" x="70.27135" y="87.157541" sam="false" boundary="true" fixed="true"/>
       <node nr="90" x="70.27884999999999" y="91.817719" sam="false" boundary="false" fixed="false"/>
       <node nr="91" x="70.26071999999999" y="98.703137" sam="false" boundary="false" fixed="false"/>
       <node nr="92" x="123.42805999999999" y="113.50501" sam="false" boundary="true" fixed="false"/>
@@ -684,8 +483,8 @@
       <node nr="94" x="118.55559" y="106.34935999999999" sam="false" boundary="false" fixed="false"/>
       <node nr="95" x="123.20377000000002" y="100.09423000000001" sam="false" boundary="true" fixed="false"/>
       <node nr="96" x="123.25737000000002" y="93.37488300000001" sam="false" boundary="true" fixed="false"/>
-      <node nr="97" x="123.29807000000002" y="88.27283000000001" sam="false" boundary="true" fixed="false"/>
-      <node nr="98" x="118.54594000000003" y="88.17937000000002" sam="false" boundary="true" fixed="false"/>
+      <node nr="97" x="123.29807000000002" y="88.27283000000001" sam="false" boundary="true" fixed="true"/>
+      <node nr="98" x="118.54594000000003" y="88.17937000000002" sam="false" boundary="true" fixed="true"/>
       <node nr="99" x="54.304343" y="119.83358" sam="false" boundary="false" fixed="false"/>
       <node nr="100" x="54.403863" y="126.21679999999999" sam="false" boundary="false" fixed="false"/>
       <node nr="101" x="54.338603" y="129.93871" sam="false" boundary="false" fixed="false"/>
@@ -709,7 +508,7 @@
       <node nr="119" x="64.407454" y="104.50472" sam="false" boundary="false" fixed="false"/>
       <node nr="120" x="64.404054" y="98.852467" sam="false" boundary="false" fixed="false"/>
       <node nr="121" x="64.557218" y="92.96654500000001" sam="false" boundary="false" fixed="false"/>
-      <node nr="122" x="64.554918" y="87.148053" sam="false" boundary="true" fixed="false"/>
+      <node nr="122" x="64.554918" y="87.148053" sam="false" boundary="true" fixed="true"/>
       <node nr="123" x="59.880877999999996" y="137.28996999999998" sam="false" boundary="true" fixed="false"/>
       <node nr="124" x="59.58888" y="130.86944" sam="false" boundary="false" fixed="false"/>
       <node nr="125" x="54.47333700000001" y="122.23992999999997" sam="false" boundary="false" fixed="false"/>
@@ -720,18 +519,18 @@
       <node nr="130" x="54.306992" y="98.463207" sam="false" boundary="false" fixed="false"/>
       <node nr="131" x="59.051733" y="98.40050699999999" sam="false" boundary="false" fixed="false"/>
       <node nr="132" x="54.478119" y="92.82549699999998" sam="false" boundary="false" fixed="false"/>
-      <node nr="133" x="54.473019" y="87.33950699999998" sam="false" boundary="true" fixed="false"/>
-      <node nr="134" x="59.217759" y="87.28242699999998" sam="false" boundary="true" fixed="false"/>
+      <node nr="133" x="54.473019" y="87.33950699999998" sam="false" boundary="true" fixed="true"/>
+      <node nr="134" x="59.217759" y="87.28242699999998" sam="false" boundary="true" fixed="true"/>
       <node nr="135" x="45.098000000000006" y="112.77741" sam="false" boundary="true" fixed="false"/>
       <node nr="136" x="45.09420000000001" y="105.43088" sam="false" boundary="true" fixed="false"/>
       <node nr="137" x="49.54598100000001" y="105.3241" sam="false" boundary="false" fixed="false"/>
       <node nr="138" x="45.264142" y="99.30042699999998" sam="false" boundary="true" fixed="false"/>
       <node nr="139" x="45.214822" y="92.58107699999998" sam="false" boundary="true" fixed="false"/>
-      <node nr="140" x="45.177431999999996" y="87.47902099999997" sam="false" boundary="true" fixed="false"/>
-      <node nr="141" x="49.555378999999995" y="87.38556099999998" sam="false" boundary="true" fixed="false"/>
+      <node nr="140" x="45.177431999999996" y="87.47902099999997" sam="false" boundary="true" fixed="true"/>
+      <node nr="141" x="49.555378999999995" y="87.38556099999998" sam="false" boundary="true" fixed="true"/>
    </nodes>
    <cells n="48" magnfication="1" nchem="0" offsetx="0" offsety="0" base_area="81.54687787293662">
-      <cell boundary="0" cell_type="0" target_area="102.75452157865" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="0" source="false" pin_fixed="false" area="102.75452157865" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="3" target_area="102.75452157865" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="0" source="false" pin_fixed="false" area="102.75452157865" fixed="false" div_counter="0">
          <node n="0"/>
          <node n="7"/>
          <node n="6"/>
@@ -747,7 +546,7 @@
          <wall w="23"/>
          <wall w="93"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="72.76930116840009" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="1" source="false" pin_fixed="false" area="72.76930116840009" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="3" target_area="72.76930116840009" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="1" source="false" pin_fixed="false" area="72.76930116840009" fixed="false" div_counter="0">
          <node n="2"/>
          <node n="3"/>
          <node n="4"/>
@@ -759,7 +558,7 @@
          <wall w="1"/>
          <wall w="3"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="29.385486882370053" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="2" source="false" pin_fixed="false" area="29.385486882370053" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="29.385486882370053" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="2" source="false" pin_fixed="false" area="29.385486882370053" fixed="false" div_counter="0">
          <node n="13"/>
          <node n="17"/>
          <node n="16"/>
@@ -770,7 +569,7 @@
          <wall w="6"/>
          <wall w="94"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="43.75137486531998" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="3" source="false" pin_fixed="false" area="43.75137486531998" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="43.75137486531998" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="3" source="false" pin_fixed="false" area="43.75137486531998" fixed="false" div_counter="0">
          <node n="18"/>
          <node n="21"/>
          <node n="20"/>
@@ -783,7 +582,7 @@
          <wall w="9"/>
          <wall w="10"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="64.57145507782013" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="4" source="false" pin_fixed="false" area="64.57145507782013" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="64.57145507782013" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="4" source="false" pin_fixed="false" area="64.57145507782013" fixed="false" div_counter="0">
          <node n="22"/>
          <node n="25"/>
          <node n="24"/>
@@ -796,7 +595,7 @@
          <wall w="13"/>
          <wall w="14"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="63.238784622957056" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="5" source="false" pin_fixed="false" area="63.238784622957056" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="63.238784622957056" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="5" source="false" pin_fixed="false" area="63.238784622957056" fixed="false" div_counter="0">
          <node n="26"/>
          <node n="29"/>
          <node n="28"/>
@@ -809,7 +608,7 @@
          <wall w="17"/>
          <wall w="18"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="62.440796160291995" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="6" source="false" pin_fixed="false" area="62.440796160291995" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="62.440796160291995" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="6" source="false" pin_fixed="false" area="62.440796160291995" fixed="false" div_counter="0">
          <node n="30"/>
          <node n="33"/>
          <node n="32"/>
@@ -821,7 +620,7 @@
          <wall w="20"/>
          <wall w="95"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="80.67130275804985" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="7" source="false" pin_fixed="false" area="80.67130275804985" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="2" target_area="80.67130275804985" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="7" source="false" pin_fixed="false" area="80.67130275804985" fixed="false" div_counter="0">
          <node n="17"/>
          <node n="35"/>
          <node n="2"/>
@@ -835,7 +634,7 @@
          <wall w="21"/>
          <wall w="96"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="95.64217515710044" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="8" source="false" pin_fixed="false" area="95.64217515710044" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="2" target_area="95.64217515710044" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="8" source="false" pin_fixed="false" area="95.64217515710044" fixed="false" div_counter="0">
          <node n="21"/>
          <node n="37"/>
          <node n="36"/>
@@ -849,7 +648,7 @@
          <wall w="21"/>
          <wall w="22"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="133.24869510014958" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="9" source="false" pin_fixed="false" area="133.24869510014958" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="2" target_area="133.24869510014958" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="9" source="false" pin_fixed="false" area="133.24869510014958" fixed="false" div_counter="0">
          <node n="25"/>
          <node n="39"/>
          <node n="38"/>
@@ -864,7 +663,7 @@
          <wall w="24"/>
          <wall w="25"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="134.9440251266499" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="10" source="false" pin_fixed="false" area="134.9440251266499" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="2" target_area="134.9440251266499" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="10" source="false" pin_fixed="false" area="134.9440251266499" fixed="false" div_counter="0">
          <node n="29"/>
          <node n="42"/>
          <node n="41"/>
@@ -879,7 +678,7 @@
          <wall w="27"/>
          <wall w="28"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="125.95617066986993" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="11" source="false" pin_fixed="false" area="125.95617066986993" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="2" target_area="125.95617066986993" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="11" source="false" pin_fixed="false" area="125.95617066986993" fixed="false" div_counter="0">
          <node n="33"/>
          <node n="45"/>
          <node n="44"/>
@@ -1143,7 +942,7 @@
          <wall w="68"/>
          <wall w="107"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="146.4480248388999" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="32" source="false" pin_fixed="false" area="146.4480248388999" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="3" target_area="146.4480248388999" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="32" source="false" pin_fixed="false" area="146.4480248388999" fixed="false" div_counter="0">
          <node n="40"/>
          <node n="94"/>
          <node n="93"/>
@@ -1158,7 +957,7 @@
          <wall w="69"/>
          <wall w="108"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="183.20985189264024" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="33" source="false" pin_fixed="false" area="183.20985189264024" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="3" target_area="183.20985189264024" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="33" source="false" pin_fixed="false" area="183.20985189264024" fixed="false" div_counter="0">
          <node n="44"/>
          <node n="98"/>
          <node n="97"/>
@@ -1174,7 +973,7 @@
          <wall w="69"/>
          <wall w="109"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="93.1080630972049" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="34" source="false" pin_fixed="false" area="93.1080630972049" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="3" target_area="93.1080630972049" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="34" source="false" pin_fixed="false" area="93.1080630972049" fixed="false" div_counter="0">
          <node n="99"/>
          <node n="125"/>
          <node n="100"/>
@@ -1190,7 +989,7 @@
          <wall w="85"/>
          <wall w="110"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="65.93898455909006" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="35" source="false" pin_fixed="false" area="65.93898455909006" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="3" target_area="65.93898455909006" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="35" source="false" pin_fixed="false" area="65.93898455909006" fixed="false" div_counter="0">
          <node n="101"/>
          <node n="107"/>
          <node n="108"/>
@@ -1202,7 +1001,7 @@
          <wall w="71"/>
          <wall w="73"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="31.414565732749985" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="36" source="false" pin_fixed="false" area="31.414565732749985" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="31.414565732749985" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="36" source="false" pin_fixed="false" area="31.414565732749985" fixed="false" div_counter="0">
          <node n="59"/>
          <node n="60"/>
          <node n="112"/>
@@ -1213,7 +1012,7 @@
          <wall w="75"/>
          <wall w="111"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="45.42472447299003" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="37" source="false" pin_fixed="false" area="45.42472447299003" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="45.42472447299003" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="37" source="false" pin_fixed="false" area="45.42472447299003" fixed="false" div_counter="0">
          <node n="70"/>
          <node n="58"/>
          <node n="59"/>
@@ -1226,7 +1025,7 @@
          <wall w="76"/>
          <wall w="77"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="67.83964079640504" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="38" source="false" pin_fixed="false" area="67.83964079640504" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="67.83964079640504" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="38" source="false" pin_fixed="false" area="67.83964079640504" fixed="false" div_counter="0">
          <node n="80"/>
          <node n="69"/>
          <node n="70"/>
@@ -1239,7 +1038,7 @@
          <wall w="78"/>
          <wall w="79"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="66.46157124512492" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="39" source="false" pin_fixed="false" area="66.46157124512492" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="66.46157124512492" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="39" source="false" pin_fixed="false" area="66.46157124512492" fixed="false" div_counter="0">
          <node n="91"/>
          <node n="79"/>
          <node n="80"/>
@@ -1252,7 +1051,7 @@
          <wall w="80"/>
          <wall w="81"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="66.87871941318389" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="40" source="false" pin_fixed="false" area="66.87871941318389" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="66.87871941318389" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="40" source="false" pin_fixed="false" area="66.87871941318389" fixed="false" div_counter="0">
          <node n="89"/>
          <node n="90"/>
          <node n="91"/>
@@ -1264,7 +1063,7 @@
          <wall w="82"/>
          <wall w="112"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="73.0902865471199" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="41" source="false" pin_fixed="false" area="73.0902865471199" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="2" target_area="73.0902865471199" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="41" source="false" pin_fixed="false" area="73.0902865471199" fixed="false" div_counter="0">
          <node n="114"/>
          <node n="113"/>
          <node n="112"/>
@@ -1278,7 +1077,7 @@
          <wall w="83"/>
          <wall w="113"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="87.74323762852012" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="42" source="false" pin_fixed="false" area="87.74323762852012" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="2" target_area="87.74323762852012" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="42" source="false" pin_fixed="false" area="87.74323762852012" fixed="false" div_counter="0">
          <node n="116"/>
          <node n="115"/>
          <node n="114"/>
@@ -1292,7 +1091,7 @@
          <wall w="83"/>
          <wall w="84"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="118.94419229358961" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="43" source="false" pin_fixed="false" area="118.94419229358961" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="2" target_area="118.94419229358961" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="43" source="false" pin_fixed="false" area="118.94419229358961" fixed="false" div_counter="0">
          <node n="118"/>
          <node n="117"/>
          <node n="116"/>
@@ -1307,7 +1106,7 @@
          <wall w="86"/>
          <wall w="87"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="121.35626457062602" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="44" source="false" pin_fixed="false" area="121.35626457062602" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="2" target_area="121.35626457062602" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="44" source="false" pin_fixed="false" area="121.35626457062602" fixed="false" div_counter="0">
          <node n="120"/>
          <node n="119"/>
          <node n="118"/>
@@ -1322,7 +1121,7 @@
          <wall w="89"/>
          <wall w="90"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="113.7396859984041" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="45" source="false" pin_fixed="false" area="113.7396859984041" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="2" target_area="113.7396859984041" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="45" source="false" pin_fixed="false" area="113.7396859984041" fixed="false" div_counter="0">
          <node n="122"/>
          <node n="121"/>
          <node n="120"/>
@@ -1336,7 +1135,7 @@
          <wall w="91"/>
          <wall w="114"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="134.8155326007549" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="46" source="false" pin_fixed="false" area="134.8155326007549" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="134.8155326007549" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="46" source="false" pin_fixed="false" area="134.8155326007549" fixed="false" div_counter="0">
          <node n="129"/>
          <node n="127"/>
          <node n="99"/>
@@ -1351,7 +1150,7 @@
          <wall w="92"/>
          <wall w="115"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="164.22701413885022" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="47" source="false" pin_fixed="false" area="164.22701413885022" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="164.22701413885022" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="47" source="false" pin_fixed="false" area="164.22701413885022" fixed="false" div_counter="0">
          <node n="133"/>
          <node n="132"/>
          <node n="130"/>
@@ -1367,7 +1166,7 @@
          <wall w="92"/>
          <wall w="116"/>
       </cell>
-      <boundary_polygon boundary="0" cell_type="0" target_area="3914.2501379009577" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="-1" source="false" pin_fixed="false" area="3914.2501379009577" fixed="false" div_counter="0">
+      <boundary_polygon boundary="0" cell_type="-1" target_area="3914.2501379009577" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="-1" source="false" pin_fixed="false" area="3914.2501379009577" fixed="false" div_counter="0">
          <node n="4"/>
          <node n="12"/>
          <node n="11"/>
@@ -1888,10 +1687,25 @@
          <transporters2/>
       </wall>
    </walls>
-   <nodesets n="0"/>
-   
-   
-  
+  <nodesets n="1">
+      <nodeset index="0" name="boundary_nodes">
+         <node n="10"/>
+         <node n="11"/>
+         <node n="9"/>
+         <node n="34"/>
+         <node n="14"/>
+         <node n="15"/>
+         <node n="46"/>
+         <node n="51"/>
+         <node n="54"/>
+         <node n="60"/>
+         <node n="112"/>
+         <node n="123"/>
+         <node n="108"/>
+         <node n="109"/>
+         <node n="110"/>
+      </nodeset>
+   </nodesets>
    
    <settings>
       

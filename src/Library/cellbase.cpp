@@ -754,10 +754,11 @@ Vector CellBase::getMinMaxPositionY()
  * 
  * @details Loops over the nodes and updates the opposing_node to the node with the smallest y and x distance.
  *          
- * @return Returns Node* to opposing Node. If x distance is smaller than minX_distance returns Nullpointer.
+ * @return Returns Node* to opposing Node.
+ *  If x/y distance is smaller than minX_distance/maxY_distnace returns Nullpointer.
  * 
  */
-Node* CellBase::findeOpposedNode(Node* op_node, double minX_distance, double minY_distance){
+Node* CellBase::findeOpposedNode(Node* op_node, double minX_distance, double maxY_distance){
   Node* opposing_node = NULL;
   
   double op_node_x { op_node->x };
@@ -769,13 +770,13 @@ Node* CellBase::findeOpposedNode(Node* op_node, double minX_distance, double min
     if (n == op_node) continue;
     double dy = fabs(n->y - op_node_y);
     double dx = fabs(n->x - op_node_x);
-    if (dy < best_dy || (dy <= best_dy && dx < best_dx)) {
+    if (dy < best_dy || (dy <= best_dy+0.5 && dx < best_dx)) {
         best_dy = dy;
         best_dx = dx;
         opposing_node = n;
     }
   }
-  if(best_dx < minX_distance && best_dy < minY_distance)
+  if(best_dx < minX_distance || best_dy >  maxY_distance)
   {
     return NULL;
   } else{
@@ -800,11 +801,11 @@ void CellBase::addTriangleToCell( Triangle& t )
  * 
  * @return Returns void, but updates the triangles List of the cell. 
  */
-void CellBase::setTriangles()
+void CellBase::setTriangles( double minX_distance, double maxY_distance )
 {
   triangles.clear();
   for( list<Node *>::iterator n=nodes.begin(); n!=nodes.end(); n++ ){
-    Node* n_B { findeOpposedNode((*n), 6, 6) }; // 6 sollte eig base length sein! ist abstand in  model 1A
+    Node* n_B { findeOpposedNode((*n), minX_distance, maxY_distance) }; // 6 sollte eig base length sein! ist abstand in  model 1A
     Node *neighbor1;
     if (n!=nodes.begin()) {
       list<Node *>::iterator previous_n_iterator=n;

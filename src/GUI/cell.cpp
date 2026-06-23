@@ -1133,7 +1133,7 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
 
  // Inherit cellulose triangle properties and reset the triangles
   
-  if( par.k[0] == 0){
+  if( isTrianglePlaced() ){
     Vector targetVector { getTargetVectorABofTriangle() };
     triangles.clear();
     daughter->triangles.clear();

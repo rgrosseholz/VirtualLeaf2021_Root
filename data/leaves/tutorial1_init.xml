@@ -198,7 +198,16 @@
     </boundary_polygon>
   </cells>
   <walls n="0"/>
-  <nodesets n="0"/>
+<nodesets n="1">
+  <nodeset index="0" name="boundary_nodes">
+    <node n="0"/>
+    <node n="1"/>
+    <node n="2"/>
+    <node n="3"/>
+    <node n="4"/>
+    <node n="5"/>
+  </nodeset>
+</nodesets>
   <settings>
     <setting name="show_cell_centers" val="false"/>
     <setting name="show_nodes" val="true"/>

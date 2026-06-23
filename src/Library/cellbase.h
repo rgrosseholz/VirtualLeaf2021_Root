@@ -34,6 +34,7 @@
 
 #include "assert.h"
 #include "cellwallcurve.h"
+#include "matrix.h"
 #include "nodebase.h"
 #include "Neighbor.h"
 #include "parameter.h"
@@ -270,27 +271,16 @@ class CellBase :  public QObject, public Vector
   void addTriangleToCell( Triangle& t);
   list<Triangle*> findActiveTriangles(Node* mov_node);
 
-  void setTriangles();
+  void setTriangles(double minX_distance = 6, double maxY_distance = 4);
   void updateTriangle();
 
+  void setStiffnessMatrix( Matrix C) { stiffnessMatrix = C;};
+  Matrix getStiffnessMatrix() { return stiffnessMatrix; };
   
-  void SetSpringsNormalDistributedExcludeTopBottom(int numOfAverage);
-  void SetSpringsNormalDistributed(void);
-  void SetSpringNetwork(double spring_distribution_mean, double sigma_springs);
-  void SetSpringsOnNodeIntoNetwork(Node* node, double spring_distribution_mean, double sigma_springs);
-  void resetSpringNetwork(Node* newNode, double spring_distribution_mean, double sigma_springs);
-  void cleanUpNetwork(double angle1, double angle2, int maxNumSprings);
-  bool isSpringAlready(Node* node1, Node* node2);
-  void SetSpringOnNodeInsertion(Node* newNode, int numOfAverage);
-
-  void CheckSprings(void);
-  void cleanUpSprings(double angle1, double angle2);
-  void removeSprings();
-  void resetSprings(int numOfAverage);
   bool isNodeWithinBoundary(Node* node, int numOfAverage, double intervalY = 3.5,
                              double intervalX = 3.5);
   pair<Node*, Node*> findeOpposedNodes(Node* op_node);
-  Node* findeOpposedNode(Node* op_node, double minX_distance, double minY_distance );
+  Node* findeOpposedNode(Node* op_node, double minX_distance, double maxY_distance );
   
   pair<double,double> findAverageMinMaxY(int numOfAverage, double intervalY);
   Vector getMinMaxPositionX();
@@ -598,7 +588,7 @@ class CellBase :  public QObject, public Vector
   double wall_stiffness; // Lebovka et al
   bool veto_reconfigurationling; // testing cellular veto
   Vector targetVectorTriangleAB;
-  
+  Matrix stiffnessMatrix;
 
   
 

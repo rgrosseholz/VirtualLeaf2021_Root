@@ -29,7 +29,7 @@ INCLUDEPATH += ../../../include
 
 DEFINES = QTGRAPHICS
 DESTDIR = $${BINDIR}/models
-TARGET = nineCells
+TARGET = root
 
 QMAKE_CXXFLAGS += -Wno-write-strings
 QMAKE_CXXFLAGS += -Wno-unused-parameter

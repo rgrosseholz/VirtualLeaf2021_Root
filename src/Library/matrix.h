@@ -43,6 +43,8 @@ class Matrix {
   Matrix operator*(const Matrix &v) const; // matrix * matrix
   Matrix operator+(const Matrix &v) const; // matrix + matrix
   Matrix operator-(const Matrix &v) const; // matrix - matrix
+  friend Matrix operator*(double scalar, const Matrix &m); // scalar * matrix
+
   bool operator==(Matrix &v) const; // comparison
   double Det(void) const; // gives the "determinant" (| m |) of m
   Matrix Inverse(void) const; // gives the inverse of m

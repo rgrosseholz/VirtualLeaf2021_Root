@@ -30,8 +30,9 @@
 class TwoCells : public QObject, SimPluginInterface {
 	Q_OBJECT
 	Q_INTERFACES(SimPluginInterface);
-     Q_PLUGIN_METADATA(IID "org.virtualleaf.nineCells")
-
+     Q_PLUGIN_METADATA(IID "org.virtualleaf.root")
+	double highestNode_y;
+	double lowestNode_y;
 public:
 	virtual QString ModelID(void);
 	

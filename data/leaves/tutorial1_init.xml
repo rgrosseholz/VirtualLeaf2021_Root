@@ -112,7 +112,7 @@
     <par name="constituous_expansion_limit" val="16"/>
     <par name="vessel_inh_level" val="1"/>
     <par name="vessel_expansion_rate" val="0.25"/>
-    <par name="d" val="2000000"/>
+    <par name="d" val="3e6"/>
     <par name="e" val="1.3"/>
     <par name="f" val="0.8"/>
     <par name="c" val="1e-6"/>

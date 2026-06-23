@@ -28,14 +28,14 @@
 
 #include "wallbase.h"
 #include "cellbase.h"
-#include "root.h"
+#include "RootLayout.h"
 
 static const std::string _module_id("$Id$");
 
 QString TwoCells::ModelID(void)
 {
   // specify the name of your model here
-  return QString("Root");
+  return QString("RootLayout");
 }
 
 // return the number of chemicals your model uses

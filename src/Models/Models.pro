@@ -19,7 +19,7 @@ Tutorial1B \
 #twoCells \ 
 threeCells \
 5x2_Cells \
-root \
+RootLayout \
 #LateralRoot \
 #MyModel \
 #CellOutlines \

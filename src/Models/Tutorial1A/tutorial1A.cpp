@@ -69,7 +69,7 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
     double width {0};
     c->Length(NULL, &width);
     c->PlaceTriangles();
-    c->setTargetVectorABofTriangle( Vector {width, par->nu} );
+    c->setTargetVectorABofTriangle( Vector {width, 0} );
     c->setTriangles();
     // set mechanical properties
     c->setStiffnessMatrix( par->d * Matrix { Vector { par->e,par->f,0},

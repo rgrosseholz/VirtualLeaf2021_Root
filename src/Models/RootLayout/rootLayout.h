@@ -20,6 +20,8 @@
  *
  */
 
+#ifndef _ROOTLAYOUT_H_
+#define _ROOTLAYOUT_H_
 
 #include <QObject>
 #include <QtGui>
@@ -30,9 +32,7 @@
 class TwoCells : public QObject, SimPluginInterface {
 	Q_OBJECT
 	Q_INTERFACES(SimPluginInterface);
-     Q_PLUGIN_METADATA(IID "org.virtualleaf.root")
-	double highestNode_y;
-	double lowestNode_y;
+     Q_PLUGIN_METADATA(IID "org.virtualleaf.RootLayout")
 public:
 	virtual QString ModelID(void);
 	
@@ -60,6 +60,6 @@ public:
 	
 };
 
-
+#endif
 
 

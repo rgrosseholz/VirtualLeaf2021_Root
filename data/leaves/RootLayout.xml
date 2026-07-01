@@ -54,7 +54,7 @@
       <par val="100" name="lambda_length"/>
       
       
-      <par val="2.5" name="yielding_threshold"/>
+      <par val="8" name="yielding_threshold"/>
       
       
       <par val="0" name="lambda_celllength"/>
@@ -63,7 +63,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="1" name="cell_expansion_rate"/>
+      <par val="0." name="cell_expansion_rate"/>
       
       
       <par val="10" name="cell_div_expansion_rate"/>
@@ -115,26 +115,25 @@
          
               
          <valarray>
-         // stiffness cell_type 1 
-            <val v="2e6"/> \\lambda
-            <val v="5.5"/> \\ xx
-            <val v="0.8"/>  \\ xy
-            <val v="1e-6"/> \\ yy
-            <val v="0.8"/> \\ x + y
+         
+            <val v="2e6"/>
+            <val v="5.5"/> 
+            <val v="0.8"/>  
+            <val v="1e-6"/>
+            <val v="0.8"/> 
 
-            // stiffness cell_type 2 
-            <val v="2e6"/> \\lambda
-            <val v="1e3"/> \\ xx
-            <val v="0.8"/>  \\ xy
-            <val v="1e-6"/> \\ yy
-            <val v="0.8"/> \\ x + y
+            
+            <val v="2e6"/>
+            <val v="1e3"/>
+            <val v="0.8"/>
+            <val v="1e-6"/>
+            <val v="0.8"/>
 
-            // stiffness cell_type 3 epidermis
-            <val v="2e6"/> \\lambda
-            <val v="1e12"/> \\ xx
-            <val v="2.8"/>  \\ xy
-            <val v="1e-6"/> \\ yy
-            <val v="2.8"/> \\ x + y
+            <val v="2e6"/> 
+            <val v="1e12"/> 
+            <val v="2.8"/>  
+            <val v="1e-6"/> 
+            <val v="2.8"/> 
                  
          </valarray>
          
@@ -148,26 +147,26 @@
          
               
          <valarray>
-          // stiffness cell_type 1 
-            <val v="2e6"/> \\lambda
-            <val v="5.5"/> \\ xx
-            <val v="0.8"/>  \\ xy
-            <val v="1e-6"/> \\ yy
-            <val v="0.8"/> \\ x + y
+          
+            <val v="2e6"/> 
+            <val v="5.5"/>
+            <val v="0.8"/>
+            <val v="1e-6"/>
+            <val v="0.8"/>
 
-            // stiffness cell_type 2 
-            <val v="2e6"/> \\lambda
-            <val v="1e3"/> \\ xx
-            <val v="0.8"/>  \\ xy
-            <val v="1e-6"/> \\ yy
-            <val v="0.8"/> \\ x + y
+         
+            <val v="2e6"/> 
+            <val v="1e3"/> 
+            <val v="0.8"/>  
+            <val v="1e-6"/> 
+            <val v="0.8"/>
 
-            // stiffness cell_type 3 epidermis
-            <val v="2e6"/> \\lambda
-            <val v="1e12"/> \\ xx
-            <val v="2.8"/>  \\ xy
-            <val v="1e-6"/> \\ yy
-            <val v="2.8"/> \\ x + y
+          
+            <val v="2e6"/> 
+            <val v="1e12"/> 
+            <val v="2.8"/>  
+            <val v="1e-6"/> 
+            <val v="2.8"/>
                  
          </valarray>
          
@@ -299,34 +298,37 @@
       
       <par val="0.25" name="vessel_expansion_rate"/>
       
-      // stiffness cell_type 0
-      <par name="d" val="3.0e6"/> \\ lambda
-      
-      <par name="e" val="10.5"/> \\ xx
-      <par name="f" val="0.8"/> \\ xy 
-      <par name="c" val="0.5"/> \\ yy
-      <par name="mu" val="0.9"/> \\ x + y
+     
+      <par name="d" val="0.0e5"/>
+      <par name="e" val="1.5"/>
+      <par name="f" val="0.8"/>
+      <par name="c" val="1e-6"/> 
+      <par name="mu" val="0.9"/>
 
-      // stiffness cell_type 1
-      <par val="2e6" name="nu"/>  \\ lambda
-      <par val="1.5" name="rho0"/>  \\ xx
-      <par val="0.8" name="rho1"/> \\ xy
-      <par val="1e-6" name="c0"/> \\ yy 
-      <par val="0.7" name="gamma"/> \\ x + y
-
-      // stiffness cell_type 2    
-      <par val="2e6" name="eps"/>  \\ lambda
-      <par val="3.5" name="betaN"/> \\ xx 
-      <par val="0.8" name="gammaN"/> \\ xy 
-      <par val="1e-6" name="betaD"/> \\ yy 
-      <par val="0.7" name="gammaD"/> \\ x + y
       
-      // stiffness cell_type 3      
-      <par val="2e6" name="betaR"/> \\ lambda 
-      <par val="10.5" name="gammaR"/> \\ xx 
-      <par val="0.8" name="tau"/>  \\ xy 
-      <par val="1e-6" name="kt"/> \\ yy 
-      <par val="0.7" name="kc"/> \\ x + y
+      <par val="4.5" name="nu"/>
+      <par val="3" name="rho0"/>
+
+
+      <par val="2.5" name="rho1"/> 
+      <par val="2" name="c0"/> 
+
+
+      <par val="2.5" name="gamma"/> 
+      <par val="2" name="eps"/> 
+
+      <par val="0" name="betaN"/>
+      <par val="2.5" name="gammaN"/> 
+
+      <par val="1e-6" name="betaD"/>  
+      <par val="0.7" name="gammaD"/> 
+      
+          
+      <par val="2e6" name="betaR"/> 
+      <par val="10.5" name="gammaR"/> 
+      <par val="0.8" name="tau"/>  
+      <par val="1e-6" name="kt"/> 
+      <par val="0.7" name="kc"/>  
       
       
       <par val="0" name="krs"/>
@@ -334,26 +336,26 @@
       
       <par name="k">
          <valarray>
-            // stiffness cell_type 1 
-            <val v="2e6"/> \\lambda
-            <val v="5.5"/> \\ xx
-            <val v="0.8"/>  \\ xy
-            <val v="1e-6"/> \\ yy
-            <val v="0.8"/> \\ x + y
+         
+            <val v="0e5"/>
+            <val v="3"/>
+            <val v="0.8"/>  
+            <val v="1e-6"/> 
+            <val v="0.8"/> 
 
-            // stiffness cell_type 2 
-            <val v="2e6"/> \\lambda
-            <val v="1e3"/> \\ xx
-            <val v="0.8"/>  \\ xy
-            <val v="1e-6"/> \\ yy
-            <val v="0.8"/> \\ x + y
+        
+            <val v="0e5"/>
+            <val v="5"/> 
+            <val v="0.8"/>  
+            <val v="1e-6"/> 
+            <val v="0.8"/> 
 
-            // stiffness cell_type 3 epidermis
-            <val v="2e6"/> \\lambda
-            <val v="1e12"/> \\ xx
-            <val v="2.8"/>  \\ xy
-            <val v="1e-6"/> \\ yy
-            <val v="2.8"/> \\ x + y
+         
+            <val v="0e5"/> 
+            <val v="10"/> 
+            <val v="2.8"/> 
+            <val v="1e-6"/> 
+            <val v="5.8"/>  
                  
          </valarray>
          
@@ -1135,7 +1137,7 @@
          <wall w="91"/>
          <wall w="114"/>
       </cell>
-      <cell boundary="0" cell_type="1" target_area="134.8155326007549" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="46" source="false" pin_fixed="false" area="134.8155326007549" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="3" target_area="134.8155326007549" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="46" source="false" pin_fixed="false" area="134.8155326007549" fixed="false" div_counter="0">
          <node n="129"/>
          <node n="127"/>
          <node n="99"/>
@@ -1150,7 +1152,7 @@
          <wall w="92"/>
          <wall w="115"/>
       </cell>
-      <cell boundary="0" cell_type="1" target_area="164.22701413885022" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="47" source="false" pin_fixed="false" area="164.22701413885022" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="3" target_area="164.22701413885022" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="47" source="false" pin_fixed="false" area="164.22701413885022" fixed="false" div_counter="0">
          <node n="133"/>
          <node n="132"/>
          <node n="130"/>

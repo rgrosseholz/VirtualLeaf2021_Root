@@ -838,7 +838,8 @@ double Mesh::getStrainEnergy( Triangle* triangle, Cell& cell, Matrix& Y, Vector 
   Vector C { triangle->getNodeC()->getPos() };
   Vector target_A { triangle->getTargetA( cell.getTargetVectorABofTriangle()) };
   Vector deltaP { target_A - A };
-  double area { (B.y-C.y)*(A.x-C.x)+(C.x-B.x)*(A.y-C.y) };
+  double area { (B.y-C.y)*(A.x-C.x)+(C.x-B.x)*(A.y-C.y)};
+  if (area < 10e-3) { return 0; }
   Vector strain { ((B.y-C.y)*deltaP.x)/(6*area),
                   (C.x-B.x)*deltaP.y/(6*area),
                   ((B.y-C.y)*deltaP.y + (C.x-B.x)*deltaP.x)/(12*area) } ;

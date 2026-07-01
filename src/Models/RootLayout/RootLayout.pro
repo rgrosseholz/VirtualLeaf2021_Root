@@ -17,8 +17,9 @@
 #  Copyright 2010 Roeland Merks.
 #
 
-CONFIG += release
-CONFIG -= debug
+!contains(CONFIG, debug|release) {
+    CONFIG += debug
+}
 CONFIG += plugin
 
 BINDIR = ../../../bin
@@ -29,8 +30,7 @@ INCLUDEPATH += ../../../include
 
 DEFINES = QTGRAPHICS
 DESTDIR = $${BINDIR}/models
-TARGET = RootLayout
-
+TARGET = rootLayout
 win32-g++|unix|macx {
     QMAKE_CXXFLAGS += -Wall -Wextra
     QMAKE_CXXFLAGS += -Wno-unused-parameter
@@ -66,5 +66,17 @@ win32 {
  QMAKE_CXXFLAGS += -I$${LIBXML2DIR}\include -I$${LIBICONVDIR}\include -I$${LIBZDIR}\include
 
 }
+win32-msvc:release {
 
+    # Compiler optimizations
+    QMAKE_CXXFLAGS_RELEASE += /O2        # Max speed
+    QMAKE_CXXFLAGS_RELEASE += /Ob2       # Inline aggressively
+    QMAKE_CXXFLAGS_RELEASE += /Ot        # Favor speed
+    QMAKE_CXXFLAGS_RELEASE += /GL        # Whole program optimization
+
+    # Linker optimizations
+    QMAKE_LFLAGS_RELEASE += /LTCG        # Link-time code generation
+    QMAKE_LFLAGS_RELEASE += /OPT:REF
+    QMAKE_LFLAGS_RELEASE += /OPT:ICF
+}
 # finis

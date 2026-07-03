@@ -54,7 +54,7 @@
       <par val="100" name="lambda_length"/>
       
       
-      <par val="8" name="yielding_threshold"/>
+      <par val="7" name="yielding_threshold"/>
       
       
       <par val="0" name="lambda_celllength"/>
@@ -63,7 +63,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="0." name="cell_expansion_rate"/>
+      <par val="0.5" name="cell_expansion_rate"/>
       
       
       <par val="10" name="cell_div_expansion_rate"/>
@@ -317,7 +317,7 @@
       <par val="2.5" name="gamma"/> 
       <par val="2" name="eps"/> 
 
-      <par val="0" name="betaN"/>
+      <par val="2.5" name="betaN"/>
       <par val="2.5" name="gammaN"/> 
 
       <par val="1e-6" name="betaD"/>  
@@ -337,21 +337,21 @@
       <par name="k">
          <valarray>
          
-            <val v="0e5"/>
+            <val v="1e6"/>
             <val v="3"/>
             <val v="0.8"/>  
             <val v="1e-6"/> 
             <val v="0.8"/> 
 
         
-            <val v="0e5"/>
+            <val v="1e6"/>
             <val v="5"/> 
-            <val v="0.8"/>  
+            <val v="2.8"/>  
             <val v="1e-6"/> 
-            <val v="0.8"/> 
+            <val v="1.8"/> 
 
          
-            <val v="0e5"/> 
+            <val v="2e6"/> 
             <val v="10"/> 
             <val v="2.8"/> 
             <val v="1e-6"/> 
@@ -1697,9 +1697,10 @@
          <node n="34"/>
          <node n="14"/>
          <node n="15"/>
-         <node n="46"/>
+         <node n="48"/>
          <node n="51"/>
          <node n="54"/>
+         <node n="57"/>
          <node n="60"/>
          <node n="112"/>
          <node n="123"/>

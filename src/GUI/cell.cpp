@@ -79,8 +79,8 @@ void Cell::DivideOverAxis(Vector axis)
   if (dead) return;
 
   Vector centroid=Centroid(); // cell center
-  double prev_cross_z=(axis * (centroid - *(nodes.back()) ) ).z ; // irrelevant für mich ist nur z komponente
-
+  double prev_cross_z=(axis * (centroid - *(nodes.back()) ) ).z ; 
+  if (prev_cross_z < TINY) return;
   ItList new_node_locations;
 
   for (list<Node *>::iterator i=nodes.begin(); i!=nodes.end(); i++) {
@@ -1135,17 +1135,18 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
   
   if( isTrianglePlaced() ){
     Vector targetVector { getTargetVectorABofTriangle() };
+    double width { getTargetVectorABofTriangle().x };
     triangles.clear();
     daughter->triangles.clear();
     if( isTrianglePlaced() ) {
     daughter->PlaceTriangles();
     daughter->setTargetVectorABofTriangle(targetVector);
-    daughter->setTriangles();
+    daughter->setTriangles(width - par.rho1, par.c0);
     };
     //parent cell
     PlaceTriangles();
     setTargetVectorABofTriangle(targetVector);
-    setTriangles();
+    setTriangles(width - par.rho1, par.c0);
   }
 
   	/**

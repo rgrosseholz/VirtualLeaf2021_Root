@@ -13,4 +13,4 @@
 **/python
 **/.vscode
 **/.venv_svg_to_vl
-
+**/.qmake.stash

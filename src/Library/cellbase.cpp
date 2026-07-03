@@ -790,9 +790,10 @@ void CellBase::addTriangleToCell( Triangle& t )
 }
 
 /**
- * @brief Sets triangles in cell.
+ * @brief Sets triangle on newNode in cell.
  * 
- * @details Loops over all Nodes in the cell. This is Node A in the triangle.
+ * @details Loops over all Nodes in the cell and only executes if node == newNode.
+ *  This is Node A in the triangle.
  * Tries to find an opposing node, if found this is Node B of the triangle.
  * Then takes neighbors of Node B. If they are non equal to node A they become
  * Node C of the triangle. If Nodes A, B and C exist a triangle is created.
@@ -801,6 +802,82 @@ void CellBase::addTriangleToCell( Triangle& t )
  * 
  * @return Returns void, but updates the triangles List of the cell. 
  */
+void CellBase::setTriangleOnNode(Node* newNode, double minX_distance, double maxY_distance )
+{
+  for( list<Node *>::iterator n=nodes.begin(); n!=nodes.end(); n++ ){
+    if( (*n) != newNode) {
+      continue;
+    }else{
+    Node* n_B { findeOpposedNode((*n), minX_distance, maxY_distance) }; // 6 sollte eig base length sein! ist abstand in  model 1A
+    Node *neighbor1;
+    if (n!=nodes.begin()) {
+      list<Node *>::iterator previous_n_iterator=n;
+      previous_n_iterator--;
+      neighbor1=*previous_n_iterator;
+    } else {
+      neighbor1=nodes.back();
+    }
+    Node *neighbor2;
+    list<Node *>::iterator next_n_iterator=n;
+    next_n_iterator++;
+    if (next_n_iterator==nodes.end()) {
+      neighbor2=nodes.front();
+    } else {
+      neighbor2=*next_n_iterator;
+    }
+
+    if( n_B == neighbor1 || n_B == neighbor2 ) { continue; }
+
+    if(n_B != NULL){
+       for (list<Node *>::iterator i=nodes.begin(); i!=nodes.end(); i++) {
+        if( *i == n_B ){
+          //copied assignment of neigbors from cell.cpp from function ConstructConnections 
+          Node *previous;
+           if (i!=nodes.begin()) {
+              list<Node *>::iterator previous_iterator=i;
+              previous_iterator--;
+              previous=*previous_iterator;
+            } else {
+              previous=nodes.back();
+            }
+            Node *next;
+            list<Node *>::iterator next_iterator=i;
+            next_iterator++;
+            if (next_iterator==nodes.end()) {
+              next=nodes.front();
+            } else {
+              next=*next_iterator;
+            }
+          Node* n_C1 {previous};
+          Node* n_C2 {next};
+          // 3 as min y distance for triangle placement so that they do not lie in a line
+          if((*n) != n_C1 && fabs((*n)->y - n_C1->y) > 3){
+            if( (*n)->x > n_B->x){
+              Triangle t { (*n), n_B, n_C1, this };
+              addTriangleToCell( t );
+            }else{
+              Triangle t { (*n), n_B, n_C1, this };
+              addTriangleToCell( t );
+            }
+          }
+          if((*n) != n_C2 && fabs((*n)->y - n_C2->y) > 3){
+            if( (*n)->x > n_B->x){
+              Triangle t { (*n), n_B, n_C2, this };
+              addTriangleToCell( t );
+            }else{
+              Triangle t { (*n), n_B, n_C2, this };
+              addTriangleToCell( t );
+            }
+          }
+        }
+      }
+    }  
+  }
+  } 
+}
+
+
+
 void CellBase::setTriangles( double minX_distance, double maxY_distance )
 {
   triangles.clear();

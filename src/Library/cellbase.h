@@ -271,7 +271,9 @@ class CellBase :  public QObject, public Vector
   void addTriangleToCell( Triangle& t);
   list<Triangle*> findActiveTriangles(Node* mov_node);
 
-  void setTriangles(double minX_distance = 2.5, double maxY_distance = 4);
+  void setTriangles(double minX_distance = 2.5, double maxY_distance = 2.5);
+  void setTriangleOnNode(Node* newNode, double minX_distance = 2.5, double maxY_distance = 2.5);
+  
   void updateTriangle();
 
   void setStiffnessMatrix( Matrix C) { stiffnessMatrix = C;};

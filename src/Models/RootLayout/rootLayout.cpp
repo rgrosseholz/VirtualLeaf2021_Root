@@ -68,8 +68,8 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     c->setTargetVectorABofTriangle( Vector{6,0,0} );
     c->setTriangles(width - par->nu, par->rho0);
     // set mechanical properties
-    c->setStiffnessMatrix( par->d * Matrix { Vector { par->e,par->f,0},
-                   Vector { par->f,par->c,0}, Vector {0,0,par->mu }});
+    c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
+                   Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
                   
     c->SetCellVeto(true);
   }

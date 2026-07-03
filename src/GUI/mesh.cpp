@@ -839,12 +839,15 @@ double Mesh::getStrainEnergy( Triangle* triangle, Cell& cell, Matrix& Y, Vector 
   Vector target_A { triangle->getTargetA( cell.getTargetVectorABofTriangle()) };
   Vector deltaP { target_A - A };
   double area { (B.y-C.y)*(A.x-C.x)+(C.x-B.x)*(A.y-C.y)};
-  if (area < 10e-3) { return 0; }
+  if (fabs(area) < 1) {
+    //cell.triangles.clear();
+    //cell.setTriangles( cell.getTargetVectorABofTriangle().x - par.rho1, par.c0);
+    return 0; } 
   Vector strain { ((B.y-C.y)*deltaP.x)/(6*area),
                   (C.x-B.x)*deltaP.y/(6*area),
                   ((B.y-C.y)*deltaP.y + (C.x-B.x)*deltaP.x)/(12*area) } ;
  double energy {  InnerProduct((Y*strain),strain) };
- return energy;
+  return energy;
 }
 
 double Mesh::deltaE_triangle ( Triangle* triangle, Cell& cell, Matrix& Y, Vector deltaA){
@@ -1196,10 +1199,8 @@ double Mesh::DisplaceNodes(void)
       for(auto* t:activeTriangles){
         Matrix C { c.getStiffnessMatrix() };
         cellulose_spring_dh += deltaE_triangle(t, c, C, delta_p);
-        cellulose_spring_dh += TINY;
       }
     }
-    cellulose_spring_dh += TINY;
   }
 
   // make anisotropic energy panality
@@ -1472,11 +1473,9 @@ void Mesh::InsertNode(Edge &e) {
   for(auto owner : owners){
     if(owner.cell->isTrianglePlaced() ){
       double width { owner.getCell()->getTargetVectorABofTriangle().x };
-      owner.getCell()->triangles.clear();
-      owner.getCell()->setTriangles(width -2.5);
+      owner.getCell()->setTriangles(width - par.rho1, par.c0);
     }
   }
-
   new_node->splittWallElementsBetween(e.first, e.second);
 }
 

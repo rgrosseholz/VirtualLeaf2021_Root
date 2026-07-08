@@ -62,17 +62,22 @@ void Tutorial1B::CellHouseKeeping(CellBase *c) {
 
 
     // cellulose activation
-  if(par->k[0] == 0 && !(c->isTrianglePlaced()) && c->Index()!=-1 ) // instead of celltype use k 
+  if(c->CellType() == 0 && !(c->isTrianglePlaced()) && c->Index()!=-1 ) // instead of celltype use k 
   {
     double width {0};
     c->Length(NULL, &width);
     c->PlaceTriangles();
-    c->setTargetVectorABofTriangle( Vector{width,0,0} );
-    c->setTriangles();
+    c->setTargetVectorABofTriangle( Vector{6,0,0} );
+    c->setTriangles(6 - par->rho1, par->c0);
+    // set mechanical properties
+    c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
+                   Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
+                  
+    c->SetCellVeto(true);
   } 
 
   //cell wall weakening happens here
-  if(par->k[0] == 0){
+  if(c->CellType() == 0){
 
     c->LoopWallElements([](auto wallElementInfo){
       Vector from { *(wallElementInfo->getFrom()) };

@@ -80,7 +80,6 @@ void Cell::DivideOverAxis(Vector axis)
 
   Vector centroid=Centroid(); // cell center
   double prev_cross_z=(axis * (centroid - *(nodes.back()) ) ).z ; 
-  if (prev_cross_z < TINY) return;
   ItList new_node_locations;
 
   for (list<Node *>::iterator i=nodes.begin(); i!=nodes.end(); i++) {
@@ -1147,6 +1146,21 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
     PlaceTriangles();
     setTargetVectorABofTriangle(targetVector);
     setTriangles(width - par.rho1, par.c0);
+
+    double centerMother { Centroid().y };
+    double centerDaughter { daughter->Centroid().y };
+    // update which cell is allowed to devide and who is growing faster
+    if( centerMother  > centerDaughter ){
+      setPin_fixed(true); // dividing cell
+      daughter->setPin_fixed(false); // non dividing cell
+      SetTargetLength( 0 ); // grows slower
+      daughter->SetTargetLength( 1 ); // grows faster
+    }else{
+      setPin_fixed(false); // non dividing
+      daughter->setPin_fixed(true); // dividing
+      SetTargetLength( 1 ); // grows faster
+      daughter->SetTargetLength( 0 ); // grows slower
+    }
   }
 
   	/**

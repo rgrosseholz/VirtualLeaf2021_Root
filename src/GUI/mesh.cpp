@@ -832,26 +832,40 @@ double Mesh::ReconfigurationWallElements(vector<CellWallCurve> & curves) {
 	return 0.0;
 }
 
-double Mesh::getStrainEnergy( Triangle* triangle, Cell& cell, Matrix& Y, Vector deltaA = Vector {0,0,0}){
+/**
+ * @brief Calculates the energy due to the strain of the cell wall triangle
+ * 
+ * @details Obtains the triangle node positions. Calculates the target postion of the Node A
+ *  relative to Node B. From this the needed displacement deltaP to reach the target postion of 
+ *  Node A is calculated. 
+ *  Then the area, strain and energy of the triangle is calculated. 
+ * 
+ * @param Takes triangle, cell, Stiffness matrix Y and node displacment deltaA as parameter.
+ * 
+ * @return Retruns energy as double value
+ */
+double Mesh::getStrainEnergy( Triangle* triangle, Cell& cell, Matrix& Y, Vector deltaA ){
   Vector A { triangle->getNodeA()->getPos() + deltaA };
   Vector B { triangle->getNodeB()->getPos() };
   Vector C { triangle->getNodeC()->getPos() };
   Vector target_A { triangle->getTargetA( cell.getTargetVectorABofTriangle()) };
-  Vector deltaP { target_A - A };
-  double area { (B.y-C.y)*(A.x-C.x)+(C.x-B.x)*(A.y-C.y)};
-  if (fabs(area) < 1) {
-    //cell.triangles.clear();
-    //cell.setTriangles( cell.getTargetVectorABofTriangle().x - par.rho1, par.c0);
-    return 0; } 
+  Vector deltaP { 0.5*(target_A - A) };
+  double area { (B.y-C.y)*(A.x-C.x)+(C.x-B.x)*(A.y-C.y) };
   Vector strain { ((B.y-C.y)*deltaP.x)/(6*area),
                   (C.x-B.x)*deltaP.y/(6*area),
                   ((B.y-C.y)*deltaP.y + (C.x-B.x)*deltaP.x)/(12*area) } ;
- double energy {  InnerProduct((Y*strain),strain) };
+ double energy { InnerProduct((Y*strain),strain) };
   return energy;
 }
-
+/**
+ * @brief calculates energy difference for cell wall triangles between the new and old position
+ * 
+ * @param Takes triangle, cell, Stiffness matrix Y and node displacment deltaA as parameter
+ * 
+ * @return Retruns energy difference as double value
+ */
 double Mesh::deltaE_triangle ( Triangle* triangle, Cell& cell, Matrix& Y, Vector deltaA){
-  double energy0 { Mesh::getStrainEnergy(triangle, cell, Y) };
+  double energy0 { Mesh::getStrainEnergy(triangle, cell, Y, Vector {0,0,0}) };
   double energy1 { Mesh::getStrainEnergy(triangle, cell, Y, deltaA) };
   double energy { energy1 - energy0 };
   return energy;
@@ -1471,9 +1485,14 @@ void Mesh::InsertNode(Edge &e) {
   }
 
   for(auto owner : owners){
-    if(owner.cell->isTrianglePlaced() ){
-      double width { owner.getCell()->getTargetVectorABofTriangle().x };
-      owner.getCell()->setTriangles(width - par.rho1, par.c0);
+    Cell* cell { owner.cell };
+    if(cell->isTrianglePlaced() ){
+      double width { cell->getTargetVectorABofTriangle().x };
+      cell->setTriangles(width - par.rho1, par.c0);
+      if ( new_node->boundary && (! cell->findeOpposedNode(new_node, width - par.rho1, par.c0)) ){
+        cell->setTriangleOnNode(new_node);
+      } 
+
     }
   }
   new_node->splittWallElementsBetween(e.first, e.second);

@@ -210,6 +210,8 @@ class CellBase :  public QObject, public Vector
 
   inline void SetTargetLength(double tar_l) { target_length=tar_l; }
 
+  int getTargetLength() { return target_length; }
+
   inline void SetLambdaLength(double lambda_length) { lambda_celllength = lambda_length; }
 
   inline double TargetArea(void) { return target_area; }
@@ -272,9 +274,12 @@ class CellBase :  public QObject, public Vector
   list<Triangle*> findActiveTriangles(Node* mov_node);
 
   void setTriangles(double minX_distance = 2.5, double maxY_distance = 2.5);
-  void setTriangleOnNode(Node* newNode, double minX_distance = 2.5, double maxY_distance = 2.5);
+  void setTriangleOnNode( Node* node );
   
   void updateTriangle();
+  
+  void setPin_fixed( bool pin ) { pin_fixed = pin; };
+  bool getPin_fixed() { return pin_fixed; };
 
   void setStiffnessMatrix( Matrix C) { stiffnessMatrix = C;};
   Matrix getStiffnessMatrix() { return stiffnessMatrix; };
@@ -283,6 +288,7 @@ class CellBase :  public QObject, public Vector
                              double intervalX = 3.5);
   pair<Node*, Node*> findeOpposedNodes(Node* op_node);
   Node* findeOpposedNode(Node* op_node, double minX_distance, double maxY_distance );
+  Node* findeBestOpposedNode( Node* op_node );
   
   pair<double,double> findAverageMinMaxY(int numOfAverage, double intervalY);
   Vector getMinMaxPositionX();

@@ -55,71 +55,110 @@ void TwoCells::SetCellColor(CellBase *c, QColor *color)
 
 void TwoCells::CellHouseKeeping(CellBase *c)
 {
-  // add cell behavioral rules here
-  
-  // cellulose spring rules
-  c->EnlargeTargetArea(par->cell_expansion_rate);
+    
+  // growth rates are calculated 
+  if(c->getTargetLength() == 2){
+    c->EnlargeTargetArea(par->cell_expansion_rate *  par->d  );
+  }else if(c->getTargetLength() == 1){
+    c->EnlargeTargetArea(par->cell_expansion_rate * par->e);
+  }else {
+    c->EnlargeTargetArea(par->cell_expansion_rate);
+  }
 
+  // initialize cell properties depending on cell type
   if(!(c->isTrianglePlaced()) && c->Index() != -1 && c->CellType() == 0 ) 
   {
-    double width {0};
-    c->Length(NULL, &width);
+    double width {6}; //  width of the cell 
+    // set triangles
     c->PlaceTriangles();
-    c->setTargetVectorABofTriangle( Vector{6,0,0} );
+    c->setTargetVectorABofTriangle( Vector{width,0,0} );
     c->setTriangles(width - par->nu, par->rho0);
     // set mechanical properties
     c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
                    Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
-                  
+    // set cell wall remodelling veto              
     c->SetCellVeto(true);
+
+    // depending on cell position, set growth rate parameter ( TargetLength used for this )
+    double centroidY { c->Centroid().y };
+    if ( centroidY < 115){
+      c->SetTargetLength( 2 );
+    }else if ( centroidY < 130){
+      c->SetTargetLength( 1 );
+    } else {
+      c->SetTargetLength( 0 );
+    }
   }
 
   if(!(c->isTrianglePlaced()) && c->CellType() == 1 ) 
   {
-    double width {0};
-    c->Length(NULL, &width);
+    double width {6};
+    
     c->PlaceTriangles();
-    c->setTargetVectorABofTriangle( Vector{6,0,0} );
+    c->setTargetVectorABofTriangle( Vector{width,0,0} );
     c->setTriangles(width - par->rho1, par->c0);
     // set mechanical properties
     c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
                    Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
                   
     c->SetCellVeto(true);
+    double centroidY { c->Centroid().y };
+    if ( centroidY < 115){
+      c->SetTargetLength( 2 );
+    }else if ( centroidY < 130){
+      c->SetTargetLength( 1 );
+    } else {
+      c->SetTargetLength( 0 );
+    }
   }
 
   if(!(c->isTrianglePlaced()) && c->CellType() == 2 ) 
   {
-    double width {0};
-    c->Length(NULL, &width);
+    double width {10};
+    
     c->PlaceTriangles();
-    c->setTargetVectorABofTriangle( Vector{10,0,0} );
+    c->setTargetVectorABofTriangle( Vector{width,0,0} );
     c->setTriangles(width - par->gamma, par->eps);
     // set mechanical properties
     c->setStiffnessMatrix( par->k[5] * Matrix { Vector { par->k[6],par->k[7],0},
                    Vector { par->k[7],par->k[8],0}, Vector {0,0,par->k[9] }});
                   
     c->SetCellVeto(true);
+    double centroidY { c->Centroid().y };
+    if ( centroidY < 115){
+      c->SetTargetLength( 2 );
+    }else if ( centroidY < 130){
+      c->SetTargetLength( 1 );
+    } else {
+      c->SetTargetLength( 0 );
+    }
   }
 
-   if(!(c->isTrianglePlaced()) && c->CellType() == 3 ) 
+
+  if(!(c->isTrianglePlaced()) && c->CellType() == 3 ) 
   {
-    double width {0};
-    c->Length(NULL, &width);
+    double width {10};
+    
     c->PlaceTriangles();
-    c->setTargetVectorABofTriangle( Vector{10,0,0} );
+    c->setTargetVectorABofTriangle( Vector{width,0,0} );
     c->setTriangles(width - par->betaN, par->gammaN);
     // set mechanical properties
     c->setStiffnessMatrix( par->k[10] * Matrix { Vector { par->k[11],par->k[12],0},
                    Vector { par->k[12],par->k[13],0}, Vector {0,0,par->k[14] }});
 
     c->SetCellVeto(true);
+    double centroidY { c->Centroid().y };
+    if ( centroidY < 115){
+      c->SetTargetLength( 2 );
+    }else if ( centroidY < 130){
+      c->SetTargetLength( 1 );
+    } else {
+      c->SetTargetLength( 0 );
+    }
   }
 
-  if ( ( c->Index() == 1 || c->Index() == 2 || c->Index() == 7 ||
-        c->Index() == 12 || c->Index() == 13 || c->Index() == 14 ||
-        c->Index() == 15 || c->Index() == 16 || c->Index() == 36 ||
-        c->Index() == 41 || c->Index() == 35 ) && 
+  // Allow only lowest row  of cells to devide. The parameter pin_fixed is used therefore.
+  if ( c->getPin_fixed()  && 
       c->Area() > par->rel_cell_div_threshold * c->BaseArea() 
       )
   {
@@ -127,7 +166,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
 	}
 
     //cell wall weakening happens here
-  if(par->k[0] == 0){
+  if(true){
 
     c->LoopWallElements([](auto wallElementInfo){
       Vector from { *(wallElementInfo->getFrom()) };

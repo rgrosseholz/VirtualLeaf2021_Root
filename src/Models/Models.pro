@@ -9,7 +9,7 @@ SUBDIRS = \
 #Test \
 #Tutorial0 \
 Tutorial1A \
-#Tutorial1B \
+Tutorial1B \
 #Tutorial1C \
 #Tutorial1D \
 #Tutorial2 \

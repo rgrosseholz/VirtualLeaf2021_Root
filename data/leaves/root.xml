@@ -54,7 +54,7 @@
       <par val="80" name="lambda_length"/>
       
       
-      <par val="4" name="yielding_threshold"/>
+      <par val="3.5" name="yielding_threshold"/>
       
       
       <par val="0" name="lambda_celllength"/>
@@ -63,7 +63,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="2" name="cell_expansion_rate"/>
+      <par val="0.005" name="cell_expansion_rate"/>
       
       
       <par val="10" name="cell_div_expansion_rate"/>
@@ -75,7 +75,7 @@
       <par val="0.0001" name="ode_accuracy"/>
       
       
-      <par val="0.4" name="mc_stepsize"/>
+      <par val="0.2" name="mc_stepsize"/>
       
       
       <par val="0.2" name="mc_cell_stepsize"/>
@@ -394,7 +394,7 @@
       <par val="100000" name="nit"/>
       
       
-      <par val="65535" name="compatibility_level"/>
+      <par val="1 " name="compatibility_level"/>
       
       
       <par val="1e+06" name="maxt"/>
@@ -412,7 +412,7 @@
       <par val="0.25" name="vessel_expansion_rate"/>
       
       
-      <par name="d" val="1"/>
+      <par name="d" val="200"/>
       <par name="e" val="1"/>
 
 
@@ -467,9 +467,9 @@
          <valarray>
          
             <val v="2.5e5"/>
-            <val v="150"/>
-            <val v="2"/>
-            <val v="1e-3"/>
+            <val v="400"/>
+            <val v="10"/>
+            <val v="1e-6"/>
             <val v="100"/> 
 
         
@@ -512,9 +512,6 @@
   
    
    </parameter>
-   
-   
-  
    
    <nodes n="163">
       <node nr="0" x="117.56826" y="119.70128" sam="false" boundary="false" fixed="false"/>

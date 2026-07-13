@@ -849,7 +849,7 @@ double Mesh::getStrainEnergy( Triangle* triangle, Cell& cell, Matrix& Y, Vector 
   Vector B { triangle->getNodeB()->getPos() };
   Vector C { triangle->getNodeC()->getPos() };
   Vector target_A { triangle->getTargetA( cell.getTargetVectorABofTriangle()) };
-  Vector deltaP { 0.5*(target_A - A) };
+  Vector deltaP { (target_A - A) };
   double area { (B.y-C.y)*(A.x-C.x)+(C.x-B.x)*(A.y-C.y) };
   Vector strain { ((B.y-C.y)*deltaP.x)/(6*area),
                   (C.x-B.x)*deltaP.y/(6*area),
@@ -905,8 +905,8 @@ double Mesh::DisplaceNodes(void)
       continue;
 
     // Attempt to move this cell in a random direction
-    double rx=par.mc_stepsize*(RANDOM()-0.5); // was 100.
-    double ry=par.mc_stepsize*(RANDOM()-0.5);
+    double rx=par.mc_stepsize*(RANDOM()-0.6); 
+    double ry=par.mc_stepsize*(RANDOM()-0.4);
 
     // Uniform with a circle of radius par.mc_stepsize
     /* double r = RANDOM() * par.mc_stepsize;

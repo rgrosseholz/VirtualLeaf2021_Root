@@ -57,13 +57,9 @@ void TwoCells::CellHouseKeeping(CellBase *c)
 {
     
   // growth rates are calculated 
-  if(c->getTargetLength() == 2){
-    c->EnlargeTargetArea(par->cell_expansion_rate *  par->d  );
-  }else if(c->getTargetLength() == 1){
-    c->EnlargeTargetArea(par->cell_expansion_rate * par->e);
-  }else {
-    c->EnlargeTargetArea(par->cell_expansion_rate);
-  }
+ 
+  c->EnlargeTargetArea(par->cell_expansion_rate * c->getTargetArea() );
+ 
 
   // initialize cell properties depending on cell type
   if(!(c->isTrianglePlaced()) && c->Index() != -1 && c->CellType() == 0 ) 
@@ -98,7 +94,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     c->setTargetVectorABofTriangle( Vector{width,0,0} );
     c->setTriangles(width - par->rho1, par->c0);
     // set mechanical properties
-    c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
+   c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
                    Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
                   
     c->SetCellVeto(true);
@@ -120,8 +116,8 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     c->setTargetVectorABofTriangle( Vector{width,0,0} );
     c->setTriangles(width - par->gamma, par->eps);
     // set mechanical properties
-    c->setStiffnessMatrix( par->k[5] * Matrix { Vector { par->k[6],par->k[7],0},
-                   Vector { par->k[7],par->k[8],0}, Vector {0,0,par->k[9] }});
+    c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
+                   Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
                   
     c->SetCellVeto(true);
     double centroidY { c->Centroid().y };
@@ -143,8 +139,8 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     c->setTargetVectorABofTriangle( Vector{width,0,0} );
     c->setTriangles(width - par->betaN, par->gammaN);
     // set mechanical properties
-    c->setStiffnessMatrix( par->k[10] * Matrix { Vector { par->k[11],par->k[12],0},
-                   Vector { par->k[12],par->k[13],0}, Vector {0,0,par->k[14] }});
+    c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
+                   Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
 
     c->SetCellVeto(true);
     double centroidY { c->Centroid().y };
@@ -162,7 +158,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
       c->Area() > par->rel_cell_div_threshold * c->BaseArea() 
       )
   {
-		  c->Divide();
+		  c->DivideOverAxis(Vector {1,0,0});
 	}
 
     //cell wall weakening happens here

@@ -824,7 +824,7 @@ void CellBase::setTriangles( double minX_distance, double maxY_distance )
       neighbor2=*next_n_iterator;
     }
 
-    if( n_B == neighbor1 || n_B == neighbor2 ) { continue; }
+    //if( n_B == neighbor1 || n_B == neighbor2 ) { continue; }
 
     if(n_B != NULL){
        for (list<Node *>::iterator i=nodes.begin(); i!=nodes.end(); i++) {

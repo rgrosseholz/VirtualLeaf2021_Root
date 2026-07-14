@@ -806,7 +806,12 @@ void CellBase::setTriangles( double minX_distance, double maxY_distance )
 {
   triangles.clear();
   for( list<Node *>::iterator n=nodes.begin(); n!=nodes.end(); n++ ){
-    Node* n_B { findeOpposedNode((*n), minX_distance, maxY_distance) }; // 6 sollte eig base length sein! ist abstand in  model 1A
+    Node* n_B;
+    if( (*n)->boundary ){
+    n_B = findeOpposedNode((*n), minX_distance, maxY_distance);
+    }else{
+    n_B = findeBestOpposedNode((*n));
+    }
     Node *neighbor1;
     if (n!=nodes.begin()) {
       list<Node *>::iterator previous_n_iterator=n;

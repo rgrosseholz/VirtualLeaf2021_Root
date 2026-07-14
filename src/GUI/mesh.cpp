@@ -850,7 +850,7 @@ double Mesh::getStrainEnergy( Triangle* triangle, Cell& cell, Matrix& Y, Vector 
   Vector C { triangle->getNodeC()->getPos() };
   Vector target_A { triangle->getTargetA( cell.getTargetVectorABofTriangle()) };
   Vector deltaP { (target_A - A) };
-  double area { (B.y-C.y)*(A.x-C.x)+(C.x-B.x)*(A.y-C.y) };
+  double area { fabs((B.y-C.y)*(A.x-C.x)+(C.x-B.x)*(A.y-C.y)) };
   Vector strain { ((B.y-C.y)*deltaP.x)/(6*area),
                   (C.x-B.x)*deltaP.y/(6*area),
                   ((B.y-C.y)*deltaP.y + (C.x-B.x)*deltaP.x)/(12*area) } ;
@@ -1483,16 +1483,19 @@ void Mesh::InsertNode(Edge &e) {
     }
     c++;
   }
-
+  
+  //creats unique list of owner cells
+  list<Cell*> cells;
   for(auto owner : owners){
     Cell* cell { owner.cell };
+    cells.push_back(cell);
+  }
+  cells.unique();
+
+  for(auto cell : cells){
     if(cell->isTrianglePlaced() ){
       double width { cell->getTargetVectorABofTriangle().x };
-      cell->setTriangles(width * par.rho1 , par.c0);
-      if ( new_node->boundary && (! cell->findeOpposedNode(new_node, width - par.rho1, par.c0)) ){
-        cell->setTriangleOnNode(new_node);
-      } 
-
+      cell->setTriangles(width * par.rho1 , par.c0);   
     }
   }
   new_node->splittWallElementsBetween(e.first, e.second);

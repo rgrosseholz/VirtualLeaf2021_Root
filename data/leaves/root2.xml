@@ -51,10 +51,10 @@
       <par val="1" name="T"/>
       
       
-      <par val="80" name="lambda_length"/>
+      <par val="100" name="lambda_length"/>
       
       
-      <par val="7" name="yielding_threshold"/>
+      <par val="14" name="yielding_threshold"/>
       
       
       <par val="0" name="lambda_celllength"/>
@@ -63,7 +63,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="0.001" name="cell_expansion_rate"/>
+      <par val="0.0025" name="cell_expansion_rate"/>
       
       
       <par val="10" name="cell_div_expansion_rate"/>
@@ -400,7 +400,7 @@
       <par val="1e+06" name="maxt"/>
       
       
-      <par val="-1" name="rseed"/>
+      <par val="1" name="rseed"/>
       
       
       <par val="16" name="constituous_expansion_limit"/>
@@ -412,8 +412,8 @@
       <par val="0.25" name="vessel_expansion_rate"/>
       
       
-      <par name="d" val="200"/>
-      <par name="e" val="1"/>
+      <par name="d" val="500"/>
+      <par name="e" val="0"/>
 
 
 
@@ -467,9 +467,9 @@
          <valarray>
          
             <val v="3e5"/>
-            <val v="200"/>
+            <val v="1000"/>
             <val v="10"/>
-            <val v="1e-6"/>
+            <val v="1e-1"/>
             <val v="50"/> 
 
         
@@ -1692,22 +1692,7 @@
          <transporters2/>
       </wall>
    </walls>
-   <nodesets n="1">
-      <nodeset index="0" name="boundary_nodes">
-         <node n="83"/>
-         <node n="82"/>
-         <node n="90"/>
-         <node n="89"/>
-         <node n="9"/>
-         <node n="8"/>
-         <node n="14"/>
-         <node n="17"/>
-         <node n="53"/>
-         <node n="54"/>
-         <node n="46"/>
-         <node n="47"/>
-      </nodeset>
-   </nodesets>
+  
    
    
   

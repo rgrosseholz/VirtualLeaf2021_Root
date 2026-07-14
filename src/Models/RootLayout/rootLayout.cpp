@@ -68,7 +68,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     // set triangles
     c->PlaceTriangles();
     c->setTargetVectorABofTriangle( Vector{width,0,0} );
-    c->setTriangles(width - par->nu, par->rho0);
+    c->setTriangles(width * par->rho1, par->c0);
     // set mechanical properties
     c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
                    Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
@@ -92,7 +92,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     
     c->PlaceTriangles();
     c->setTargetVectorABofTriangle( Vector{width,0,0} );
-    c->setTriangles(width - par->rho1, par->c0);
+    c->setTriangles(width * par->rho1, par->c0);
     // set mechanical properties
    c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
                    Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
@@ -114,7 +114,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     
     c->PlaceTriangles();
     c->setTargetVectorABofTriangle( Vector{width,0,0} );
-    c->setTriangles(width - par->gamma, par->eps);
+    c->setTriangles(width * par->rho1, par->c0);
     // set mechanical properties
     c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
                    Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
@@ -137,7 +137,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     
     c->PlaceTriangles();
     c->setTargetVectorABofTriangle( Vector{width,0,0} );
-    c->setTriangles(width - par->betaN, par->gammaN);
+    c->setTriangles(width * par->rho1, par->c0);
     // set mechanical properties
     c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
                    Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});

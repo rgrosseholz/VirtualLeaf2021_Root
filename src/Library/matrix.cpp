@@ -120,9 +120,9 @@ Vector Matrix::operator*(const Vector &v) const
   // matrix * vector
   Vector result;
 
-  result.x = mat[0][0]*v.x+mat[0][1]*v.y+mat[0][2]*v.z;
-  result.y = mat[1][0]*v.x+mat[1][1]*v.y+mat[1][2]*v.z;
-  result.z = mat[2][0]*v.x+mat[2][1]*v.y+mat[2][2]*v.z;
+  result.x = mat[0][0]*v.x + mat[0][1]*v.y + mat[0][2]*v.z;
+  result.y = mat[1][0]*v.x + mat[1][1]*v.y + mat[1][2]*v.z;
+  result.z = mat[2][0]*v.x + mat[2][1]*v.y + mat[2][2]*v.z;
 
   return result;
 }

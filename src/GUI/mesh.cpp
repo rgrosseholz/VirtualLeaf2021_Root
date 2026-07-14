@@ -854,7 +854,7 @@ double Mesh::getStrainEnergy( Triangle* triangle, Cell& cell, Matrix& Y, Vector 
   Vector strain { ((B.y-C.y)*deltaP.x)/(6*area),
                   (C.x-B.x)*deltaP.y/(6*area),
                   ((B.y-C.y)*deltaP.y + (C.x-B.x)*deltaP.x)/(12*area) } ;
- double energy { InnerProduct((Y*strain),strain) };
+  double energy { InnerProduct((Y*strain),strain) };
   return energy;
 }
 /**
@@ -905,8 +905,8 @@ double Mesh::DisplaceNodes(void)
       continue;
 
     // Attempt to move this cell in a random direction
-    double rx=par.mc_stepsize*(RANDOM()-0.6); 
-    double ry=par.mc_stepsize*(RANDOM()-0.4);
+    double rx=par.mc_stepsize*(RANDOM()-0.5); 
+    double ry=par.mc_stepsize*(RANDOM()-0.5);
 
     // Uniform with a circle of radius par.mc_stepsize
     /* double r = RANDOM() * par.mc_stepsize;
@@ -1488,7 +1488,7 @@ void Mesh::InsertNode(Edge &e) {
     Cell* cell { owner.cell };
     if(cell->isTrianglePlaced() ){
       double width { cell->getTargetVectorABofTriangle().x };
-      cell->setTriangles(width - par.rho1, par.c0);
+      cell->setTriangles(width * par.rho1 , par.c0);
       if ( new_node->boundary && (! cell->findeOpposedNode(new_node, width - par.rho1, par.c0)) ){
         cell->setTriangleOnNode(new_node);
       } 

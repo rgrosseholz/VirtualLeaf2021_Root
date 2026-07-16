@@ -750,7 +750,7 @@ Vector CellBase::getMinMaxPositionY()
 
 /**
  * @brief Findes opposing node to op_node, which is the closes to the y coordinate
- *        and the x distance not smaller than minX_distance
+ *        and the x distance. They need to have a minimal X distnace and a maximal Y distance.
  * 
  * @details Loops over the nodes and updates the opposing_node to the node with the smallest y and x distance.
  *          
@@ -770,7 +770,7 @@ Node* CellBase::findeOpposedNode(Node* op_node, double minX_distance, double max
     if (n == op_node) continue;
     double dy = fabs(n->y - op_node_y);
     double dx = fabs(n->x - op_node_x);
-    if ( dy <= best_dy+1 && dx > best_dx - 1 ) {
+    if ( dy <= best_dy+1 || ( dy <= best_dy +1 && dx > best_dx - 1) ) {
         best_dy = dy;
         best_dx = dx;
         opposing_node = n;
@@ -807,8 +807,8 @@ void CellBase::setTriangles( double minX_distance, double maxY_distance )
   triangles.clear();
   for( list<Node *>::iterator n=nodes.begin(); n!=nodes.end(); n++ ){
     Node* n_B;
-    if( (*n)->boundary ){
-    n_B = findeOpposedNode((*n), minX_distance, maxY_distance);
+    if( ! (*n)->boundary ){
+     n_B =  findeOpposedNode((*n), minX_distance, maxY_distance) ;
     }else{
     n_B = findeBestOpposedNode((*n));
     }

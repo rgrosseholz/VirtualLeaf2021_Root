@@ -271,6 +271,10 @@ TIMESTEP {
 		mesh.ElasticModulus(par.elastic_modulus);
 		mesh.setElasticLimit(par.elastic_limit);
 		mesh.WallRelaxation();
+    
+    if( !mesh.areTrianglesInitialized() ){
+      mesh.initializeTriangles();
+    }
 
 		dh = mesh.DisplaceNodes();
 

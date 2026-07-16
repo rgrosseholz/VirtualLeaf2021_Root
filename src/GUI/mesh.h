@@ -231,56 +231,69 @@ class Mesh {
     }
   }
 
-  void DoCellHouseKeeping(vector<CellWallCurve>& curves) {
+  void DoCellHouseKeeping(vector<CellWallCurve> &curves)
+  {
     vector<Cell *> current_cells = cells;
     for (vector<Cell *>::iterator i = current_cells.begin();
-    		i != current_cells.end();
-    		i ++) {
-    	plugin->CellHouseKeeping(*i); // cellhouse keeping of model
+         i != current_cells.end();
+         i++)
+    {
+      plugin->CellHouseKeeping(*i); // cellhouse keeping of model
     }
-    //cell wall reconfiguration
-    sort(curves.begin(), curves.end(), [](CellWallCurve lhs, CellWallCurve rhs) {return lhs.getThreshold() > rhs.getThreshold();});
-    CellWallCurve * array = &(curves[0]);
-    double count = curves.size();
-    for (int index = 0;index < (count*3); index++) {
-    	double rand= RANDOM();
-    	// quadratic random is used to prioritize high energy cases over low energy cases
-    	int arrayIndex = round((count-1.)*rand*rand);
-    	CellWallCurve * element= &(array[arrayIndex]);
-    	if (element->removeSpike()) {
-    	    if(element->isBorderCase()){
-    	    	RepairBoundaryPolygon();
-    	    }
-    	    bool anyActive = false;
-    	    for (std::vector<CellWallCurve>::iterator it2 = curves.begin(); it2 != curves.end(); ++it2){
-    	    	it2->check_overlap(*element);
-    	    	anyActive = anyActive || !(it2->isDeacivated());
-    		}
-          element->getCell()->setTriangles();
-          element->getOtherCell()->setTriangles();
-    	    element->reset();
-    	    if (!anyActive) {
-    	    	break;
-    	    }
-    	}
+    // cell wall reconfiguration
+    if (activateWallReconfigurationing())
+    {
+      sort(curves.begin(), curves.end(), [](CellWallCurve lhs, CellWallCurve rhs)
+           { return lhs.getThreshold() > rhs.getThreshold(); });
+      CellWallCurve *array = &(curves[0]);
+      double count = curves.size();
+      for (int index = 0; index < (count * 3); index++)
+      {
+        double rand = RANDOM();
+        // quadratic random is used to prioritize high energy cases over low energy cases
+        int arrayIndex = round((count - 1.) * rand * rand);
+        CellWallCurve *element = &(array[arrayIndex]);
+        if (element->removeSpike())
+        {
+          if (element->isBorderCase())
+          {
+            RepairBoundaryPolygon();
+          }
+          bool anyActive = false;
+          for (std::vector<CellWallCurve>::iterator it2 = curves.begin(); it2 != curves.end(); ++it2)
+          {
+            it2->check_overlap(*element);
+            anyActive = anyActive || !(it2->isDeacivated());
+          }
+          element->reset();
+          if (!anyActive)
+          {
+            break;
+          }
+        }
+      }
     }
 
     for (vector<Cell *>::iterator i = current_cells.begin();
-    		i != current_cells.end();
-    		i ++) {
-		// Call functions of Cell that cannot be called from CellBase, including Division
-		if ((*i)->flag_for_divide) {
-			if ((*i)->division_axis) {
-				(*i)->DivideOverAxis(*(*i)->division_axis);
-				delete (*i)->division_axis;
-				(*i)->division_axis = 0;
-			} else {
-				(*i)->Divide();
-			}
-			(*i)->flag_for_divide=false;
-		}
+         i != current_cells.end();
+         i++)
+    {
+      // Call functions of Cell that cannot be called from CellBase, including Division
+      if ((*i)->flag_for_divide)
+      {
+        if ((*i)->division_axis)
+        {
+          (*i)->DivideOverAxis(*(*i)->division_axis);
+          delete (*i)->division_axis;
+          (*i)->division_axis = 0;
+        }
+        else
+        {
+          (*i)->Divide();
+        }
+        (*i)->flag_for_divide = false;
+      }
     }
-
   }
 
   // Apply "f" to cell i
@@ -465,6 +478,15 @@ class Mesh {
   Node* findNextBoundaryNode(Node*);
 
   vector<Node *> getShuffledNodes() { return shuffled_nodes;};
+
+  void initializeTriangles( ){
+    for( auto cell : cells ){
+      plugin->initializeTriangles(cell);
+    }
+    par.mc_cell_stepsize = 1;
+  };
+
+  bool areTrianglesInitialized() { return static_cast<bool> (par.mc_cell_stepsize); };
 
  private:
   list<Node *>* cellNodes(Cell * cell) ;

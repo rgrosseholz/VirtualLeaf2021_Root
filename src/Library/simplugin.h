@@ -43,6 +43,7 @@ class SimPluginInterface {
 
   virtual ~SimPluginInterface() { }
 
+  virtual void initializeTriangles(CellBase *c) = 0;
   // Executed after the cellular mechanics steps have equillibrized
   virtual void CellHouseKeeping(CellBase *c) = 0;
 

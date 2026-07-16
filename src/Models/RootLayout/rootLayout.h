@@ -35,7 +35,7 @@ class TwoCells : public QObject, SimPluginInterface {
      Q_PLUGIN_METADATA(IID "org.virtualleaf.RootLayout")
 public:
 	virtual QString ModelID(void);
-	
+	virtual void initializeTriangles (CellBase *c);
 	// Executed after the cellular mechanics steps have equillibrized
 	virtual void CellHouseKeeping (CellBase *c);
 	// Differential equations describing transport of chemicals from cell to cell

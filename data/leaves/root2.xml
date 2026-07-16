@@ -51,7 +51,7 @@
       <par val="1" name="T"/>
       
       
-      <par val="100" name="lambda_length"/>
+      <par val="140" name="lambda_length"/>
       
       
       <par val="14" name="yielding_threshold"/>
@@ -66,7 +66,7 @@
       <par val="0.0025" name="cell_expansion_rate"/>
       
       
-      <par val="10" name="cell_div_expansion_rate"/>
+      <par val="7" name="cell_div_expansion_rate"/>
       
       
       <par val="true" name="auxin_dependent_growth"/>
@@ -78,7 +78,7 @@
       <par val="0.2" name="mc_stepsize"/>
       
       
-      <par val="0.2" name="mc_cell_stepsize"/>
+      <par val="0" name="mc_cell_stepsize"/>
       
       
       <par val="1000" name="energy_threshold"/>
@@ -394,7 +394,7 @@
       <par val="100000" name="nit"/>
       
       
-      <par val="1 " name="compatibility_level"/>
+      <par val="1" name="compatibility_level"/>
       
       
       <par val="1e+06" name="maxt"/>
@@ -426,8 +426,8 @@
       <par val="4" name="rho0"/>
 
 
-      <par val="0.8" name="rho1"/> 
-      <par val="4" name="c0"/> 
+      <par val="0.75" name="rho1"/> 
+      <par val="3" name="c0"/> 
 
 
       <par val="2.5" name="gamma"/> 
@@ -466,8 +466,8 @@
               
          <valarray>
          
-            <val v="3e5"/>
-            <val v="1000"/>
+            <val v="2e5"/>
+            <val v="500"/>
             <val v="10"/>
             <val v="1e-1"/>
             <val v="50"/> 

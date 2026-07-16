@@ -51,23 +51,33 @@ void TwoCells::OnDivide(ParentInfo *parent_info, CellBase *daughter1, CellBase *
 void TwoCells::SetCellColor(CellBase *c, QColor *color)
 {
   // add cell coloring rules here
-  color->setRgb(20, 0 , 0);
-}
+  double targetArea = c->getTargetArea();
+  double currentArea = c->Area();
+  double maxLogDeviation = log10(2.0);
+  double areaDiff = log10(currentArea/targetArea);
 
-void TwoCells::CellHouseKeeping(CellBase *c)
-{
-    
-  // growth rates are calculated 
-  if( (c->Index() == 47 || c->Index() == 30 || c->Index() == 37 || c->Index() == 45
-    || c->Index() == 10 || c->Index() == 11 || c->Index() == 12 || c->Index() == 27 || c->Index() == 0
-    || c->Index() == 29) && par->e <= 9 )
-  { c->EnlargeTargetArea(par->d);
-    par->e ++;
+  areaDiff = clamp(
+    areaDiff,
+    -maxLogDeviation,
+    maxLogDeviation
+  );
+  double intensity = abs(areaDiff) / maxLogDeviation;
+
+  int deviationChannel = static_cast<int>(255.0 * intensity);
+
+  int greenChannel = 255 - deviationChannel;
+
+  if (areaDiff < 0){
+    color->setRgb(deviationChannel, greenChannel, 0);
   }
-  //c->EnlargeTargetArea(par->cell_expansion_rate * c->getTargetArea() );
-
+  else
+  {
+    color->setRgb(0, greenChannel, deviationChannel);
+  }
+}
+void TwoCells::initializeTriangles(CellBase *c){
   // initialize cell properties depending on cell type
-  if(!(c->isTrianglePlaced()) && c->Index() != -1 && c->CellType() == 0 ) 
+  if( c->Index() != -1 && c->CellType() == 0 ) 
   {
     double width {6}; //  width of the cell 
     // set triangles
@@ -91,7 +101,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     }
   }
 
-  if(!(c->isTrianglePlaced()) && c->CellType() == 1 ) 
+  if( c->CellType() == 1 ) 
   {
     double width {6};
     
@@ -113,7 +123,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     }
   }
 
-  if(!(c->isTrianglePlaced()) && c->CellType() == 2 ) 
+  if( c->CellType() == 2 ) 
   {
     double width {10};
     
@@ -136,7 +146,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   }
 
 
-  if(!(c->isTrianglePlaced()) && c->CellType() == 3 ) 
+  if( c->CellType() == 3 ) 
   {
     double width {10};
     c->PlaceTriangles();
@@ -157,6 +167,20 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     }
     
   }
+}
+
+void TwoCells::CellHouseKeeping(CellBase *c)
+{
+    
+  // growth rates are calculated 
+  if( (c->Index() == 47 || c->Index() == 30 || c->Index() == 37 || c->Index() == 45
+    || c->Index() == 10 || c->Index() == 11 || c->Index() == 12 || c->Index() == 19 || c->Index() == 27 || c->Index() == 0
+    || c->Index() == 29) && c->getTargetLength() != 3 )
+  { c->EnlargeTargetArea(par->d);
+    c->SetTargetLength(3);
+  }
+
+  //c->EnlargeTargetArea(par->cell_expansion_rate * c->getTargetArea() );
 
   // Allow only lowest row  of cells to devide. The parameter pin_fixed is used therefore.
   if ( c->getPin_fixed()  && 

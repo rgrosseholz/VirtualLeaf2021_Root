@@ -1,0 +1,2 @@
+Previous XML snapshot was not found: /tmp/tmp.s63r9nSPQe/prev/leaf.000001.xml
+A diff could not be generated.

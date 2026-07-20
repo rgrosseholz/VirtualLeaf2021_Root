@@ -30,6 +30,9 @@
 #include <list>
 #include <iterator>
 #include "node.h"
+#include "mesh.h"
+
+class Mesh;
 class NodeSet : public list<Node *> {
 
  public:
@@ -80,23 +83,36 @@ class NodeSet : public list<Node *> {
     transform( begin(), end(), ostream_iterator<int>( os, " " ), mem_fn( &Node::Index ) );
   }
 
+  
+
   /*! Attempt a move over (rx, ry)
     reject if energetically unfavourable.
   */
-
-  void AttemptMove(double rx, double ry) {
+  void AttemptMove(Mesh* m, double rx, double ry) {
 
     done = true;
     // 1. Collect list of all attached to the nodes in the set
     list<Cell *> celllist = getCells();
 
     // 2. Sum the current energy of these cells
+    // implemented erngies: area energy, 1D and 2D cell wall energy
     double old_energy=0.;
     for ( list<Cell *>::const_iterator i = celllist.begin(); 
 	  i!=celllist.end();
 	  ++i ) {
-
-      old_energy += (*i)->Energy();
+      double length_energy {0};
+      double cellulose_energy { 0 };
+      for(auto node : (*i)->getNodesList()){
+        //1D Cell Wall energy
+        for( auto owner : node->owners){
+          if( owner.CellEquals( (*i)->Index() ) ){
+            length_energy += m->cellWallEnergy1D( *(*i), *node, *owner.get_nb1(), *owner.get_nb2() );
+          }
+        }
+        //2D Cell Wall energy
+        cellulose_energy += m->wallEnergy2D(*(*i), *node);
+      }
+      old_energy += (*i)->AreaEnergy() +  length_energy + cellulose_energy;
     }
 
     // 3. (Temporarily) move the set's nodes.
@@ -110,12 +126,23 @@ class NodeSet : public list<Node *> {
     }
 
     // 4. Recalculate the energy
-    double new_energy = 0.;
+    double new_energy=0.;
     for ( list<Cell *>::const_iterator i = celllist.begin(); 
 	  i!=celllist.end();
 	  ++i ) {
-
-      new_energy += (*i)->Energy();
+      double length_energy {0};
+      double cellulose_energy { 0 };
+      for(auto node : (*i)->getNodesList()){
+        //1D Cell Wall energy
+        for( auto owner : node->owners){
+          if( owner.CellEquals( (*i)->Index() ) ){
+            length_energy += m->cellWallEnergy1D( *(*i), *node, *owner.get_nb1(), *owner.get_nb2() );
+          }
+        }
+        //2D Cell Wall energy
+        cellulose_energy += m->wallEnergy2D(*(*i), *node);
+      }
+      new_energy += (*i)->AreaEnergy() +  length_energy + cellulose_energy;
     }
 
 

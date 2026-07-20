@@ -899,7 +899,7 @@ Node* CellBase::findeBestOpposedNode( Node* op_node ){
     if (n == op_node) continue;
     double dy = fabs(n->y - op_node_y);
     double dx = fabs(n->x - op_node_x);
-    if ( dy <= best_dy+1 && dx > best_dx - 1 ) {
+    if ( dy <= best_dy+1 || ( dy <= best_dy +1 && dx > best_dx - 1) ) {
         best_dy = dy;
         best_dx = dx;
         opposing_node = n;

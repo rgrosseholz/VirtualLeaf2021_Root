@@ -75,6 +75,7 @@ void TwoCells::SetCellColor(CellBase *c, QColor *color)
     color->setRgb(0, greenChannel, deviationChannel);
   }
 }
+
 void TwoCells::initializeTriangles(CellBase *c){
   // initialize cell properties depending on cell type
   if( c->Index() != -1 && c->CellType() == 0 ) 
@@ -173,15 +174,22 @@ void TwoCells::CellHouseKeeping(CellBase *c)
 {
     
   // growth rates are calculated 
-  if( (c->Index() == 47 || c->Index() == 30 || c->Index() == 37 || c->Index() == 45
+  /*if( (c->Index() == 47 || c->Index() == 30 || c->Index() == 37 || c->Index() == 45
     || c->Index() == 10 || c->Index() == 11 || c->Index() == 12 || c->Index() == 19 || c->Index() == 27 || c->Index() == 0
     || c->Index() == 29) && c->getTargetLength() != 3 )
   { c->EnlargeTargetArea(par->d);
     c->SetTargetLength(3);
   }
-
-  //c->EnlargeTargetArea(par->cell_expansion_rate * c->getTargetArea() );
-
+  */
+  if(c->getTargetLength() == 0 && c->TargetArea() < par->f * c->Area()){
+    c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
+  }
+  if(c->getTargetLength() == 1 && c->TargetArea() < par->c * c->Area()){
+    c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
+  }
+  if(c->getTargetLength() == 2 && c->TargetArea() < par->mu * c->Area()){
+    c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
+  }
   // Allow only lowest row  of cells to devide. The parameter pin_fixed is used therefore.
   if ( c->getPin_fixed()  && 
       c->Area() > par->rel_cell_div_threshold * c->BaseArea() 

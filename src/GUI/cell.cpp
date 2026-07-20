@@ -1439,6 +1439,10 @@ void Cell::Displace (void)
   Displace(par.mc_cell_stepsize*(RANDOM()-0.5),par.mc_cell_stepsize*(RANDOM()-0.5),0);
 }
 
+double Cell::AreaEnergy(void) const{
+  return DSQR(CalcArea() - target_area);
+}
+
 // Get energy level of whole cell (excluding length constraint?)
 double Cell::Energy(void) const
 {

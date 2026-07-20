@@ -112,6 +112,7 @@ class Cell : public CellBase
   double Displace(double dx, double dy, double dh);
   void Displace(void);
   double Energy(void) const;
+  double AreaEnergy(void) const;
   bool SelfIntersect(void);
   bool MoveSelfIntersectsP(Node *nid, Vector new_pos);
   bool LinePieceIntersectsP(const Vector v1, const Vector v2) const;

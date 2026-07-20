@@ -871,6 +871,29 @@ double Mesh::deltaE_triangle ( Triangle* triangle, Cell& cell, Matrix& Y, Vector
   return energy;
 }
 
+/**
+ * @brief Calculates the energy for the 2D cell wall. Not the energy difference.
+ * 
+ * @param Takes cell, moving node and node displacment parameter
+ * 
+ * @return Retruns energy due to 2D cell wall property. Is 0 if no triangles are placed.
+ */
+double Mesh::wallEnergy2D( Cell& cell, Node& node, Vector deltaP){
+  double cellulose_energy { 0 };
+  if (cell.isTrianglePlaced())
+  {
+    list<Triangle*> activeTriangles { cell.findActiveTriangles(&node) };
+    if(activeTriangles.front()){
+      for(auto* t:activeTriangles){
+        Matrix C { cell.getStiffnessMatrix() };
+        cellulose_energy += Mesh::getStrainEnergy(t, cell, C, deltaP);
+      }
+    }
+  }
+  return cellulose_energy;
+}
+
+
 double Mesh::DisplaceNodes(void)
 {
 
@@ -905,8 +928,8 @@ double Mesh::DisplaceNodes(void)
       continue;
 
     // Attempt to move this cell in a random direction
-    double rx=par.mc_stepsize*(RANDOM()-0.5); 
-    double ry=par.mc_stepsize*(RANDOM()-0.5);
+    double rx=par.mc_stepsize*(RANDOM()-0.7); 
+    double ry=par.mc_stepsize*(RANDOM()-0.4);
 
     // Uniform with a circle of radius par.mc_stepsize
     /* double r = RANDOM() * par.mc_stepsize;
@@ -929,7 +952,7 @@ double Mesh::DisplaceNodes(void)
     {
       // move each node set only once
       if (!node.node_set->DoneP()) 
-	node.node_set->AttemptMove(rx,ry);
+	node.node_set->AttemptMove(this, rx, ry);
     }
     else
     {
@@ -942,14 +965,12 @@ double Mesh::DisplaceNodes(void)
       double length_dh=0.;
       double cell_length_dh=0.;
       double alignment_dh=0.;
-      double anisotropic_dh {0};
-      double cellulose_spring_dh {0};
+      double cellWall2D_dh {0};
 
       // for (auto c : cells){
       //    (c->index == 0) ? c->anisotropic_growth = true : c->anisotropic_growth = false;
       // };
 
-      double &anisotropic_penality{par.d};
       Vector anisotropic_growth_axis{0, 1};
 
       double old_l1=0.,old_l2=0.,new_l1=0.,new_l2=0.;
@@ -985,7 +1006,7 @@ double Mesh::DisplaceNodes(void)
 
         Vector i_plus_1  { *(cit->nb2) };
 
-	//if (cit->cell>=0) {
+	//if (cit->cell>=0) {   
 
         // calculate: area_dh, cell_length_dh, alignment_dh, length_dh   lasse
         if (!cit->cell->BoundaryPolP())
@@ -1205,55 +1226,13 @@ double Mesh::DisplaceNodes(void)
 	}
 
   // cellulose spring energy panality
+  cellWall2D_dh += Mesh::wallEnergy2D( c, node, delta_p );
+  cellWall2D_dh -= Mesh::wallEnergy2D( c, node );
 
-  if (c.isTrianglePlaced())
-  {
-    list<Triangle*> activeTriangles { c.findActiveTriangles(&node) };
-    if(activeTriangles.front()){
-      for(auto* t:activeTriangles){
-        Matrix C { c.getStiffnessMatrix() };
-        cellulose_spring_dh += deltaE_triangle(t, c, C, delta_p);
-      }
-    }
-  }
-
-  // make anisotropic energy panality
-
-  //double alignment_with_axis{DSQR(InnerProduct(anisotropic_growth_axis.Normalised(), old_p.Normalised()))};
-
-  if (c.anisotropic_growth)
-  {
-
-          // The InnerProduct penalizes if the change of the x and y is not
-          // along the direction of the growth axis
-          // lasse
-          // anisotropic_dh += DSQR( InnerProduct(anisotroic_growth_axis, new_p -
-          //                         old_p)) * anisotropic_penality ;
-          // anisotropic_dh += ( DSQR( rx ) - sgn(ry) * sgn( old_p.y - c.Centroid().y )
-          //                     * DSQR( ry )  ) * anisotropic_penality;
-          
-          /*
-          //Das hier ist die "eigentlich getestete" version
-           anisotropic_dh += ((anisotropic_growth_axis * delta_p).SqrNorm()
-                             - sgn(InnerProduct((old_p - c.Centroid()), delta_p))
-                             * DSQR(InnerProduct(anisotropic_growth_axis, delta_p)))
-                             * anisotropic_penality;
-          */
-          Matrix youngs_modulus{Vector{1, 0, 0}, Vector{0, 0, 0}, Vector{0, 0, 0}};   
-          Vector quadrat_delta_p {DSQR(delta_p.x), DSQR(delta_p.y)};
-          Vector young_delta_p { youngs_modulus * delta_p };
-          double anisoDH {InnerProduct(young_delta_p, delta_p)};
-          anisotropic_dh += anisoDH * par.d;
-          anisotropic_dh += InnerProduct(youngs_modulus * Vector{DSQR(delta_p.x), DSQR(delta_p.y)},
-                                        anisotropic_growth_axis) * anisotropic_penality;
-          
-        }
-         
       }
 
       dh = area_dh + cell_length_dh + par.lambda_length * length_dh +
-           par.bend_lambda * bending_dh + par.alignment_lambda * alignment_dh + cellulose_spring_dh
-           + anisotropic_dh;
+           par.bend_lambda * bending_dh + par.alignment_lambda * alignment_dh + cellWall2D_dh;
 
          //(length_constraint_after - length_constraint_before);
 
@@ -1273,6 +1252,67 @@ double Mesh::DisplaceNodes(void)
   }
 
   return sum_dh;
+}
+
+double Mesh::cellWallEnergy1D(Cell &c, Node &node, Node &nb1, Node &nb2)
+{
+  // We must double the weights for the perimeter (otherwise they start bulging...)
+  double w1, w2;
+#ifdef FLEMING
+  if (node.boundary && nb1.boundary)
+    w1 = par.rel_perimeter_stiffness;
+  else
+    w1 = 1;
+  if (node.boundary && nb2.boundary)
+    w2 = par.rel_perimeter_stiffness;
+  else
+    w2 = 1;
+
+#else
+  if (node.boundary && nb1.boundary)
+    w1 = 2;
+  else
+    w1 = 1;
+  if (node.boundary && nb2.boundary)
+    w2 = 2;
+  else
+    w2 = 1;
+#endif
+  // Cell specific wall stiffness
+  double cell_w = c.GetWallStiffness();
+  w1 = w1 * cell_w;
+  w2 = w2 * cell_w;
+
+  double w_w1 = 1;
+  double w_w2 = 1;
+  double bl_minus_1 = 0.0;
+  double bl_plus_1 = 0.0;
+  double l1 { (node.getPos() - nb1.getPos()).Norm() };
+  double l2 { (node.getPos() - nb2.getPos()).Norm() };
+  double length_energy{0};
+  if (Mesh::activateWallStiffnessHamiltonian())
+  {
+    Mesh::calculateWallStiffness(&c, &node, &w_w1, &w_w2, &bl_minus_1, &bl_plus_1);
+  }
+  if (bl_minus_1 > 0 && bl_plus_1 > 0)
+  {
+
+    w1 = cell_w * (w_w1);
+    w2 = cell_w * (w_w2);
+    // check if wall elements are defined and pick the appropriate length_dh
+    length_energy +=
+        elastic_modulus * w1 *
+            bl_minus_1 * (DSQR(l1 / bl_minus_1 - 1)) +
+        elastic_modulus * w2 *
+            bl_plus_1 * (DSQR(l2 / bl_plus_1 - 1));
+  }
+  else
+  {
+    length_energy += 2 * Node::target_length * (w1 * l1 + w2 * l2) +
+                     w1 * DSQR(l1) + w2 * DSQR(l2);
+  }
+  //    cout << node << "\t" << bl_minus_1 <<  "\t" << bl_plus_1 <<  "\t" << w_w1 <<  "\t" << w_w2 << "\n";
+  return length_energy;
 }
 
 void Mesh::WallRelaxation(void) {

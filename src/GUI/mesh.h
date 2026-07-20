@@ -307,11 +307,15 @@ class Mesh {
   double DisplaceNodes(void);
   void WallRelaxation(void);
   void ElasticModulus(double elastic_modulus) {this->elastic_modulus=elastic_modulus;}
+  double getElasticModulus() { return elastic_modulus; }
   void setElasticLimit(double elastic_limit) {this->elastic_limit=elastic_limit;}
   void CompatibilityLevel(int compatibility_level) {this->compatibility_level=compatibility_level;}
   bool activateWallStiffnessHamiltonian() {return (this->compatibility_level & WALL_STIFFNESS_HAMILTONIAN) != 0;}
   bool activateWallReconfigurationing() {return (this->compatibility_level & WALL_SLIDING) != 0;}
 
+  double getAreaEnergery(Cell&, Vector mov_node, Vector nb1, Vector nb2);
+  double cellWallEnergy1D(Cell& c, Node& node, Node& nb1, Node& nb2);
+  double wallEnergy2D( Cell& cell, Node& node, Vector deltaP = Vector { 0,0,0 });
   double getStrainEnergy(Triangle* triangle, Cell& cell, Matrix& Y, Vector deltaA);
   double deltaE_triangle ( Triangle* triangle, Cell& cell, Matrix& Y, Vector deltaA);
   void BoundingBox(Vector &LowerLeft, Vector &UpperRight);

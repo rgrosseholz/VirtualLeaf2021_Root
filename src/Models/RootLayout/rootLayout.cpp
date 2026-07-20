@@ -53,7 +53,7 @@ void TwoCells::SetCellColor(CellBase *c, QColor *color)
   // add cell coloring rules here
   double targetArea = c->getTargetArea();
   double currentArea = c->Area();
-  double maxLogDeviation = log10(2.0);
+  double maxLogDeviation = log10(par->mu);
   double areaDiff = log10(currentArea/targetArea);
 
   areaDiff = clamp(
@@ -191,7 +191,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
   }
   // Allow only lowest row  of cells to devide. The parameter pin_fixed is used therefore.
-  if ( c->getPin_fixed()  && 
+  if (false && c->getPin_fixed()  && 
       c->Area() > par->rel_cell_div_threshold * c->BaseArea() 
       )
   {

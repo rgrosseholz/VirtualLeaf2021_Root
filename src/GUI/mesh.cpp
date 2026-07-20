@@ -1380,7 +1380,7 @@ void Mesh::InsertNode(Edge &e) {
   // it will be part of the boundary, fixed, and source, too
 
   // The new node is part of the boundary only if both its neighbors are boundary nodes and the boundray proceeds from first to second.
-  new_node->boundary = (e.first->BoundaryP() && e.first->BoundaryP()) && ((findNextBoundaryNode(e.first))->Index() == e.second->Index());
+  new_node->boundary = (e.first->BoundaryP() && e.second->BoundaryP()) && ((findNextBoundaryNode(e.first))->Index() == e.second->Index());
   new_node->fixed = e.first->fixed && e.second->fixed;
   new_node->sam = new_node->boundary && (e.first->sam || e.second->sam);
 

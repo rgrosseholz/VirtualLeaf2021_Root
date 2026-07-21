@@ -1,0 +1,2 @@
+Previous XML snapshot was not found: 
+A diff could not be generated.

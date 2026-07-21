@@ -1013,7 +1013,11 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
   // factor 4 is to keep tension on the walls;
   // this is a hidden parameter and should be made explicit
   // later on.
-  int n=(int)((dist/Node::target_length)/4+0.5);
+  WallElementInfo wallInfo;
+	this->fillWallElementInfo( &wallInfo, div_edges->first, div_edges->second );
+  double baseLength { wallInfo.getBaseLength() }; 
+  int n=(int)((dist/baseLength)/4+0.5);
+  //int n=(int)((dist/Node::target_length)/4+0.5);
 
   Vector nodevec = ( new_node[1]- new_node[0]).Normalised();
 

@@ -812,24 +812,6 @@ void CellBase::setTriangles( double minX_distance, double maxY_distance )
     }else{
     n_B = findeBestOpposedNode((*n));
     }
-    Node *neighbor1;
-    if (n!=nodes.begin()) {
-      list<Node *>::iterator previous_n_iterator=n;
-      previous_n_iterator--;
-      neighbor1=*previous_n_iterator;
-    } else {
-      neighbor1=nodes.back();
-    }
-    Node *neighbor2;
-    list<Node *>::iterator next_n_iterator=n;
-    next_n_iterator++;
-    if (next_n_iterator==nodes.end()) {
-      neighbor2=nodes.front();
-    } else {
-      neighbor2=*next_n_iterator;
-    }
-
-    //if( n_B == neighbor1 || n_B == neighbor2 ) { continue; }
 
     if(n_B != NULL){
        for (list<Node *>::iterator i=nodes.begin(); i!=nodes.end(); i++) {

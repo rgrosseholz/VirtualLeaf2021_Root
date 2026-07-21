@@ -544,9 +544,6 @@ class CellBase :  public QObject, public Vector
   inline void removeWall(Wall * wall) {walls.remove(wall);}
   void attachToCell(CellWallCurve * curve);
 
-
-  bool getAnisotropicGrowth() { return anisotropic_growth; }
-  void setAnisotropicGrowth(bool isAnisotropic)  { anisotropic_growth = isAnisotropic; }
   list<Node *> getNodesList() { return nodes;}
 
  protected:
@@ -597,7 +594,6 @@ class CellBase :  public QObject, public Vector
   bool veto_reconfigurationling; // testing cellular veto
   Vector targetVectorTriangleAB;
   Matrix stiffnessMatrix;
-
   
 
   double stiffness; // stiffness like in Hogeweg (2000)

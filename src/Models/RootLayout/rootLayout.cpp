@@ -172,15 +172,29 @@ void TwoCells::initializeTriangles(CellBase *c){
 
 void TwoCells::CellHouseKeeping(CellBase *c)
 {
-    
-  // growth rates are calculated 
-  /*if( (c->Index() == 47 || c->Index() == 30 || c->Index() == 37 || c->Index() == 45
-    || c->Index() == 10 || c->Index() == 11 || c->Index() == 12 || c->Index() == 19 || c->Index() == 27 || c->Index() == 0
-    || c->Index() == 29) && c->getTargetLength() != 3 )
-  { c->EnlargeTargetArea(par->d);
-    c->SetTargetLength(3);
+  double centerY { c->Centroid().y };  
+  // par->gamma = minimal cell center
+  if( centerY < par->gamma ){
+    par->gamma = centerY; 
   }
-  */
+   // par->eps = maximal cell center
+  if(centerY > par->eps){
+    par->eps = centerY; 
+  }
+  double tissueDistance { par->eps - par->gamma };
+  // set cell targetLength to adjust maximal allowed pressure in the cell 
+  if( centerY > par->gamma + 0.66 * tissueDistance){
+    c->SetTargetLength(0);
+  }
+  if( centerY > par->gamma + 0.33 * tissueDistance && centerY < par->gamma + 0.66 * tissueDistance){
+    c->SetTargetLength(1);
+  }
+  if( centerY < par->gamma + 0.33 * tissueDistance){
+    c->SetTargetLength(2);
+  }
+
+  // enlarge target area depending on tissue location ( cell target length )
+  // and only up to a certain pressure
   if(c->getTargetLength() == 0 && c->TargetArea() < par->f * c->Area()){
     c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
   }
@@ -190,17 +204,17 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   if(c->getTargetLength() == 2 && c->TargetArea() < par->mu * c->Area()){
     c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
   }
+
   // Allow only lowest row  of cells to devide. The parameter pin_fixed is used therefore.
-  if (false && c->getPin_fixed()  && 
+  if ( c->getPin_fixed()  && 
       c->Area() > par->rel_cell_div_threshold * c->BaseArea() 
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});
 	}
 
-    //cell wall weakening happens here
+  //cell wall weakening happens here
   if(true){
-
     c->LoopWallElements([](auto wallElementInfo){
       Vector from { *(wallElementInfo->getFrom()) };
       Vector to { *(wallElementInfo->getTo()) };

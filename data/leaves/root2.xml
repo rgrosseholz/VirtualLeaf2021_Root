@@ -39,10 +39,10 @@
       <par val="cell." name="export_fn_prefix"/>
       
       
-      <par val="1000" name="storage_stride"/>
+      <par val="100" name="storage_stride"/>
       
       
-      <par val="1000" name="xml_storage_stride"/>
+      <par val="100" name="xml_storage_stride"/>
       
       
       <par val="lateral_root" name="datadir"/>
@@ -51,7 +51,7 @@
       <par val="1" name="T"/>
       
       
-      <par val="100" name="lambda_length"/>
+      <par val="140" name="lambda_length"/>
       
       
       <par val="13" name="yielding_threshold"/>
@@ -63,7 +63,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="0.01" name="cell_expansion_rate"/>
+      <par val="0.02" name="cell_expansion_rate"/>
       
       
       <par val="7" name="cell_div_expansion_rate"/>
@@ -90,7 +90,7 @@
       <par val="0" name="alignment_lambda"/>
       
       
-      <par val="1.8" name="rel_cell_div_threshold"/>
+      <par val="2" name="rel_cell_div_threshold"/>
       
       
       <par val="4" name="rel_perimeter_stiffness"/>
@@ -394,7 +394,7 @@
       <par val="100000" name="nit"/>
       
       
-      <par val="1" name="compatibility_level"/>
+      <par val="0" name="compatibility_level"/>
       
       
       <par val="1e+06" name="maxt"/>
@@ -417,21 +417,21 @@
 
 
 
-      <par name="f" val="1.1"/>
-      <par name="c" val="3"/> 
-      <par name="mu" val="4"/>
+      <par name="f" val="1.5"/>
+      <par name="c" val="2.5"/> 
+      <par name="mu" val="3"/>
 
       
       <par val="4.5" name="nu"/>
       <par val="4" name="rho0"/>
 
 
-      <par val="0.2" name="rho1"/> 
+      <par val="0.1" name="rho1"/> 
       <par val="2.5" name="c0"/> 
 
 
-      <par val="2.5" name="gamma"/> 
-      <par val="2" name="eps"/> 
+      <par val="108" name="gamma"/> 
+      <par val="144" name="eps"/> 
 
       <par val="1.5" name="betaN"/>
       <par val="4" name="gammaN"/> 

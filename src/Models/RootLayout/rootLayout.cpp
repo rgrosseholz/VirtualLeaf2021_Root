@@ -61,18 +61,22 @@ void TwoCells::SetCellColor(CellBase *c, QColor *color)
     -maxLogDeviation,
     maxLogDeviation
   );
-  double intensity = abs(areaDiff) / maxLogDeviation;
 
-  int deviationChannel = static_cast<int>(255.0 * intensity);
-
-  int greenChannel = 255 - deviationChannel;
-
-  if (areaDiff < 0){
-    color->setRgb(deviationChannel, greenChannel, 0);
+  double deviationRatio = 0.0;
+  if (maxLogDeviation > 0) {
+    deviationRatio = areaDiff / maxLogDeviation;
   }
-  else
-  {
-    color->setRgb(0, greenChannel, deviationChannel);
+  deviationRatio = clamp(deviationRatio, -1.0, 1.0);
+
+  double intensity = abs(deviationRatio);
+  int saturation = static_cast<int>(150 + 105.0 * intensity);
+  int value = static_cast<int>(255.0 - 120.0 * intensity);
+
+  if (deviationRatio < 0) {
+    *color = QColor::fromHsv(30, saturation, value); // orange-ish for smaller-than-target
+  }
+  else {
+    *color = QColor::fromHsv(210, saturation, value); //  blue-ish for larger-than-target
   }
 }
 
@@ -91,15 +95,6 @@ void TwoCells::initializeTriangles(CellBase *c){
     // set cell wall remodelling veto              
     c->SetCellVeto(true);
 
-    // depending on cell position, set growth rate parameter ( TargetLength used for this )
-    double centroidY { c->Centroid().y };
-    if ( centroidY < 115){
-      c->SetTargetLength( 2 );
-    }else if ( centroidY < 130){
-      c->SetTargetLength( 1 );
-    } else {
-      c->SetTargetLength( 0 );
-    }
   }
 
   if( c->CellType() == 1 ) 
@@ -114,14 +109,7 @@ void TwoCells::initializeTriangles(CellBase *c){
                    Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
                   
     c->SetCellVeto(true);
-    double centroidY { c->Centroid().y };
-    if ( centroidY < 115){
-      c->SetTargetLength( 2 );
-    }else if ( centroidY < 130){
-      c->SetTargetLength( 1 );
-    } else {
-      c->SetTargetLength( 0 );
-    }
+
   }
 
   if( c->CellType() == 2 ) 
@@ -137,13 +125,7 @@ void TwoCells::initializeTriangles(CellBase *c){
                   
     c->SetCellVeto(true);
     double centroidY { c->Centroid().y };
-    if ( centroidY < 115){
-      c->SetTargetLength( 2 );
-    }else if ( centroidY < 130){
-      c->SetTargetLength( 1 );
-    } else {
-      c->SetTargetLength( 0 );
-    }
+
   }
 
 
@@ -159,19 +141,32 @@ void TwoCells::initializeTriangles(CellBase *c){
 
     c->SetCellVeto(true);
     double centroidY { c->Centroid().y };
-    if ( centroidY < 115){
-      c->SetTargetLength( 2 );
-    }else if ( centroidY < 130){
-      c->SetTargetLength( 1 );
-    } else {
-      c->SetTargetLength( 0 );
-    }
     
   }
 }
 
 void TwoCells::CellHouseKeeping(CellBase *c)
 {
+
+  //fix cell if final size is reached and belongs to the upper part of the tissue ( = targetLength > 0)
+  if(c->CellType() == 0 &&  c->TargetArea() > 170 * par->nu && c->getTargetLength() > 0){
+    c->SetTargetLength(4);//stop growth
+  }
+
+  if(c->CellType() == 1 &&  c->TargetArea() > 115 * par->nu && c->getTargetLength() > 0){
+    c->SetTargetLength(4);//stop growth
+  }
+
+  if(c->CellType() == 2 &&  c->TargetArea() > 190 * par->nu && c->getTargetLength() > 0){
+    c->SetTargetLength(4);//stop growth
+  }
+
+  if(c->CellType() == 3 && c->TargetArea() > 280 * par->nu && c->getTargetLength() > 0){
+    c->SetTargetLength(4);//stop growth
+  }
+
+
+  //update min and max cellcenter of tissue layout
   double centerY { c->Centroid().y };  
   // par->gamma = minimal cell center
   if( centerY < par->gamma ){
@@ -183,13 +178,13 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   }
   double tissueDistance { par->eps - par->gamma };
   // set cell targetLength to adjust maximal allowed pressure in the cell 
-  if( centerY > par->gamma + 0.66 * tissueDistance){
+  if( centerY > par->gamma + 0.8 * tissueDistance){
     c->SetTargetLength(0);
   }
-  if( centerY > par->gamma + 0.33 * tissueDistance && centerY < par->gamma + 0.66 * tissueDistance){
+  if( centerY > par->gamma + 0.4 * tissueDistance && centerY < par->gamma + 0.8 * tissueDistance){
     c->SetTargetLength(1);
   }
-  if( centerY < par->gamma + 0.33 * tissueDistance){
+  if( centerY < par->gamma + 0.4 * tissueDistance){
     c->SetTargetLength(2);
   }
 
@@ -205,14 +200,35 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
   }
 
-  // Allow only lowest row  of cells to devide. The parameter pin_fixed is used therefore.
-  if ( c->getPin_fixed()  && 
-      c->Area() > par->rel_cell_div_threshold * c->BaseArea() 
+  // Allow only lowest row  of cells to devide. The parameter pin_fixed is used therefore. 
+  // Allow Cell division if area is x times larger then initial cell area
+  if ( c->getPin_fixed()  && c->CellType() == 0 && 
+      c->Area() > par->rel_cell_div_threshold * 72
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});
 	}
 
+  if ( c->getPin_fixed()  && c->CellType() == 1 && 
+      c->Area() > par->rel_cell_div_threshold * 50
+      )
+  {
+		  c->DivideOverAxis(Vector {1,0,0});
+	}
+
+  if ( c->getPin_fixed()  && c->CellType() == 2 && 
+      c->Area() > par->rel_cell_div_threshold * 80
+      )
+  {
+		  c->DivideOverAxis(Vector {1,0,0});
+	}
+
+  if ( c->getPin_fixed()  && c->CellType() == 3 && 
+      c->Area() > par->rel_cell_div_threshold * 80
+      )
+  {
+		  c->DivideOverAxis(Vector {1,0,0});
+	}
   //cell wall weakening happens here
   if(true){
     c->LoopWallElements([](auto wallElementInfo){

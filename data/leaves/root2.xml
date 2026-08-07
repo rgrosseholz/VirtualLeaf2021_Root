@@ -39,10 +39,10 @@
       <par val="cell." name="export_fn_prefix"/>
       
       
-      <par val="100" name="storage_stride"/>
+      <par val="1000" name="storage_stride"/>
       
       
-      <par val="100" name="xml_storage_stride"/>
+      <par val="1000" name="xml_storage_stride"/>
       
       
       <par val="lateral_root" name="datadir"/>
@@ -63,7 +63,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="0.02" name="cell_expansion_rate"/>
+      <par val="0.005" name="cell_expansion_rate"/>
       
       
       <par val="7" name="cell_div_expansion_rate"/>
@@ -75,7 +75,7 @@
       <par val="0.0001" name="ode_accuracy"/>
       
       
-      <par val="0.2" name="mc_stepsize"/>
+      <par val="0.3" name="mc_stepsize"/>
       
       
       <par val="0" name="mc_cell_stepsize"/>
@@ -417,12 +417,12 @@
 
 
 
-      <par name="f" val="1.5"/>
-      <par name="c" val="2.5"/> 
-      <par name="mu" val="3"/>
+      <par name="f" val="1.25"/>
+      <par name="c" val="1.8"/> 
+      <par name="mu" val="2.1"/>
 
       
-      <par val="4.5" name="nu"/>
+      <par val="3.5" name="nu"/>
       <par val="4" name="rho0"/>
 
 
@@ -801,7 +801,7 @@
          <wall w="29"/>
          <wall w="31"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="46.73992459019995" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="15" source="false" pin_fixed="false" area="46.73992459019995" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="46.73992459019995" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="15" source="false" pin_fixed="false" area="46.73992459019995" fixed="false" div_counter="0">
          <node n="48"/>
          <node n="49"/>
          <node n="50"/>
@@ -813,7 +813,7 @@
          <wall w="35"/>
          <wall w="36"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="33.94373513639985" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="16" source="false" pin_fixed="true" area="33.94373513639985" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="33.94373513639985" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="16" source="false" pin_fixed="true" area="33.94373513639985" fixed="false" div_counter="0">
          <node n="50"/>
          <node n="53"/>
          <node n="54"/>
@@ -823,7 +823,7 @@
          <wall w="38"/>
          <wall w="97"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="61.631358303480056" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="17" source="false" pin_fixed="false" area="61.631358303480056" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="61.631358303480056" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="17" source="false" pin_fixed="false" area="61.631358303480056" fixed="false" div_counter="0">
          <node n="55"/>
          <node n="56"/>
          <node n="48"/>
@@ -836,7 +836,7 @@
          <wall w="41"/>
          <wall w="42"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="69.44201886824985" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="18" source="false" pin_fixed="false" area="69.44201886824985" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="69.44201886824985" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="18" source="false" pin_fixed="false" area="69.44201886824985" fixed="false" div_counter="0">
          <node n="59"/>
          <node n="60"/>
          <node n="55"/>
@@ -848,7 +848,7 @@
          <wall w="44"/>
          <wall w="45"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="94.02439925738992" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="19" source="false" pin_fixed="false" area="94.02439925738992" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="94.02439925738992" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="19" source="false" pin_fixed="false" area="94.02439925738992" fixed="false" div_counter="0">
          <node n="62"/>
          <node n="63"/>
          <node n="59"/>
@@ -1015,7 +1015,7 @@
          <wall w="61"/>
          <wall w="63"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="46.73954164619987" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="33" source="false" pin_fixed="false" area="46.73954164619987" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="46.73954164619987" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="33" source="false" pin_fixed="false" area="46.73954164619987" fixed="false" div_counter="0">
          <node n="84"/>
          <node n="88"/>
          <node n="87"/>
@@ -1027,7 +1027,7 @@
          <wall w="67"/>
          <wall w="68"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="33.94372846199999" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="34" source="false" pin_fixed="true" area="33.94372846199999" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="33.94372846199999" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="34" source="false" pin_fixed="true" area="33.94372846199999" fixed="false" div_counter="0">
          <node n="86"/>
          <node n="87"/>
          <node n="90"/>
@@ -1037,7 +1037,7 @@
          <wall w="70"/>
          <wall w="106"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="61.631146352600005" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="35" source="false" pin_fixed="false" area="61.631146352600005" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="61.631146352600005" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="35" source="false" pin_fixed="false" area="61.631146352600005" fixed="false" div_counter="0">
          <node n="91"/>
          <node n="94"/>
          <node n="93"/>
@@ -1050,7 +1050,7 @@
          <wall w="73"/>
          <wall w="74"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="70.35048683204994" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="36" source="false" pin_fixed="false" area="70.35048683204994" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="70.35048683204994" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="36" source="false" pin_fixed="false" area="70.35048683204994" fixed="false" div_counter="0">
          <node n="95"/>
          <node n="74"/>
          <node n="97"/>
@@ -1062,7 +1062,7 @@
          <wall w="76"/>
          <wall w="77"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="96.49288330713006" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="37" source="false" pin_fixed="false" area="96.49288330713006" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="1" target_area="96.49288330713006" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="37" source="false" pin_fixed="false" area="96.49288330713006" fixed="false" div_counter="0">
          <node n="98"/>
          <node n="72"/>
          <node n="73"/>

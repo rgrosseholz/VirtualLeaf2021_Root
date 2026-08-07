@@ -1,3 +1,4 @@
+import argparse
 import math
 import re
 import sys
@@ -6,10 +7,10 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import xml.etree.ElementTree as ET
 
-DATA_DIR = Path("/home/lasse/lateral_root")
+DEFAULT_DATA_DIR = Path("/home/lasse/lateral_root")
 XML_PATTERN = 'leaf.*.xml'
 TIMESTEP_RE = re.compile(r'\.(\d+)$')
-LENGTH_HISTOGRAM_BIN_WIDTH = 2
+LENGTH_HISTOGRAM_BIN_WIDTH = 1
 WIDTH_HISTOGRAM_BIN_WIDTH = 2
 
 def load_root(xml_path):
@@ -59,16 +60,35 @@ def parse_cell_metrics(xml_path):
 
         center = calc_cell_center(point_list)
         length, width, long_axis = calc_length_and_width(point_list)
+        length2 = calc_length2(point_list)
         cell_metrics.append({
             'cell_index': cell_index,
             'cell_type': cell_type,
             'center': center,
             'length': length,
+            'length2': length2,
             'width': width,
             'long_axis': long_axis,
         })
 
     return cell_metrics
+
+
+def calc_length2(node_points):
+    """Calculate an alternate length using the average of the two highest and two lowest nodes."""
+    if len(node_points) < 2:
+        raise ValueError('At least two nodes are required to compute length2.')
+
+    sorted_by_y = sorted(node_points, key=lambda p: p[1])
+    lowest = sorted_by_y[:2]
+    highest = sorted_by_y[-2:]
+
+    avg_low_x = sum(x for x, _ in lowest) / len(lowest)
+    avg_low_y = sum(y for _, y in lowest) / len(lowest)
+    avg_high_x = sum(x for x, _ in highest) / len(highest)
+    avg_high_y = sum(y for _, y in highest) / len(highest)
+
+    return math.hypot(avg_high_x - avg_low_x, avg_high_y - avg_low_y)
 
 
 def calc_length_and_width(node_points):
@@ -128,7 +148,7 @@ def _timestep_from_path(xml_path):
     return int(match.group(1))
 
 
-def collect_time_evolution(data_dir=DATA_DIR):
+def collect_time_evolution(data_dir=DEFAULT_DATA_DIR):
     xml_files = sorted(data_dir.glob(XML_PATTERN), key=_timestep_from_path)
     evolution = []
 
@@ -155,7 +175,7 @@ def compute_type_average_metrics(evolution):
                 avg_width_series.append(float('nan'))
                 continue
 
-            avg_length_series.append(sum(item['length'] for item in type_cells) / len(type_cells))
+            avg_length_series.append(sum(item['length2'] for item in type_cells) / len(type_cells))
             avg_width_series.append(sum(item['width'] for item in type_cells) / len(type_cells))
 
         averages[cell_type] = {
@@ -186,7 +206,7 @@ def _build_bin_edges(values, bin_width):
     return edges
 
 
-def plot_histograms(evolution, output_dir=DATA_DIR, length_bin_width=LENGTH_HISTOGRAM_BIN_WIDTH, width_bin_width=WIDTH_HISTOGRAM_BIN_WIDTH):
+def plot_histograms(evolution, output_dir=DEFAULT_DATA_DIR, length_bin_width=LENGTH_HISTOGRAM_BIN_WIDTH, width_bin_width=WIDTH_HISTOGRAM_BIN_WIDTH):
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -200,41 +220,43 @@ def plot_histograms(evolution, output_dir=DATA_DIR, length_bin_width=LENGTH_HIST
     for timestep, metrics in selected_timesteps:
         for cell_type in cell_types:
             type_metrics = [item for item in metrics if item['cell_type'] == cell_type]
-            lengths = [item['length'] for item in type_metrics]
+            lengths = [item['length2'] for item in type_metrics]
             widths = [item['width'] for item in type_metrics]
 
             if lengths:
                 length_edges = _build_bin_edges(lengths, length_bin_width)
                 fig, ax = plt.subplots(figsize=(8, 5))
+                print(f"hist timestep={timestep} type={cell_type} n={len(lengths)} min={min(lengths):.3f} max={max(lengths):.3f}")
+                print(f"  edges={length_edges[:3]} ... {length_edges[-3:]}")
                 ax.hist(lengths, bins=length_edges, color='steelblue', edgecolor='black')
                 ax.set_title(f'Cell length distribution at timestep {timestep} for cell type {cell_type}')
                 ax.set_xlabel('Length')
                 ax.set_ylabel('Count')
                 ax.grid(True, alpha=0.3)
                 fig.tight_layout()
-                out_path = output_dir / f'cell_length_histogram_timestep_{timestep}_type_{cell_type}_width_{length_bin_width}.png'
+                out_path = output_dir / f'length_histogram_type_{cell_type}_time_{timestep}.png'
                 fig.savefig(out_path, dpi=150)
                 plt.close(fig)
                 plot_paths.append(out_path)
 
-            if widths:
-                width_edges = _build_bin_edges(widths, width_bin_width)
-                fig, ax = plt.subplots(figsize=(8, 5))
-                ax.hist(widths, bins=width_edges, color='lightcoral', edgecolor='black')
-                ax.set_title(f'Cell width distribution at timestep {timestep} for cell type {cell_type}')
-                ax.set_xlabel('Width')
-                ax.set_ylabel('Count')
-                ax.grid(True, alpha=0.3)
-                fig.tight_layout()
-                out_path = output_dir / f'cell_width_histogram_timestep_{timestep}_type_{cell_type}_width_{width_bin_width}.png'
-                fig.savefig(out_path, dpi=150)
-                plt.close(fig)
-                plot_paths.append(out_path)
+#            if widths:
+#                width_edges = _build_bin_edges(widths, width_bin_width)
+#                fig, ax = plt.subplots(figsize=(8, 5))
+#                ax.hist(widths, bins=width_edges, color='lightcoral', edgecolor='black')
+#                ax.set_title(f'Cell width distribution at timestep {timestep} for cell type {cell_type}')
+#                ax.set_xlabel('Width')
+#                ax.set_ylabel('Count')
+#                ax.grid(True, alpha=0.3)
+#                fig.tight_layout()
+#                out_path = output_dir / f'width_histogram_type_{cell_type}_time_{timestep}.png'
+#                fig.savefig(out_path, dpi=150)
+#                plt.close(fig)
+#                plot_paths.append(out_path)
 
     return plot_paths
 
 
-def plot_time_evolution(evolution, output_dir=DATA_DIR):
+def plot_time_evolution(evolution, output_dir=DEFAULT_DATA_DIR):
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -257,7 +279,7 @@ def plot_time_evolution(evolution, output_dir=DATA_DIR):
 
         for cell_id in cell_ids:
             length_series = [
-                next((item['length'] for item in metrics if item['cell_index'] == cell_id and item['cell_type'] == cell_type), float('nan'))
+                next((item['length2'] for item in metrics if item['cell_index'] == cell_id and item['cell_type'] == cell_type), float('nan'))
                 for _, metrics in evolution
             ]
             width_series = [
@@ -292,10 +314,18 @@ def plot_time_evolution(evolution, output_dir=DATA_DIR):
 
 
 if __name__ == '__main__':
-    output_dir = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent / 'output'
+    parser = argparse.ArgumentParser(description='Evaluate time evolution of leaf XML data.')
+    parser.add_argument('data_dir', nargs='?', default=DEFAULT_DATA_DIR,
+                        help='Directory containing XML timestep files')
+    parser.add_argument('output_dir', nargs='?', default=Path(__file__).resolve().parent / 'output',
+                        help='Directory to write generated plots')
+    args = parser.parse_args()
 
-    evolution = collect_time_evolution()
-    print(f'Analyzed {len(evolution)} timestep files from {DATA_DIR}')
+    data_dir = Path(args.data_dir)
+    output_dir = Path(args.output_dir)
+
+    evolution = collect_time_evolution(data_dir=data_dir)
+    print(f'Analyzed {len(evolution)} timestep files from {data_dir}')
 
     for timestep, metrics in evolution[:3]:
         print(f'Timestep {timestep}: cells={len(metrics)}')
@@ -303,7 +333,9 @@ if __name__ == '__main__':
             print(
                 f'  Cell {item["cell_index"]}: '
                 f'center=({item["center"][0]:.3f}, {item["center"][1]:.3f}), '
-                f'length={item["length"]:.3f}, width={item["width"]:.3f}'
+                f'length={item["length"]:.3f}, '
+                f'length2={item["length2"]:.3f}, '
+                f'width={item["width"]:.3f}'
             )
 
     time_plot_paths = plot_time_evolution(evolution, output_dir=output_dir)

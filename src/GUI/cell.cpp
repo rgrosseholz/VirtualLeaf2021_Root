@@ -1141,11 +1141,12 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
     double width { getTargetVectorABofTriangle().x };
     triangles.clear();
     daughter->triangles.clear();
-    if( isTrianglePlaced() ) {
+    
+    //daughter cell
     daughter->PlaceTriangles();
     daughter->setTargetVectorABofTriangle(targetVector);
     daughter->setTriangles(width - par.rho1, par.c0);
-    };
+    
     //parent cell
     PlaceTriangles();
     setTargetVectorABofTriangle(targetVector);
@@ -1157,13 +1158,9 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
     if( centerMother  > centerDaughter ){
       setPin_fixed(true); // dividing cell
       daughter->setPin_fixed(false); // non dividing cell
-      SetTargetLength( 0 ); // grows slower
-      daughter->SetTargetLength( 1 ); // grows faster
     }else{
       setPin_fixed(false); // non dividing
       daughter->setPin_fixed(true); // dividing
-      SetTargetLength( 1 ); // grows faster
-      daughter->SetTargetLength( 0 ); // grows slower
     }
   }
 

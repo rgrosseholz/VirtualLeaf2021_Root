@@ -17,7 +17,7 @@ The script will:
   1. determine the next numbered iteration from the highest existing iteration_* directory
   2. create a numbered output folder under the repository root
   3. compare current_xml_path with the matching file from the previous iteration directory
-  4. stage the current XML snapshot and latest PDF into the evaluator data directory
+  4. stage the current XML snapshot and latest PDF and XML into the evaluator data directory
   5. run the time-evolution Python evaluator to generate plots
 EOF
 }
@@ -99,9 +99,14 @@ mkdir -p "$EVAL_DATA_DIR"
 STAGED_NAME="leaf.$(printf '%06d' "$ITERATION").xml"
 cp "$CURRENT_XML" "$EVAL_DATA_DIR/$STAGED_NAME"
 
-NEWEST_PDF=$(find "$DATA_DIR" -maxdepth 1 -name "leaf.*.pdf" -print0 | xargs -r -0 ls -1 -t | head -1)
+NEWEST_PDF=$(find "$DATA_DIR" -maxdepth 1 -name "leaf.*.pdf" -printf '%T@ %p\n' | sort -nr | cut -d' ' -f2- | head -n1)
 if [[ -n "$NEWEST_PDF" ]]; then
     cp "$NEWEST_PDF" "$EVAL_DATA_DIR/"
+fi
+
+NEWEST_XML=$(find "$DATA_DIR" -maxdepth 1 -name "leaf.*.xml" -printf '%T@ %p\n' | sort -nr | cut -d' ' -f2- | head -n1)
+if [[ -n "$NEWEST_XML" ]]; then
+    cp "$NEWEST_XML" "$EVAL_DATA_DIR/"
 fi
 
 DEFAULT_PYTHON_BIN="$PROJECT_ROOT/src/python/evaluate_time_evolution/Data/venv_CalcData/.venv_test/bin/python"
@@ -121,7 +126,12 @@ if ! "$PYTHON_BIN" -c 'import matplotlib' >/dev/null 2>&1; then
     exit 1
 fi
 
-"$PYTHON_BIN" "$EVAL_SCRIPT" "$EVAL_DATA_DIR"
+"$PYTHON_BIN" "$EVAL_SCRIPT" "$DATA_DIR" "$EVAL_DATA_DIR"
+
+cp -r "$DATA_DIR" /home/lasse/wurzel
+rm "$DATA_DIR"/*.xml
+rm "$DATA_DIR"/*."pdf"
+
 
 printf '\nDone.\n'
 printf 'Run directory: %s\n' "$RUN_DIR"

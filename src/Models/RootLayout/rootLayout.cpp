@@ -150,7 +150,8 @@ void TwoCells::CellHouseKeeping(CellBase *c)
 
   //fix cell if final size is reached and belongs to the upper part of the tissue ( = targetLength > 0)
   if(c->CellType() == 0 &&  c->TargetArea() > 170 * par->nu && c->getTargetLength() > 0){
-    c->SetTargetLength(4);//stop growth
+    //c->SetTargetLength(4);//stop growth
+    c->Fix();
   }
 
   if(c->CellType() == 1 &&  c->TargetArea() > 115 * par->nu && c->getTargetLength() > 0){
@@ -158,11 +159,13 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   }
 
   if(c->CellType() == 2 &&  c->TargetArea() > 190 * par->nu && c->getTargetLength() > 0){
-    c->SetTargetLength(4);//stop growth
+    //c->SetTargetLength(4);//stop growth
+    c->Fix();
   }
 
   if(c->CellType() == 3 && c->TargetArea() > 280 * par->nu && c->getTargetLength() > 0){
-    c->SetTargetLength(4);//stop growth
+    //c->SetTargetLength(4);//stop growth
+    c->Fix();
   }
 
 
@@ -178,13 +181,13 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   }
   double tissueDistance { par->eps - par->gamma };
   // set cell targetLength to adjust maximal allowed pressure in the cell 
-  if( centerY > par->gamma + 0.8 * tissueDistance){
+  if( centerY > par->gamma + 0.8 * tissueDistance && c->getTargetLength() < 4){
     c->SetTargetLength(0);
   }
-  if( centerY > par->gamma + 0.4 * tissueDistance && centerY < par->gamma + 0.8 * tissueDistance){
+  if( centerY > par->gamma + 0.4 * tissueDistance && centerY < par->gamma + 0.8 * tissueDistance && c->getTargetLength() < 4){
     c->SetTargetLength(1);
   }
-  if( centerY < par->gamma + 0.4 * tissueDistance){
+  if( centerY < par->gamma + 0.4 * tissueDistance && c->getTargetLength() < 4){
     c->SetTargetLength(2);
   }
 

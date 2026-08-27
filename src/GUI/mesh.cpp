@@ -928,7 +928,7 @@ double Mesh::DisplaceNodes(void)
       continue;
 
     // Attempt to move this cell in a random direction
-    double rx=par.mc_stepsize*(RANDOM()-0.7); 
+    double rx=par.mc_stepsize*(RANDOM()-0.8); 
     double ry=par.mc_stepsize*(RANDOM()-0.4);
 
     // Uniform with a circle of radius par.mc_stepsize

@@ -14,4 +14,4 @@
 **/.venv_svg_to_vl
 **/.qmake.stash
 /src/python/evaluate_time_evolution/calc/iterations
-/src/python/evaluate_time_evolution/calc/venv_CalcData
+/src/python/evaluate_time_evolution/calc/venv_CalcData/.venv_test

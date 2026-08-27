@@ -37,10 +37,10 @@ fi
 
 
 PROJECT_ROOT="$(cd "/home/lasse/VirtualLeaf2021_Root" && pwd)"
-EVAL_SCRIPT="$PROJECT_ROOT/src/python/evaluate_time_evolution/Data/venv_CalcData/dataWork.py"
+EVAL_SCRIPT="$PROJECT_ROOT/src/python/evaluate_time_evolution/calc/venv_CalcData/dataWork.py"
 
 shopt -s nullglob
-iteration_dirs=("$PROJECT_ROOT/src/python/evaluate_time_evolution/Data/iterations"/iteration_*)
+iteration_dirs=("$PROJECT_ROOT/src/python/evaluate_time_evolution/calc/iterations"/iteration_*)
 MAX_ITERATION=-1
 for iteration_dir in "${iteration_dirs[@]}"; do
     iteration_name=$(basename "$iteration_dir")
@@ -60,8 +60,8 @@ else
     PREV_ITERATION=-1
 fi
 
-RUN_DIR="$PROJECT_ROOT/src/python/evaluate_time_evolution/Data/iterations/iteration_${ITERATION}"
-PREVIOUS_DIR="$PROJECT_ROOT/src/python/evaluate_time_evolution/Data/iterations/iteration_${PREV_ITERATION}"
+RUN_DIR="$PROJECT_ROOT/src/python/evaluate_time_evolution/calc/iterations/iteration_${ITERATION}"
+PREVIOUS_DIR="$PROJECT_ROOT/src/python/evaluate_time_evolution/calc/iterations/iteration_${PREV_ITERATION}"
 EVAL_DATA_DIR="$RUN_DIR/data"
 
 if [[ -d "$PREVIOUS_DIR" && -d "$PREVIOUS_DIR/data" ]]; then

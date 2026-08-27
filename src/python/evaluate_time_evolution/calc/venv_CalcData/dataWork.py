@@ -33,7 +33,7 @@ def calc_cell_center(node_points):
         cx += (x_i + x_j) * cross
         cy += (y_i + y_j) * cross
 
-    area = area2 / 2.0
+    area = abs(area2) / 2.0
     if abs(area) < 1e-12:
         raise ValueError('Cell area is zero, cannot compute the center.')
 
@@ -132,9 +132,15 @@ def calc_length_and_width(node_points):
     rhs1 = (ixx + iyy) / 2.0
     rhs2 = math.sqrt((ixx - iyy) * (ixx - iyy) + 4.0 * ixy * ixy) / 2.0
     lambda_b = rhs1 + rhs2
+    if lambda_b < 0 :
+        length = 0 
+    else :
+        length = 4.0 * math.sqrt(lambda_b / my_area)
+    if (rhs1 - rhs2) < 0 :
+        width = 0
+    else :
+        width = 4.0 * math.sqrt((rhs1 - rhs2) / my_area)
 
-    length = 4.0 * math.sqrt(lambda_b / my_area)
-    width = 4.0 * math.sqrt((rhs1 - rhs2) / my_area)
     long_axis = (-ixy, lambda_b - ixx, 0.0)
 
     return length, width, long_axis
@@ -313,6 +319,43 @@ def plot_time_evolution(evolution, output_dir=DEFAULT_DATA_DIR):
     return plot_paths
 
 
+def plot_length_by_center(evolution, output_dir=DEFAULT_DATA_DIR):
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    if not evolution:
+        return []
+
+    selected_timesteps = [evolution[0]]
+    if len(evolution) > 1:
+        selected_timesteps.append(evolution[-1])
+
+    plot_paths = []
+    cell_types = sorted({item['cell_type'] for _, metrics in evolution for item in metrics})
+
+    for cell_type in cell_types:
+        fig, ax = plt.subplots(figsize=(8, 5))
+        for timestep, metrics in selected_timesteps:
+            type_metrics = [item for item in metrics if item['cell_type'] == cell_type]
+            centers = [item['center'][1] for item in type_metrics]
+            lengths = [item['length'] for item in type_metrics]
+            if centers:
+                ax.scatter(centers, lengths, alpha=0.8, label=f'Timestep {timestep}')
+
+        ax.set_title(f'Cell length by center coordinate for cell type {cell_type}')
+        ax.set_xlabel('Cell center y coordinate')
+        ax.set_ylabel('Cell length')
+        ax.grid(True, alpha=0.3)
+        ax.legend(loc='best')
+        fig.tight_layout()
+        out_path = output_dir / f'cell_length_by_center_type_{cell_type}.png'
+        fig.savefig(out_path, dpi=150)
+        plt.close(fig)
+        plot_paths.append(out_path)
+
+    return plot_paths
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Evaluate time evolution of leaf XML data.')
     parser.add_argument('data_dir', nargs='?', default=DEFAULT_DATA_DIR,
@@ -338,14 +381,15 @@ if __name__ == '__main__':
                 f'width={item["width"]:.3f}'
             )
 
-    time_plot_paths = plot_time_evolution(evolution, output_dir=output_dir)
+    # time_plot_paths = plot_time_evolution(evolution, output_dir=output_dir)
+    center_plot_paths = plot_length_by_center(evolution, output_dir=output_dir)
     hist_plot_paths = plot_histograms(
         evolution,
         output_dir=output_dir,
         length_bin_width=LENGTH_HISTOGRAM_BIN_WIDTH,
         width_bin_width=WIDTH_HISTOGRAM_BIN_WIDTH,
     )
-    plot_paths = time_plot_paths + hist_plot_paths
+    plot_paths = center_plot_paths + hist_plot_paths
     print(f'Wrote {len(plot_paths)} plot(s) to {output_dir}')
     for plot_path in plot_paths:
         print(f'  {plot_path}')

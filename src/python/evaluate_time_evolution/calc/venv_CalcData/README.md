@@ -11,7 +11,8 @@ This script analyzes XML cell-layout snapshots and extracts per-cell geometric m
   - approximate cell length and width
   - long-axis vector
 - Collects metrics across all timesteps
-- Produces a plot of cell length and width over time
+- Produces plots of cell length and width over time
+- Produces one cell-length-versus-center-coordinate plot per cell type for the first and last timestep
 
 ## Expected input
 
@@ -44,6 +45,7 @@ python dataWork.py \outputPath
 The script prints a summary of the first few timestep files and saves a plot to the \outputPath:
 
 - `cell_length_width_evolution_per_cell.png`
+- `cell_length_by_center_type_<cell_type>.png`
 
 
 ## Main functions

@@ -394,7 +394,7 @@
       <par val="100000" name="nit"/>
       
       
-      <par val="1" name="compatibility_level"/>
+      <par val="0" name="compatibility_level"/>
       
       
       <par val="1e+06" name="maxt"/>

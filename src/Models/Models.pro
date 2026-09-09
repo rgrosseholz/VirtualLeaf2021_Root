@@ -8,7 +8,7 @@ SUBDIRS = \
 #Turing \
 #Test \
 #Tutorial0 \
-#Tutorial1A \
+Tutorial1A \
 #Tutorial1B \
 #Tutorial1C \
 #Tutorial1D \
@@ -19,7 +19,8 @@ SUBDIRS = \
 #twoCells \ 
 #threeCells \
 #5x2_Cells \
-RootLayout \
+Root \
+RootLayer \
 #LateralRoot \
 #MyModel \
 #CellOutlines \

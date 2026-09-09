@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef _ROOTLAYOUT_H_
-#define _ROOTLAYOUT_H_
+#ifndef _ROOTLAYER_H_
+#define _ROOTLAYER_H_
 
 #include <QObject>
 #include <QtGui>
@@ -32,7 +32,7 @@
 class TwoCells : public QObject, SimPluginInterface {
 	Q_OBJECT
 	Q_INTERFACES(SimPluginInterface);
-     Q_PLUGIN_METADATA(IID "org.virtualleaf.RootLayout")
+     Q_PLUGIN_METADATA(IID "org.virtualleaf.RootLayer")
 public:
 	virtual QString ModelID(void);
 	virtual void initializeTriangles (CellBase *c);
@@ -56,7 +56,7 @@ public:
 	// return number of chemicals
 	virtual int NChem(void);
 	
-	virtual QString DefaultLeafML(void) { return QString("root2.xml"); }
+	virtual QString DefaultLeafML(void) { return QString("root_horizontal.xml"); }
 	
 };
 

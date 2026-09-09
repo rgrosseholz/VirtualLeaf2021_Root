@@ -28,14 +28,14 @@
 
 #include "wallbase.h"
 #include "cellbase.h"
-#include "rootLayout.h"
+#include "rootLayer.h"
 
 static const std::string _module_id("$Id$");
 
 QString TwoCells::ModelID(void)
 {
   // specify the name of your model here
-  return QString("RootLayout");
+  return QString("RootLayer");
 }
 
 // return the number of chemicals your model uses
@@ -168,38 +168,9 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     c->Fix();
   }
 
-
-  //update min and max cellcenter of tissue layout
-  double centerY { c->Centroid().y };  
-  // par->gamma = minimal cell center
-  if( centerY < par->gamma ){
-    par->gamma = centerY; 
-  }
-   // par->eps = maximal cell center
-  if(centerY > par->eps){
-    par->eps = centerY; 
-  }
-  double tissueDistance { par->eps - par->gamma };
-  // set cell targetLength to adjust maximal allowed pressure in the cell 
-  if( centerY > par->gamma + 0.8 * tissueDistance && c->getTargetLength() < 4){
-    c->SetTargetLength(0);
-  }
-  if( centerY > par->gamma + 0.4 * tissueDistance && centerY < par->gamma + 0.8 * tissueDistance && c->getTargetLength() < 4){
-    c->SetTargetLength(1);
-  }
-  if( centerY < par->gamma + 0.4 * tissueDistance && c->getTargetLength() < 4){
-    c->SetTargetLength(2);
-  }
-
-  // enlarge target area depending on tissue location ( cell target length )
+  // enlarge target area
   // and only up to a certain pressure
-  if(c->getTargetLength() == 0 && c->TargetArea() < par->f * c->Area()){
-    c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
-  }
-  if(c->getTargetLength() == 1 && c->TargetArea() < par->c * c->Area()){
-    c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
-  }
-  if(c->getTargetLength() == 2 && c->TargetArea() < par->mu * c->Area()){
+  if(c->TargetArea() < par->f * c->Area()){
     c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
   }
 

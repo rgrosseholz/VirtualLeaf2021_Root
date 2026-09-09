@@ -1183,7 +1183,7 @@ double Mesh::DisplaceNodes(void)
     if (bl_minus_1 > 0 && bl_plus_1 > 0)
     {
             
-      w1 = cell_w * (w_w1);
+        w1 = cell_w * (w_w1);
       w2 = cell_w * (w_w2);
       //check if wall elements are defined and pick the appropriate length_dh
         length_dh +=

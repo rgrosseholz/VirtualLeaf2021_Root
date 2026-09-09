@@ -3,112 +3,77 @@
    
    
    <parameter>
-      
 
       <par val="yellow" name="arrowcolor"/>
 
       <par val="10" name="arrowsize"/>
-      
-      
+ 
       <par val="blue" name="textcolor"/>
-      
-      
+
       <par val="1" name="cellnumsize"/>
-      
-      
+
       <par val="1" name="nodenumsize"/>
-      
-      
+
       <par val="1" name="node_mag"/>
-      
-      
+
       <par val="1" name="outlinewidth"/>
-      
-      
+
       <par val="forestgreen" name="cell_outline_color"/>
-      
-      
+
       <par val="10" name="resize_stride"/>
-      
-      
+
       <par val="0" name="export_interval"/>
-      
-      
+ 
       <par val="cell." name="export_fn_prefix"/>
-      
-      
+ 
       <par val="1000" name="storage_stride"/>
-      
-      
+
       <par val="1000" name="xml_storage_stride"/>
-      
-      
+
       <par val="lateral_root" name="datadir"/>
-      
-      
+
       <par val="1" name="T"/>
-      
-      
+
       <par val="140" name="lambda_length"/>
-      
-      
+
       <par val="12.2" name="yielding_threshold"/>
-      
-      
+
       <par val="0" name="lambda_celllength"/>
-      
-      
+  
       <par val="60" name="target_length"/>
-      
-      
+
       <par val="0.0075" name="cell_expansion_rate"/>
-      
-      
+
       <par val="7" name="cell_div_expansion_rate"/>
-      
-      
+
       <par val="true" name="auxin_dependent_growth"/>
-      
-      
+ 
       <par val="0.0001" name="ode_accuracy"/>
-      
-      
+
       <par val="0.3" name="mc_stepsize"/>
-      
-      
+
       <par val="0" name="mc_cell_stepsize"/>
-      
-      
+ 
       <par val="1000" name="energy_threshold"/>
-      
-      
+
       <par val="0" name="bend_lambda"/>
-      
-      
+
       <par val="0" name="alignment_lambda"/>
-      
-      
+
       <par val="2.5" name="rel_cell_div_threshold"/>
-      
-      
+
       <par val="4" name="rel_perimeter_stiffness"/>
-      
-      
+
       <par val="0.5" name="collapse_node_threshold"/>
-      
-      
+
       <par val="0.2" name="morphogen_div_threshold"/>
-      
-      
+
       <par val="0.01" name="morphogen_expansion_threshold"/>
-      
-      
+ 
       <par val="true" name="copy_wall"/>
-      
-      
+ 
       <par val="0" name="source"/>
-      
-      
+
       <par name="D">
          
               

@@ -25,29 +25,31 @@
 #include "simplugin.h"
 
 #include "parameter.h"
-#include "matrix.h"
+
 #include "wallbase.h"
 #include "cellbase.h"
-#include "tutorial1A.h"
+#include "root.h"
 
 static const std::string _module_id("$Id$");
 
-QString Tutorial1A::ModelID(void) {
+QString TwoCells::ModelID(void)
+{
   // specify the name of your model here
-  return QString( "1A: Cell growth" );
+  return QString("Root");
 }
 
 // return the number of chemicals your model uses
-int Tutorial1A::NChem(void) { return 0; }
+int TwoCells::NChem(void) { return 0; }
 
 // To be executed after cell division
-void Tutorial1A::OnDivide(ParentInfo *parent_info, CellBase *daughter1, CellBase *daughter2) {
+void TwoCells::OnDivide(ParentInfo *parent_info, CellBase *daughter1, CellBase *daughter2)
+{
   // rules to be executed after cell division go here
   // (e.g., cell differentiation rules)
 }
 
-void Tutorial1A::SetCellColor(CellBase *c, QColor *color) { 
-  // add cell coloring rules here
+void TwoCells::SetCellColor(CellBase *c, QColor *color)
+{
   // add cell coloring rules here
   double targetArea = c->getTargetArea();
   double currentArea = c->Area();
@@ -78,7 +80,7 @@ void Tutorial1A::SetCellColor(CellBase *c, QColor *color) {
   }
 }
 
-void Tutorial1A::initializeTriangles(CellBase *c){
+void TwoCells::initializeTriangles(CellBase *c){
   // initialize cell properties depending on cell type
   if( c->Index() != -1 && c->CellType() == 0 ) 
   {
@@ -143,43 +145,95 @@ void Tutorial1A::initializeTriangles(CellBase *c){
   }
 }
 
-void Tutorial1A::CellHouseKeeping(CellBase *c) {
-  // add cell behavioral rules here
- //fix cell if final size is reached and belongs to the upper part of the tissue ( = targetLength > 0)
-  if(c->CellType() == 0 &&  c->TargetArea() > 170 * par->nu ){
+void TwoCells::CellHouseKeeping(CellBase *c)
+{
+
+  //fix cell if final size is reached and belongs to the upper part of the tissue ( = targetLength > 0)
+  if(c->CellType() == 0 &&  c->TargetArea() > 170 * par->nu && c->getTargetLength() > 0){
     //c->SetTargetLength(4);//stop growth
     c->Fix();
   }
 
-  if(c->CellType() == 1 &&  c->TargetArea() > 115 * par->nu ){
+  if(c->CellType() == 1 &&  c->TargetArea() > 115 * par->nu && c->getTargetLength() > 0){
     c->SetTargetLength(4);//stop growth
   }
 
-  if(c->CellType() == 2 &&  c->TargetArea() > 190 * par->nu ){
+  if(c->CellType() == 2 &&  c->TargetArea() > 190 * par->nu && c->getTargetLength() > 0){
     //c->SetTargetLength(4);//stop growth
     c->Fix();
   }
 
-  if(c->CellType() == 3 && c->TargetArea() > 280 * par->nu ){
+  if(c->CellType() == 3 && c->TargetArea() > 280 * par->nu && c->getTargetLength() > 0){
     //c->SetTargetLength(4);//stop growth
     c->Fix();
   }
-// enlarge target area, par f controls the maximum pressure difference 
-  if(c->TargetArea() < par->f * c->Area()){
+
+
+  //update min and max cellcenter of tissue layout
+  double centerY { c->Centroid().y };  
+  // par->gamma = minimal cell center
+  if( centerY < par->gamma ){
+    par->gamma = centerY; 
+  }
+   // par->eps = maximal cell center
+  if(centerY > par->eps){
+    par->eps = centerY; 
+  }
+  double tissueDistance { par->eps - par->gamma };
+  // set cell targetLength to adjust maximal allowed pressure in the cell 
+  if( centerY > par->gamma + 0.8 * tissueDistance && c->getTargetLength() < 4){
+    c->SetTargetLength(0);
+  }
+  if( centerY > par->gamma + 0.4 * tissueDistance && centerY < par->gamma + 0.8 * tissueDistance && c->getTargetLength() < 4){
+    c->SetTargetLength(1);
+  }
+  if( centerY < par->gamma + 0.4 * tissueDistance && c->getTargetLength() < 4){
+    c->SetTargetLength(2);
+  }
+
+  // enlarge target area depending on tissue location ( cell target length )
+  // and only up to a certain pressure
+  if(c->getTargetLength() == 0 && c->TargetArea() < par->f * c->Area()){
+    c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
+  }
+  if(c->getTargetLength() == 1 && c->TargetArea() < par->c * c->Area()){
+    c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
+  }
+  if(c->getTargetLength() == 2 && c->TargetArea() < par->mu * c->Area()){
     c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
   }
 
-  double base_element_length = 25;
-  c->LoopWallElements([base_element_length](auto wallElementInfo)
-                      {
-        if(std::isnan(wallElementInfo->getWallElement()->getBaseLength())){
-        wallElementInfo->getWallElement()->setBaseLength(base_element_length);
-        } });
+  // Allow only lowest row  of cells to devide. The parameter pin_fixed is used therefore. 
+  // Allow Cell division if area is x times larger then initial cell area
+  if ( c->getPin_fixed()  && c->CellType() == 0 && 
+      c->Area() > par->rel_cell_div_threshold * 72
+      )
+  {
+		  c->DivideOverAxis(Vector {1,0,0});
+	}
 
+  if ( c->getPin_fixed()  && c->CellType() == 1 && 
+      c->Area() > par->rel_cell_div_threshold * 50
+      )
+  {
+		  c->DivideOverAxis(Vector {1,0,0});
+	}
 
+  if ( c->getPin_fixed()  && c->CellType() == 2 && 
+      c->Area() > par->rel_cell_div_threshold * 80
+      )
+  {
+		  c->DivideOverAxis(Vector {1,0,0});
+	}
+
+  if ( c->getPin_fixed()  && c->CellType() == 3 && 
+      c->Area() > par->rel_cell_div_threshold * 80
+      )
+  {
+		  c->DivideOverAxis(Vector {1,0,0});
+	}
   //cell wall weakening happens here
-  if(c->CellType() == 0){
-
+  if(true){
     c->LoopWallElements([](auto wallElementInfo){
       Vector from { *(wallElementInfo->getFrom()) };
       Vector to { *(wallElementInfo->getTo()) };
@@ -188,23 +242,26 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
       // if angle is between 75 - 105 degree return true
       if ( 1.3 < wallVector.Angle(growthDirection) &&  1.9 > wallVector.Angle(growthDirection) ) 
       { 
-        wallElementInfo->getWallElement()->setStiffness(1);
+        wallElementInfo->getWallElement()->setStiffness(1.5);
       } else { 
-        wallElementInfo->getWallElement()->setStiffness(0.65);
+        wallElementInfo->getWallElement()->setStiffness(1);
       }
     });
   }
+
+
+
 }
 
-void Tutorial1A::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2) {
+void TwoCells::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2)
+{
   // add biochemical transport rules here
 }
-void Tutorial1A::WallDynamics(Wall *w, double *dw1, double *dw2) {
+void TwoCells::WallDynamics(Wall *w, double *dw1, double *dw2)
+{
   // add biochemical networks for reactions occuring at walls here
 }
-void Tutorial1A::CellDynamics(CellBase *c, double *dchem) { 
+void TwoCells::CellDynamics(CellBase *c, double *dchem)
+{
   // add biochemical networks for intracellular reactions here
 }
-
-
-//Q_EXPORT_PLUGIN2(tutorial1A, Tutorial1A)

@@ -20,6 +20,8 @@
  *
  */
 
+#ifndef _ROOT_H_
+#define _ROOT_H_
 
 #include <QObject>
 #include <QtGui>
@@ -27,11 +29,10 @@
 #include "simplugin.h"
 
 
-class Tutorial1A : public QObject, SimPluginInterface {
+class TwoCells : public QObject, SimPluginInterface {
 	Q_OBJECT
 	Q_INTERFACES(SimPluginInterface);
-     Q_PLUGIN_METADATA(IID "org.virtualleaf.tutorial1a")
-
+     Q_PLUGIN_METADATA(IID "org.virtualleaf.Root")
 public:
 	virtual QString ModelID(void);
 	virtual void initializeTriangles (CellBase *c);
@@ -55,10 +56,10 @@ public:
 	// return number of chemicals
 	virtual int NChem(void);
 	
-	virtual QString DefaultLeafML(void) { return QString("tutorial1_rectangle.xml"); }
+	virtual QString DefaultLeafML(void) { return QString("root2.xml"); }
 	
 };
 
-
+#endif
 
 

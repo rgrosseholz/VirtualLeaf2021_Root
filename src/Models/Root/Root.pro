@@ -30,7 +30,7 @@ INCLUDEPATH += ../../../include
 
 DEFINES = QTGRAPHICS
 DESTDIR = $${BINDIR}/models
-TARGET = rootLayout
+TARGET = root
 win32-g++|unix|macx {
     QMAKE_CXXFLAGS += -Wall -Wextra
     QMAKE_CXXFLAGS += -Wno-unused-parameter

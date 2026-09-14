@@ -40,7 +40,7 @@ PROJECT_ROOT="$(cd "/home/lasse/VirtualLeaf2021_Root" && pwd)"
 EVAL_SCRIPT="$PROJECT_ROOT/src/python/evaluate_time_evolution/calc/venv_CalcData/dataWork.py"
 
 shopt -s nullglob
-iteration_dirs=("$PROJECT_ROOT/src/python/evaluate_time_evolution/calc/iterations"/iteration_*)
+iteration_dirs=("$PROJECT_ROOT/src/python/evaluate_time_evolution/calc/iterations_rootLayer"/iteration_*)
 MAX_ITERATION=-1
 for iteration_dir in "${iteration_dirs[@]}"; do
     iteration_name=$(basename "$iteration_dir")
@@ -60,14 +60,14 @@ else
     PREV_ITERATION=-1
 fi
 
-RUN_DIR="$PROJECT_ROOT/src/python/evaluate_time_evolution/calc/iterations/iteration_${ITERATION}"
-PREVIOUS_DIR="$PROJECT_ROOT/src/python/evaluate_time_evolution/calc/iterations/iteration_${PREV_ITERATION}"
+RUN_DIR="$PROJECT_ROOT/src/python/evaluate_time_evolution/calc/iterations_rootLayer/iteration_${ITERATION}"
+PREVIOUS_DIR="$PROJECT_ROOT/src/python/evaluate_time_evolution/calc/iterations_rootLayer/iteration_${PREV_ITERATION}"
 EVAL_DATA_DIR="$RUN_DIR/data"
 
 if [[ -d "$PREVIOUS_DIR" && -d "$PREVIOUS_DIR/data" ]]; then
     prev_xmls=("$PREVIOUS_DIR/data"/*.xml)
     if (( ${#prev_xmls[@]} > 0 )); then
-        PREVIOUS_XML=$(printf '%s\n' "${prev_xmls[@]}" | sort | tail -n 1)
+        PREVIOUS_XML=$(printf '%s\n' "${prev_xmls[@]}" | sort | head -n 1)
     else
         PREVIOUS_XML=""
     fi
@@ -76,7 +76,7 @@ else
 fi
 
 DIFF_FILE="$RUN_DIR/diff_${ITERATION}.txt"
-DATA_DIR="/home/lasse/lateral_root"
+DATA_DIR="/home/lasse/rootLayer"
 
 mkdir -p "$RUN_DIR"
 
@@ -99,10 +99,10 @@ mkdir -p "$EVAL_DATA_DIR"
 STAGED_NAME="leaf.$(printf '%06d' "$ITERATION").xml"
 cp "$CURRENT_XML" "$EVAL_DATA_DIR/$STAGED_NAME"
 
-NEWEST_PDF=$(find "$DATA_DIR" -maxdepth 1 -name "leaf.*.pdf" -printf '%T@ %p\n' | sort -nr | cut -d' ' -f2- | head -n1)
-if [[ -n "$NEWEST_PDF" ]]; then
-    cp "$NEWEST_PDF" "$EVAL_DATA_DIR/"
-fi
+#NEWEST_PDF=$(find "$DATA_DIR" -maxdepth 1 -name "leaf.*.pdf" -printf '%T@ %p\n' | sort -nr | cut -d' ' -f2- | head -n1)
+#if [[ -n "$NEWEST_PDF" ]]; then
+#    cp "$NEWEST_PDF" "$EVAL_DATA_DIR/"
+#fi
 
 NEWEST_XML=$(find "$DATA_DIR" -maxdepth 1 -name "leaf.*.xml" -printf '%T@ %p\n' | sort -nr | cut -d' ' -f2- | head -n1)
 if [[ -n "$NEWEST_XML" ]]; then
@@ -128,9 +128,10 @@ fi
 
 "$PYTHON_BIN" "$EVAL_SCRIPT" "$DATA_DIR" "$EVAL_DATA_DIR"
 
-cp -r "$DATA_DIR" /home/lasse/wurzel
-rm "$DATA_DIR"/*.xml
 rm "$DATA_DIR"/*."pdf"
+cp -r "$DATA_DIR" "$EVAL_DATA_DIR"
+rm "$DATA_DIR"/*.xml
+
 
 
 printf '\nDone.\n'

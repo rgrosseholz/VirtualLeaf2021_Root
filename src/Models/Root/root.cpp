@@ -82,6 +82,8 @@ void TwoCells::SetCellColor(CellBase *c, QColor *color)
 
 void TwoCells::initializeTriangles(CellBase *c){
   // initialize cell properties depending on cell type
+  c->EnlargeTargetArea(c->getTargetArea() * par->d);
+  
   if( c->Index() != -1 && c->CellType() == 0 ) 
   {
     double width {6}; //  width of the cell 
@@ -122,9 +124,9 @@ void TwoCells::initializeTriangles(CellBase *c){
     // set mechanical properties
     c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
                    Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
-                  
+    // set cell wall remodelling veto              
     c->SetCellVeto(true);
-    double centroidY { c->Centroid().y };
+    
 
   }
 
@@ -136,11 +138,11 @@ void TwoCells::initializeTriangles(CellBase *c){
     c->setTargetVectorABofTriangle( Vector{width,0,0} );
     c->setTriangles(width * par->rho1, par->c0);
     // set mechanical properties
-    c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
-                   Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
+    c->setStiffnessMatrix( par->k[5] * Matrix { Vector { par->k[6],par->k[7],0},
+                   Vector { par->k[7],par->k[8],0}, Vector {0,0,par->k[9] }});
 
     c->SetCellVeto(true);
-    double centroidY { c->Centroid().y };
+    
     
   }
 }
@@ -149,23 +151,28 @@ void TwoCells::CellHouseKeeping(CellBase *c)
 {
 
   //fix cell if final size is reached and belongs to the upper part of the tissue ( = targetLength > 0)
-  if(c->CellType() == 0 &&  c->TargetArea() > 170 * par->nu && c->getTargetLength() > 0){
-    //c->SetTargetLength(4);//stop growth
-    c->Fix();
-  }
-
-  if(c->CellType() == 1 &&  c->TargetArea() > 115 * par->nu && c->getTargetLength() > 0){
+  if(c->CellType() == 0 &&  c->Area() > 170 * par->nu && c->getTargetLength() > 0){
     c->SetTargetLength(4);//stop growth
+    c->SetTargetArea(c->TargetArea()*par->rho0);
+    //c->Fix();
   }
 
-  if(c->CellType() == 2 &&  c->TargetArea() > 190 * par->nu && c->getTargetLength() > 0){
-    //c->SetTargetLength(4);//stop growth
-    c->Fix();
+  if(c->CellType() == 1 &&  c->Area() > 115 * par->nu && c->getTargetLength() > 0){
+    c->SetTargetLength(4);//stop growth
+    c->SetTargetArea(c->TargetArea()*par->rho0);
+    //c->Fix();
   }
 
-  if(c->CellType() == 3 && c->TargetArea() > 280 * par->nu && c->getTargetLength() > 0){
-    //c->SetTargetLength(4);//stop growth
-    c->Fix();
+  if(c->CellType() == 2 &&  c->Area() > 190 * par->nu && c->getTargetLength() > 0){
+    c->SetTargetLength(4);//stop growth
+    c->SetTargetArea(c->TargetArea()*par->rho0);
+    //c->Fix();
+  }
+
+  if(c->CellType() == 3 && c->Area() > 280 * par->nu && c->getTargetLength() > 0){
+    c->SetTargetLength(4);//stop growth
+    c->SetTargetArea(c->TargetArea()*par->rho0);
+    //c->Fix();
   }
 
 
@@ -190,10 +197,14 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   if( centerY < par->gamma + 0.4 * tissueDistance && c->getTargetLength() < 4){
     c->SetTargetLength(2);
   }
-
+  double y { 1 / (1 + centerY - par->gamma) };
   // enlarge target area depending on tissue location ( cell target length )
   // and only up to a certain pressure
-  if(c->getTargetLength() == 0 && c->TargetArea() < par->f * c->Area()){
+  if(c->getTargetLength() != 4 && c->TargetArea() <  DSQR(c->Area()) * par->f ){
+    c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
+  }
+  
+  /*if(c->getTargetLength() == 0 && c->TargetArea() < par->f * c->Area()){
     c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
   }
   if(c->getTargetLength() == 1 && c->TargetArea() < par->c * c->Area()){
@@ -202,39 +213,60 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   if(c->getTargetLength() == 2 && c->TargetArea() < par->mu * c->Area()){
     c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
   }
-
+  */
   // Allow only lowest row  of cells to devide. The parameter pin_fixed is used therefore. 
   // Allow Cell division if area is x times larger then initial cell area
   if ( c->getPin_fixed()  && c->CellType() == 0 && 
-      c->Area() > par->rel_cell_div_threshold * 72
+      c->Area() > par->rel_cell_div_threshold * 80
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});
 	}
 
   if ( c->getPin_fixed()  && c->CellType() == 1 && 
-      c->Area() > par->rel_cell_div_threshold * 50
+      c->Area() > par->rel_cell_div_threshold * 65
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});
 	}
 
   if ( c->getPin_fixed()  && c->CellType() == 2 && 
-      c->Area() > par->rel_cell_div_threshold * 80
+      c->Area() > par->rel_cell_div_threshold * 100
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});
 	}
 
   if ( c->getPin_fixed()  && c->CellType() == 3 && 
-      c->Area() > par->rel_cell_div_threshold * 80
+      c->Area() > par->rel_cell_div_threshold * 100
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});
 	}
   //cell wall weakening happens here
-  if(true){
-    c->LoopWallElements([](auto wallElementInfo){
+  if(c->CellType() == 0 || c->CellType() == 1 || c->CellType() == 2){
+    double stiffness {par->betaD};
+    double scaling {par->gammaD  };
+    c->LoopWallElements([stiffness, scaling](auto wallElementInfo){
+      Vector from { *(wallElementInfo->getFrom()) };
+      Vector to { *(wallElementInfo->getTo()) };
+      Vector wallVector { to - from };
+      Vector growthDirection { 0, 1};
+      
+      // if angle is between 75 - 105 degree return true
+      if ( 1.3 < wallVector.Angle(growthDirection) &&  1.9 > wallVector.Angle(growthDirection) ) 
+      { 
+        wallElementInfo->getWallElement()->setStiffness(scaling * stiffness);
+      } else { 
+        wallElementInfo->getWallElement()->setStiffness(stiffness);
+      }
+    });
+  }
+
+  if(c->CellType() == 3 ){
+    double stiffness {par->betaR};
+    double scaling {par->gammaR  };
+    c->LoopWallElements([stiffness, scaling](auto wallElementInfo){
       Vector from { *(wallElementInfo->getFrom()) };
       Vector to { *(wallElementInfo->getTo()) };
       Vector wallVector { to - from };
@@ -242,15 +274,12 @@ void TwoCells::CellHouseKeeping(CellBase *c)
       // if angle is between 75 - 105 degree return true
       if ( 1.3 < wallVector.Angle(growthDirection) &&  1.9 > wallVector.Angle(growthDirection) ) 
       { 
-        wallElementInfo->getWallElement()->setStiffness(1.5);
+        wallElementInfo->getWallElement()->setStiffness(scaling * stiffness);
       } else { 
-        wallElementInfo->getWallElement()->setStiffness(1);
+        wallElementInfo->getWallElement()->setStiffness(stiffness);
       }
     });
   }
-
-
-
 }
 
 void TwoCells::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2)

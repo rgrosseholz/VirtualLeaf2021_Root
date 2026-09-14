@@ -1152,6 +1152,19 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
     setTargetVectorABofTriangle(targetVector);
     setTriangles(width - par.rho1, par.c0);
 
+
+    if(CellType()<3){
+      // set mechanical properties
+    setStiffnessMatrix( par.k[0] * Matrix { Vector { par.k[1],par.k[2],0},
+                   Vector { par.k[2],par.k[3],0}, Vector {0,0,par.k[4] }});
+    daughter->setStiffnessMatrix( par.k[0] * Matrix { Vector { par.k[1],par.k[2],0},
+                   Vector { par.k[2],par.k[3],0}, Vector {0,0,par.k[4] }});
+    }else{
+      setStiffnessMatrix( par.k[5] * Matrix { Vector { par.k[6],par.k[7],0},
+                   Vector { par.k[7],par.k[8],0}, Vector {0,0,par.k[9] }});
+      daughter->setStiffnessMatrix( par.k[5] * Matrix { Vector { par.k[6],par.k[7],0},
+                   Vector { par.k[7],par.k[8],0}, Vector {0,0,par.k[9] }});
+    }
     double centerMother { Centroid().y };
     double centerDaughter { daughter->Centroid().y };
     // update which cell is allowed to devide and who is growing faster
@@ -1162,6 +1175,10 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
       setPin_fixed(false); // non dividing
       daughter->setPin_fixed(true); // dividing
     }
+
+    //set cell veto for remodelling
+    SetCellVeto(true);
+    daughter->SetCellVeto(true);
   }
 
   	/**

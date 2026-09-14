@@ -7,11 +7,13 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import xml.etree.ElementTree as ET
 
-DEFAULT_DATA_DIR = Path("/home/lasse/lateral_root")
+DEFAULT_DATA_DIR = Path("/home/lasse/rootLayer")
 XML_PATTERN = 'leaf.*.xml'
 TIMESTEP_RE = re.compile(r'\.(\d+)$')
 LENGTH_HISTOGRAM_BIN_WIDTH = 1
 WIDTH_HISTOGRAM_BIN_WIDTH = 2
+TIME_SCALE_FACTOR = 360
+GROWTH_RATE_SMOOTHING_WINDOW = 11
 
 def load_root(xml_path):
     tree = ET.parse(xml_path)
@@ -159,7 +161,7 @@ def collect_time_evolution(data_dir=DEFAULT_DATA_DIR):
     evolution = []
 
     for xml_path in xml_files:
-        timestep = _timestep_from_path(xml_path)
+        timestep = _timestep_from_path(xml_path)  
         metrics = parse_cell_metrics(xml_path)
         evolution.append((timestep, metrics))
 
@@ -190,6 +192,58 @@ def compute_type_average_metrics(evolution):
         }
 
     return averages
+
+
+def calculate_growth_rate_series(times, values):
+    """Calculate finite-difference growth rates for a length series."""
+    growth_rates = [float('nan')]
+
+    for previous_time, current_time, previous_value, current_value in zip(
+        times, times[1:], values, values[1:]
+    ):
+        if not all(math.isfinite(value) for value in (previous_value, current_value)):
+            growth_rates.append(float('nan'))
+            continue
+
+        time_delta = current_time - previous_time
+        if time_delta == 0:
+            growth_rates.append(float('nan'))
+            continue
+
+        growth_rates.append((current_value - previous_value) * 100 / time_delta)
+
+    return growth_rates
+
+
+def smooth_growth_rate_series(growth_rates, window=GROWTH_RATE_SMOOTHING_WINDOW):
+    """Suppress isolated growth-rate spikes with a centered rolling median."""
+    if window < 1 or window % 2 == 0:
+        raise ValueError('Smoothing window must be a positive odd number.')
+
+    half_window = window // 2
+    smoothed_rates = []
+    for index in range(len(growth_rates)):
+        if not math.isfinite(growth_rates[index]):
+            smoothed_rates.append(float('nan'))
+            continue
+
+        start = max(0, index - half_window)
+        end = min(len(growth_rates), index + half_window + 1)
+        finite_rates = [
+            rate for rate in growth_rates[start:end] if math.isfinite(rate)
+        ]
+        if len(finite_rates) < 3:
+            smoothed_rates.append(growth_rates[index])
+            continue
+
+        finite_rates.sort()
+        middle = len(finite_rates) // 2
+        if len(finite_rates) % 2:
+            smoothed_rates.append(finite_rates[middle])
+        else:
+            smoothed_rates.append((finite_rates[middle - 1] + finite_rates[middle]) / 2)
+
+    return smoothed_rates
 
 
 def _build_bin_edges(values, bin_width):
@@ -266,7 +320,7 @@ def plot_time_evolution(evolution, output_dir=DEFAULT_DATA_DIR):
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    times = [t for t, _ in evolution]
+    times = [t / TIME_SCALE_FACTOR for t, _ in evolution]
     cell_types = sorted({item['cell_type'] for _, metrics in evolution for item in metrics})
     plot_paths = []
     type_averages = compute_type_average_metrics(evolution)
@@ -305,13 +359,72 @@ def plot_time_evolution(evolution, output_dir=DEFAULT_DATA_DIR):
         ax[0].grid(True, alpha=0.3)
         ax[0].legend(loc='best', fontsize=8)
 
-        ax[1].set_xlabel('Timestep')
+        ax[1].set_xlabel('Time (h)')
         ax[1].set_ylabel('Width')
         ax[1].grid(True, alpha=0.3)
         ax[1].legend(loc='best', fontsize=8)
 
         fig.tight_layout()
         out_path = output_dir / f'cell_length_width_evolution_type_{cell_type}.png'
+        fig.savefig(out_path, dpi=150)
+        plt.close(fig)
+        plot_paths.append(out_path)
+
+    return plot_paths
+
+
+def plot_growth_rate(evolution, output_dir=DEFAULT_DATA_DIR):
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    if not evolution:
+        return []
+
+    times = [t / TIME_SCALE_FACTOR for t, _ in evolution]
+    cell_types = sorted({item['cell_type'] for _, metrics in evolution for item in metrics})
+    type_averages = compute_type_average_metrics(evolution)
+    plot_paths = []
+
+    for cell_type in cell_types:
+        fig, ax = plt.subplots(figsize=(12, 6))
+        cell_ids = sorted({
+            item['cell_index']
+            for _, metrics in evolution
+            for item in metrics
+            if item['cell_type'] == cell_type
+        })
+
+        for cell_id in cell_ids:
+            length_series = [
+                next((item['length2'] for item in metrics
+                      if item['cell_index'] == cell_id and item['cell_type'] == cell_type),
+                     float('nan'))
+                for _, metrics in evolution
+            ]
+            growth_rates = calculate_growth_rate_series(times, length_series)
+            growth_rates = smooth_growth_rate_series(growth_rates)
+            ax.plot(times, growth_rates, marker='o', linewidth=1.5, label=f'Cell {cell_id}')
+
+        average_growth_rates = calculate_growth_rate_series(
+            times, type_averages[cell_type]['avg_length']
+        )
+        average_growth_rates = smooth_growth_rate_series(average_growth_rates)
+        ax.plot(
+            times,
+            average_growth_rates,
+            color='black',
+            linestyle='--',
+            linewidth=2.5,
+            label='Average growth rate',
+        )
+
+        ax.set_title(f'Cell length growth rate over time for cell type {cell_type}')
+        ax.set_xlabel('Time (h)')
+        ax.set_ylabel('Growth rate (length per second)')
+        ax.grid(True, alpha=0.3)
+        ax.legend(loc='best', fontsize=8)
+        fig.tight_layout()
+        out_path = output_dir / f'cell_length_growth_rate_type_{cell_type}.png'
         fig.savefig(out_path, dpi=150)
         plt.close(fig)
         plot_paths.append(out_path)
@@ -381,7 +494,8 @@ if __name__ == '__main__':
                 f'width={item["width"]:.3f}'
             )
 
-    # time_plot_paths = plot_time_evolution(evolution, output_dir=output_dir)
+    time_plot_paths = plot_time_evolution(evolution, output_dir=output_dir)
+    growth_rate_plot_paths = plot_growth_rate(evolution, output_dir=output_dir)
     center_plot_paths = plot_length_by_center(evolution, output_dir=output_dir)
     hist_plot_paths = plot_histograms(
         evolution,
@@ -389,7 +503,7 @@ if __name__ == '__main__':
         length_bin_width=LENGTH_HISTOGRAM_BIN_WIDTH,
         width_bin_width=WIDTH_HISTOGRAM_BIN_WIDTH,
     )
-    plot_paths = center_plot_paths + hist_plot_paths
+    plot_paths = time_plot_paths + growth_rate_plot_paths + center_plot_paths + hist_plot_paths
     print(f'Wrote {len(plot_paths)} plot(s) to {output_dir}')
     for plot_path in plot_paths:
         print(f'  {plot_path}')

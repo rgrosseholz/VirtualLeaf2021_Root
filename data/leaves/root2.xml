@@ -30,7 +30,7 @@
       <par val="forestgreen" name="cell_outline_color"/>
       
       
-      <par val="10" name="resize_stride"/>
+      <par val="10000" name="resize_stride"/>
       
       
       <par val="0" name="export_interval"/>
@@ -42,16 +42,16 @@
       <par val="1000" name="storage_stride"/>
       
       
-      <par val="1000" name="xml_storage_stride"/>
+      <par val="200" name="xml_storage_stride"/>
       
       
-      <par val="lateral_root" name="datadir"/>
+      <par val="transRoot" name="datadir"/>
       
       
       <par val="1" name="T"/>
       
       
-      <par val="140" name="lambda_length"/>
+      <par val="60" name="lambda_length"/>
       
       
       <par val="11" name="yielding_threshold"/>
@@ -63,7 +63,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="0.005" name="cell_expansion_rate"/>
+      <par val="0.0075" name="cell_expansion_rate"/>
       
       
       <par val="7" name="cell_div_expansion_rate"/>
@@ -417,12 +417,11 @@
 
 
 
-      <par name="f" val="1.25"/>
+      <par name="f" val="2"/>
       <par name="c" val="1.8"/> 
-      <par name="mu" val="2.1"/>
-
+      <par name="mu" val="4"/>
       
-      <par val="3.5" name="nu"/>
+      <par val="1.5" name="nu"/>
       <par val="4" name="rho0"/>
 
 
@@ -430,23 +429,19 @@
       <par val="2.5" name="c0"/> 
 
 
-      <par val="108" name="gamma"/> 
+      <par val="100" name="gamma"/> 
       <par val="144" name="eps"/> 
 
       <par val="1.5" name="betaN"/>
       <par val="4" name="gammaN"/> 
       
       
-      <par val="1" name="betaD"/>
+      <par val="0.4" name="betaD"/>
+      <par val="1.5" name="gammaD"/>
       
       
-      <par val="0" name="gammaD"/>
-      
-      
-      <par val="0" name="betaR"/>
-      
-      
-      <par val="0" name="gammaR"/>
+      <par val="1.2" name="betaR"/> 
+      <par val="1.5" name="gammaR"/>
       
       
       <par val="0" name="tau"/>
@@ -466,18 +461,18 @@
               
          <valarray>
          
-            <val v="1e5"/>
+            <val v="1e4"/>
             <val v="500"/>
             <val v="10"/>
             <val v="1e-1"/>
             <val v="50"/> 
 
         
-            <val v="2.5e5"/>
-            <val v="200"/>
-            <val v="10"/>
-            <val v="1e-3"/>
-            <val v="100"/>  
+            <val v="4e5 "/>
+            <val v="500"/>
+            <val v="30"/>
+            <val v="1e-1"/>
+            <val v="50"/>  
 
          
             <val v="2.5e5"/>
@@ -1756,7 +1751,28 @@
          <node n="94"/>
          <node n="95"/>
       </nodeset>
+   </nodesets> 
+   
+   
+   <nodesets n="1">für root3
+      <nodeset index="1">
+         <node n="15"/>
+         <node n="14"/>
+         <node n="22"/>
+         <node n="21"/>
+         <node n="48"/>
+         <node n="49"/>
+         <node n="70"/>
+         <node n="71"/>
+         <node n="111"/>
+         <node n="112"/>
+         <node n="104"/>
+         <node n="105"/>
+      </nodeset>
    </nodesets>
+
+
+
    
    <settings>
       

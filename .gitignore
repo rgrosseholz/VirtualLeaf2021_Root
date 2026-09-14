@@ -13,5 +13,6 @@
 **/.vscode
 **/.venv_svg_to_vl
 **/.qmake.stash
-/src/python/evaluate_time_evolution/calc/iterations
+/src/python/evaluate_time_evolution/calc/iterations_rootLayer
+/src/python/evaluate_time_evolution/calc/iterations_transRoot
 /src/python/evaluate_time_evolution/calc/venv_CalcData/.venv_test

@@ -136,8 +136,8 @@ void TwoCells::initializeTriangles(CellBase *c){
     c->setTargetVectorABofTriangle( Vector{width,0,0} );
     c->setTriangles(width * par->rho1, par->c0);
     // set mechanical properties
-    c->setStiffnessMatrix( par->k[5] * Matrix { Vector { par->k[6],par->k[7],0},
-                   Vector { par->k[7],par->k[8],0}, Vector {0,0,par->k[9] }});
+    c->setStiffnessMatrix( par->k[10] * Matrix { Vector { par->k[11],par->k[12],0},
+                   Vector { par->k[12],par->k[13],0}, Vector {0,0,par->k[14] }});
 
     c->SetCellVeto(true);
     double centroidY { c->Centroid().y };
@@ -183,7 +183,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   // Allow only lowest row  of cells to devide. The parameter pin_fixed is used therefore. 
   // Allow Cell division if area is x times larger then initial cell area
   if ( c->getPin_fixed()  && c->CellType() == 0 && 
-      c->Area() > par->rel_cell_div_threshold * 72
+      c->Area() > par->rel_cell_div_threshold * 75
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});
@@ -210,9 +210,9 @@ void TwoCells::CellHouseKeeping(CellBase *c)
 		  c->DivideOverAxis(Vector {1,0,0});
 	}
   //cell wall weakening happens here
-  if(c->CellType() == 0 || c->CellType() == 1){
+  if(c->CellType() == 0 || c->CellType() == 1 ){
     double stiffness {par->betaD};
-    double scaling {par->gammaD};
+    double scaling {par->gammaR};
     c->LoopWallElements([stiffness, scaling](auto wallElementInfo){
       Vector from { *(wallElementInfo->getFrom()) };
       Vector to { *(wallElementInfo->getTo()) };
@@ -229,7 +229,26 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     });
   }
 
-  if(c->CellType() == 3 || c->CellType() == 2){
+  if(c->CellType() == 2){
+    double stiffness {(par->gammaD)};
+    double scaling {par->gammaR};
+    c->LoopWallElements([stiffness, scaling](auto wallElementInfo){
+      Vector from { *(wallElementInfo->getFrom()) };
+      Vector to { *(wallElementInfo->getTo()) };
+      Vector wallVector { to - from };
+      Vector growthDirection { 0, 1};
+      
+      // if angle is between 75 - 105 degree return true
+      if ( 1.3 < wallVector.Angle(growthDirection) &&  1.9 > wallVector.Angle(growthDirection) ) 
+      { 
+        wallElementInfo->getWallElement()->setStiffness(scaling * stiffness);
+      } else { 
+        wallElementInfo->getWallElement()->setStiffness(stiffness);
+      }
+    });
+  }
+
+  if(c->CellType() == 3 ){
     double stiffness {par->betaR};
     double scaling {par->gammaR};
     c->LoopWallElements([stiffness, scaling](auto wallElementInfo){

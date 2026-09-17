@@ -460,25 +460,25 @@
       <par name="k">         
          <valarray>
          
-            <val v="10e4"/>
+            <val v="1e5"/>
             <val v="500"/>
             <val v="10"/>
             <val v="1e-1"/>
             <val v="50"/> 
 
         
-            <val v="4e5 "/>
+            <val v="2e5 "/>
             <val v="500"/>
             <val v="30"/>
             <val v="1e-1"/>
             <val v="50"/>  
 
          
-            <val v="2.5e5"/>
-            <val v="300"/>
-            <val v="5"/>
-            <val v="1e-3"/>
-            <val v="100"/>   
+            <val v="4e5 "/>
+            <val v="500"/>
+            <val v="30"/>
+            <val v="1e-1"/>
+            <val v="50"/>   
                         
          </valarray>
       </par>

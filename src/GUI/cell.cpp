@@ -1146,24 +1146,29 @@ void Cell::DivideWalls(ItList new_node_locations, const Vector from, const Vecto
     daughter->PlaceTriangles();
     daughter->setTargetVectorABofTriangle(targetVector);
     daughter->setTriangles(width - par.rho1, par.c0);
-    
+    daughter->SetTargetLength(0);
     //parent cell
     PlaceTriangles();
     setTargetVectorABofTriangle(targetVector);
     setTriangles(width - par.rho1, par.c0);
+    SetTargetLength(0);
 
-
-    if(CellType()<3){
+    if(CellType()<2){
       // set mechanical properties
     setStiffnessMatrix( par.k[0] * Matrix { Vector { par.k[1],par.k[2],0},
                    Vector { par.k[2],par.k[3],0}, Vector {0,0,par.k[4] }});
     daughter->setStiffnessMatrix( par.k[0] * Matrix { Vector { par.k[1],par.k[2],0},
                    Vector { par.k[2],par.k[3],0}, Vector {0,0,par.k[4] }});
-    }else{
+    }else if(CellType()<3){
       setStiffnessMatrix( par.k[5] * Matrix { Vector { par.k[6],par.k[7],0},
                    Vector { par.k[7],par.k[8],0}, Vector {0,0,par.k[9] }});
       daughter->setStiffnessMatrix( par.k[5] * Matrix { Vector { par.k[6],par.k[7],0},
                    Vector { par.k[7],par.k[8],0}, Vector {0,0,par.k[9] }});
+    }else{
+      setStiffnessMatrix( par.k[10] * Matrix { Vector { par.k[11],par.k[12],0},
+                   Vector { par.k[12],par.k[13],0}, Vector {0,0,par.k[14] }});
+      daughter->setStiffnessMatrix( par.k[10] * Matrix { Vector { par.k[11],par.k[12],0},
+                   Vector { par.k[12],par.k[13],0}, Vector {0,0,par.k[14] }});
     }
     double centerMother { Centroid().y };
     double centerDaughter { daughter->Centroid().y };

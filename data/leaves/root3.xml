@@ -54,7 +54,7 @@
       <par val="60" name="lambda_length"/>
       
       
-      <par val="13" name="yielding_threshold"/>
+      <par val="12.5" name="yielding_threshold"/>
       
       
       <par val="0" name="lambda_celllength"/>
@@ -63,7 +63,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="0.006" name="cell_expansion_rate"/>
+      <par val="10" name="cell_expansion_rate"/>
       
       
       <par val="7" name="cell_div_expansion_rate"/>
@@ -75,13 +75,13 @@
       <par val="0.0001" name="ode_accuracy"/>
       
       
-      <par val="0.2" name="mc_stepsize"/>
+      <par val="0.3" name="mc_stepsize"/>
       
       
       <par val="0" name="mc_cell_stepsize"/>
       
       
-      <par val="1000" name="energy_threshold"/>
+      <par val="500" name="energy_threshold"/>
       
       
       <par val="0" name="bend_lambda"/>
@@ -417,34 +417,33 @@
 
       
       
-      <par name="f" val="1."/>
-      <par name="c" val="1.8"/> 
-      <par name="mu" val="4"/>
+      <par name="f" val="4"/>
+      <par name="c" val="100"/> 
+      <par name="mu" val="0"/>
       
-      <par val="1.3" name="nu"/>
-      <par val="0.75" name="rho0"/>
+      <par val="1.2" name="nu"/>
+      <par val="0.9" name="rho0"/>
       
       
       <par val="0.1" name="rho1"/> 
       <par val="4" name="c0"/> 
       
       
-      <par val="85" name="gamma"/> 
+      <par val="94" name="gamma"/> 
       <par val="154" name="eps"/> 
       
       <par val="1.5" name="betaN"/>
       <par val="4" name="gammaN"/> 
       
       
-      <par val="0.4" name="betaD"/>
-      <par val="1.5" name="gammaD"/>
-      
-      
-      <par val="1.2" name="betaR"/> 
+      <par val="0.3" name="betaD"/>
+      <par val="0.8" name="gammaD"/> 
+      <par val="1.3" name="betaR"/> 
+
       <par val="1.5" name="gammaR"/>
       
       
-      <par val="0" name="tau"/>
+      <par val="4" name="tau"/>
       
       
       <par val="0" name="kt"/>
@@ -461,25 +460,25 @@
               
          <valarray>
             
-            <val v="2e5"/>
+            <val v="0.5e5"/>
             <val v="500"/>
             <val v="10"/>
             <val v="1e-1"/>
             <val v="50"/> 
+
         
-            
-            <val v="4e5 "/>
+            <val v="2.5e5 "/>
             <val v="500"/>
             <val v="30"/>
             <val v="1e-1"/>
             <val v="50"/>  
-        
-            
-            <val v="2.5e5"/>
-            <val v="300"/>
-            <val v="5"/>
-            <val v="1e-3"/>
-            <val v="100"/>   
+
+         
+            <val v="5e5 "/>
+            <val v="500"/>
+            <val v="30"/>
+            <val v="1e-1"/>
+            <val v="50"/>   
                  
          </valarray>
          
@@ -517,12 +516,12 @@
       <node nr="5" x="127.53824000000002" y="98.31612799999999" sam="false" boundary="false" fixed="false"/>
       <node nr="6" x="127.65236000000002" y="91.391364" sam="false" boundary="false" fixed="false"/>
       <node nr="7" x="127.65936000000002" y="86.40608399999999" sam="false" boundary="true" fixed="true"/>
-      <node nr="8" x="127.80979" y="136.20378" sam="false" boundary="false" fixed="false"/>
+      <node nr="8" x="127.80979" y="137.20378" sam="false" boundary="false" fixed="false"/>
       <node nr="9" x="127.82289" y="143.00475" sam="false" boundary="false" fixed="false"/>
       <node nr="10" x="127.72499" y="151.15157" sam="false" boundary="false" fixed="false"/>
       <node nr="11" x="137.73899" y="151.26886" sam="false" boundary="true" fixed="false"/>
       <node nr="12" x="137.69889" y="144.27233999999999" sam="false" boundary="true" fixed="false"/>
-      <node nr="13" x="137.86342000000002" y="136.29654" sam="false" boundary="true" fixed="false"/>
+      <node nr="13" x="137.86342000000002" y="137.29654" sam="false" boundary="true" fixed="false"/>
       <node nr="14" x="127.60950000000001" y="159.44653" sam="false" boundary="true" fixed="false"/>
       <node nr="15" x="137.58596" y="159.51042999999999" sam="false" boundary="true" fixed="false"/>
       <node nr="16" x="112.12509" y="132.65626" sam="false" boundary="false" fixed="false"/>
@@ -545,10 +544,10 @@
       <node nr="33" x="112.39074" y="91.023004" sam="false" boundary="false" fixed="false"/>
       <node nr="34" x="112.39774" y="98.429467" sam="false" boundary="false" fixed="false"/>
       <node nr="35" x="127.34537" y="132.3567" sam="false" boundary="false" fixed="false"/>
-      <node nr="36" x="127.27587" y="128.09561" sam="false" boundary="false" fixed="false"/>
+      <node nr="36" x="127.27587" y="127.09561" sam="false" boundary="false" fixed="false"/>
       <node nr="37" x="127.58282" y="120.25067" sam="false" boundary="false" fixed="false"/>
       <node nr="38" x="127.66235999999999" y="114.61218000000001" sam="false" boundary="false" fixed="false"/>
-      <node nr="39" x="138.08863" y="128.45734" sam="false" boundary="true" fixed="false"/>
+      <node nr="39" x="138.08863" y="127.45734" sam="false" boundary="true" fixed="false"/>
       <node nr="40" x="138.03612999999999" y="119.80520999999999" sam="false" boundary="true" fixed="false"/>
       <node nr="41" x="138.03113" y="115.02572999999998" sam="false" boundary="true" fixed="false"/>
       <node nr="42" x="137.94617999999997" y="107.56534" sam="false" boundary="true" fixed="false"/>
@@ -607,12 +606,12 @@
       <node nr="95" x="63.45901699999999" y="98.093244" sam="false" boundary="false" fixed="false"/>
       <node nr="96" x="63.34489699999999" y="91.16848399999999" sam="false" boundary="false" fixed="false"/>
       <node nr="97" x="63.33789699999999" y="86.18320399999999" sam="false" boundary="true" fixed="true"/>
-      <node nr="98" x="63.187467" y="135.9809" sam="false" boundary="false" fixed="false"/>
+      <node nr="98" x="63.187467" y="136.9809" sam="false" boundary="false" fixed="false"/>
       <node nr="99" x="63.174367" y="142.78187" sam="false" boundary="false" fixed="false"/>
       <node nr="100" x="63.272267" y="150.92869" sam="false" boundary="false" fixed="false"/>
       <node nr="101" x="53.258267000000004" y="151.04598" sam="false" boundary="true" fixed="false"/>
       <node nr="102" x="53.298367000000006" y="144.04945999999998" sam="false" boundary="true" fixed="false"/>
-      <node nr="103" x="53.13383700000001" y="136.07366" sam="false" boundary="true" fixed="false"/>
+      <node nr="103" x="53.13383700000001" y="137.07366" sam="false" boundary="true" fixed="false"/>
       <node nr="104" x="63.387757" y="159.22365000000002" sam="false" boundary="true" fixed="false"/>
       <node nr="105" x="53.411297000000005" y="159.28755" sam="false" boundary="true" fixed="false"/>
       <node nr="106" x="78.872167" y="132.43338" sam="false" boundary="false" fixed="false"/>
@@ -635,10 +634,10 @@
       <node nr="123" x="78.606517" y="90.80012400000001" sam="false" boundary="false" fixed="false"/>
       <node nr="124" x="78.59951699999999" y="98.206584" sam="false" boundary="false" fixed="false"/>
       <node nr="125" x="63.651886999999995" y="132.13382" sam="false" boundary="false" fixed="false"/>
-      <node nr="126" x="63.72138699999999" y="127.87272999999999" sam="false" boundary="false" fixed="false"/>
+      <node nr="126" x="63.72138699999999" y="126.87272999999999" sam="false" boundary="false" fixed="false"/>
       <node nr="127" x="63.41443699999999" y="120.02779" sam="false" boundary="false" fixed="false"/>
       <node nr="128" x="63.334897000000005" y="114.3893" sam="false" boundary="false" fixed="false"/>
-      <node nr="129" x="52.908627" y="128.23445999999998" sam="false" boundary="true" fixed="false"/>
+      <node nr="129" x="52.908627" y="127.23445999999998" sam="false" boundary="true" fixed="false"/>
       <node nr="130" x="52.961127000000005" y="119.58232999999998" sam="false" boundary="true" fixed="false"/>
       <node nr="131" x="52.96612700000001" y="114.80284999999998" sam="false" boundary="true" fixed="false"/>
       <node nr="132" x="53.051077" y="107.34246000000002" sam="false" boundary="true" fixed="false"/>

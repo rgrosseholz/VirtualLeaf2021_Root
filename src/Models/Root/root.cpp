@@ -53,7 +53,7 @@ void TwoCells::SetCellColor(CellBase *c, QColor *color)
   // add cell coloring rules here
   double targetArea = c->getTargetArea();
   double currentArea = c->Area();
-  double maxLogDeviation = log10(par->mu);
+  double maxLogDeviation = log10(par->tau);
   double areaDiff = log10(currentArea/targetArea);
 
   areaDiff = clamp(
@@ -122,8 +122,8 @@ void TwoCells::initializeTriangles(CellBase *c){
     c->setTargetVectorABofTriangle( Vector{width,0,0} );
     c->setTriangles(width * par->rho1, par->c0);
     // set mechanical properties
-    c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
-                   Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
+    c->setStiffnessMatrix( par->k[5] * Matrix { Vector { par->k[6],par->k[7],0},
+                   Vector { par->k[7],par->k[8],0}, Vector {0,0,par->k[9] }});
     // set cell wall remodelling veto              
     c->SetCellVeto(true);
     
@@ -138,8 +138,8 @@ void TwoCells::initializeTriangles(CellBase *c){
     c->setTargetVectorABofTriangle( Vector{width,0,0} );
     c->setTriangles(width * par->rho1, par->c0);
     // set mechanical properties
-    c->setStiffnessMatrix( par->k[5] * Matrix { Vector { par->k[6],par->k[7],0},
-                   Vector { par->k[7],par->k[8],0}, Vector {0,0,par->k[9] }});
+    c->setStiffnessMatrix( par->k[10] * Matrix { Vector { par->k[11],par->k[12],0},
+                   Vector { par->k[12],par->k[13],0}, Vector {0,0,par->k[14] }});
 
     c->SetCellVeto(true);
     
@@ -200,10 +200,10 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   double y { 1 / (1 + centerY - par->gamma) };
   // enlarge target area depending on tissue location ( cell target length )
   // and only up to a certain pressure
-  if(c->getTargetLength() != 4 && c->TargetArea() <  DSQR(c->Area()) * par->f ){
-    c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
+  if(c->getTargetLength() != 4 && c->TargetArea() <  c->Area() * par->f + par->c ){
+    c->EnlargeTargetArea(par->cell_expansion_rate * y );
   }
-  
+    
   /*if(c->getTargetLength() == 0 && c->TargetArea() < par->f * c->Area()){
     c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
   }
@@ -244,9 +244,28 @@ void TwoCells::CellHouseKeeping(CellBase *c)
 		  c->DivideOverAxis(Vector {1,0,0});
 	}
   //cell wall weakening happens here
-  if(c->CellType() == 0 || c->CellType() == 1 || c->CellType() == 2){
+  if(c->CellType() == 0 || c->CellType() == 1 ){
     double stiffness {par->betaD};
-    double scaling {par->gammaD  };
+    double scaling {par->gammaR};
+    c->LoopWallElements([stiffness, scaling](auto wallElementInfo){
+      Vector from { *(wallElementInfo->getFrom()) };
+      Vector to { *(wallElementInfo->getTo()) };
+      Vector wallVector { to - from };
+      Vector growthDirection { 0, 1};
+      
+      // if angle is between 75 - 105 degree return true
+      if ( 1.3 < wallVector.Angle(growthDirection) &&  1.9 > wallVector.Angle(growthDirection) ) 
+      { 
+        wallElementInfo->getWallElement()->setStiffness(scaling * stiffness);
+      } else { 
+        wallElementInfo->getWallElement()->setStiffness(stiffness);
+      }
+    });
+  }
+
+  if(c->CellType() == 2){
+    double stiffness {par->gammaD};
+    double scaling {par->gammaR};
     c->LoopWallElements([stiffness, scaling](auto wallElementInfo){
       Vector from { *(wallElementInfo->getFrom()) };
       Vector to { *(wallElementInfo->getTo()) };
@@ -265,7 +284,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
 
   if(c->CellType() == 3 ){
     double stiffness {par->betaR};
-    double scaling {par->gammaR  };
+    double scaling {par->gammaR};
     c->LoopWallElements([stiffness, scaling](auto wallElementInfo){
       Vector from { *(wallElementInfo->getFrom()) };
       Vector to { *(wallElementInfo->getTo()) };
@@ -280,6 +299,8 @@ void TwoCells::CellHouseKeeping(CellBase *c)
       }
     });
   }
+
+
 }
 
 void TwoCells::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2)

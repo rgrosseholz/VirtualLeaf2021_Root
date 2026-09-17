@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+#set -euo pipefail
 
 usage() {
     cat <<'EOF'
@@ -105,15 +105,19 @@ cp "$CURRENT_XML" "$EVAL_DATA_DIR/$STAGED_NAME"
 #fi
 
 NEWEST_XML=$(find "$DATA_DIR" -maxdepth 1 -name "leaf.*.xml" -printf '%T@ %p\n' | sort -nr | cut -d' ' -f2- | head -n1)
+
 if [[ -n "$NEWEST_XML" ]]; then
     cp "$NEWEST_XML" "$EVAL_DATA_DIR/"
+    
 fi
 
 DEFAULT_PYTHON_BIN="$PROJECT_ROOT/src/python/evaluate_time_evolution/Data/venv_CalcData/.venv_test/bin/python"
 if [[ -x "$DEFAULT_PYTHON_BIN" ]]; then
     PYTHON_BIN="${PYTHON_BIN:-$DEFAULT_PYTHON_BIN}"
+    
 else
     PYTHON_BIN="${PYTHON_BIN:-python3}"
+    
 fi
 
 if ! command -v "$PYTHON_BIN" >/dev/null 2>&1; then
@@ -128,9 +132,10 @@ fi
 
 "$PYTHON_BIN" "$EVAL_SCRIPT" "$DATA_DIR" "$EVAL_DATA_DIR"
 
-rm "$DATA_DIR"/*."pdf"
+#rm "$DATA_DIR"/*."pdf"
 cp -r "$DATA_DIR" "$EVAL_DATA_DIR"
 rm "$DATA_DIR"/*.xml
+rm "$DATA_DIR"/*.png
 
 
 

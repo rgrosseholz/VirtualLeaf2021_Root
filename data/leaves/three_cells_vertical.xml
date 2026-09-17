@@ -412,7 +412,7 @@
       <par val="0.25" name="vessel_expansion_rate"/>
       
       
-      <par val="200" name="d"/>
+      <par val="1e5" name="d"/>
       
       
       <par val="0.15" name="e"/>
@@ -483,7 +483,7 @@
             
         
             
-            <val v="0"/>
+            <val v="1"/>
             
             
         
@@ -493,7 +493,7 @@
             
         
             
-            <val v="0"/>
+            <val v="1"/>
             
             
         
@@ -586,7 +586,7 @@
    
   
    
-   <nodes n="18">
+   <nodes n="18" target_length="3">
       <node nr="0" x="188.710476" y="225.25412" sam="false" boundary="true" fixed="false"/>
       <node nr="1" x="188.676956" y="239.35492" sam="false" boundary="true" fixed="false"/>
       <node nr="2" x="188.64067599999998" y="254.62116" sam="false" boundary="true" fixed="false"/>
@@ -607,7 +607,7 @@
       <node nr="17" x="207.1146" y="299.23743999999994" sam="false" boundary="true" fixed="false"/>
    </nodes>
    <cells n="3" magnfication="1" nchem="0" offsetx="0" offsety="0" base_area="548.072573522293">
-      <cell boundary="0" cell_type="0" target_area="544.8460956934402" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="0" source="false" pin_fixed="false" area="544.8460956934402" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="0" target_area="700.8460956934402" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="0" source="false" pin_fixed="false" area="544.8460956934402" fixed="false" div_counter="0">
          <node n="0"/>
          <node n="7"/>
          <node n="6"/>
@@ -618,7 +618,7 @@
          <node n="1"/>
          <wall w="0"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="549.6842726595195" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="1" source="false" pin_fixed="false" area="549.6842726595195" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="0" target_area="700.6842726595195" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="1" source="false" pin_fixed="false" area="549.6842726595195" fixed="false" div_counter="0">
          <node n="2"/>
          <node n="3"/>
          <node n="4"/>
@@ -630,7 +630,7 @@
          <wall w="0"/>
          <wall w="1"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="549.6873522139194" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="2" source="false" pin_fixed="false" area="549.6873522139194" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="0" target_area="700.6873522139194" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="2" source="false" pin_fixed="false" area="549.6873522139194" fixed="false" div_counter="0">
          <node n="9"/>
          <node n="10"/>
          <node n="11"/>

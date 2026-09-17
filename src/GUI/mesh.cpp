@@ -1265,7 +1265,7 @@ double Mesh::DisplaceNodes(void)
   // make anisotropic energy panality
 
   double alignment_with_axis{DSQR(InnerProduct(anisotropic_growth_axis.Normalised(), old_p.Normalised()))};
-
+  c.anisotropic_growth = true;
   if (c.anisotropic_growth)
   {
 

@@ -61,9 +61,9 @@ void TwoCells::CellHouseKeeping(CellBase *c)
 
   if(c->Index() == 1){
   c->EnlargeTargetArea(par->cell_expansion_rate / 10); }
-
+  
   // cellulose spring activation
-  if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k 
+  if(par->k[0] == 0  && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k 
   {
     //c->setAnisotropicGrowth(true);
     c->PlaceSprings();

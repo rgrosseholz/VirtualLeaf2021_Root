@@ -13,20 +13,20 @@
     <par name="export_interval" val="0"/>
     <par name="export_fn_prefix" val="cell."/>
     <par name="storage_stride" val="100"/>
-    <par name="xml_storage_stride" val="500"/>
+    <par name="xml_storage_stride" val="300"/>
     <par name="datadir" val="tutorial1_data"/>
     <par name="T" val="1"/>
-    <par name="lambda_length" val="100"/>
+    <par name="lambda_length" val="40"/>
     <par name="yielding_threshold" val="4"/>
     <par name="lambda_celllength" val="0"/>
     <par name="target_length" val="60"/>
-    <par name="cell_expansion_rate" val="0.2"/>
+    <par name="cell_expansion_rate" val="0.1"/>
     <par name="cell_div_expansion_rate" val="10"/>
     <par name="auxin_dependent_growth" val="true"/>
     <par name="ode_accuracy" val="0.0001"/>
     <par name="mc_stepsize" val="0.4"/>
-    <par name="mc_cell_stepsize" val="0.2"/>
-    <par name="energy_threshold" val="1000"/>
+    <par name="mc_cell_stepsize" val="0"/>
+    <par name="energy_threshold" val="500"/>
     <par name="bend_lambda" val="0"/>
     <par name="alignment_lambda" val="0"/>
     <par name="rel_cell_div_threshold" val="6"/>
@@ -114,22 +114,22 @@
     <par name="vessel_expansion_rate" val="0.25"/>
     <par name="d" val="1e6"/>
     <par name="e" val="1.3"/>
-    <par name="f" val="0.8"/>
+    <par name="f" val="4"/>
     <par name="c" val="1e-6"/>
-    <par name="mu" val="0.9"/>
+    <par name="mu" val="2"/>
     <par name="nu" val="1.5"/>
     <par name="rho0" val="2"/>
-    <par name="rho1" val="2"/>
-    <par name="c0" val="3"/>
+    <par val="0.1" name="rho1"/> 
+      <par val="2.5" name="c0"/>
     <par name="gamma" val="0"/>
     <par name="eps" val="0"/>
     <par name="k">
       <valarray>
-        <val v="2e5"/>
-        <val v="3.5"/>
-        <val v="4"/>
-        <val v="1e-1"/>
-        <val v="6"/>
+        <val v="1.35e6"/>
+            <val v="1.3"/>
+            <val v="0.6"/>
+            <val v="1e-3"/>
+            <val v="0.6"/>
         <val v="0.0024"/>
         <val v="-0.0045"/>
         <val v="0"/>

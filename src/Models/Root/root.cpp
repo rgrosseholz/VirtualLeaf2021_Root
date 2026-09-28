@@ -197,10 +197,10 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   if( centerY < par->gamma + 0.4 * tissueDistance && c->getTargetLength() < 4){
     c->SetTargetLength(2);
   }
-  double y { 1 / (1 + centerY - par->gamma) };
+  double y { 1 / (1 + centerY - par->gamma) + par->e }; // par.e gives base growth rate
   // enlarge target area depending on tissue location ( cell target length )
   // and only up to a certain pressure
-  if(c->getTargetLength() != 4 && c->TargetArea() <  c->Area() * par->f + par->c ){
+  if(c->getTargetLength() != 4 && c->TargetArea() <  c->Area() * par->f  + par->c ){
     c->EnlargeTargetArea(par->cell_expansion_rate * y );
   }
     
@@ -217,28 +217,28 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   // Allow only lowest row  of cells to devide. The parameter pin_fixed is used therefore. 
   // Allow Cell division if area is x times larger then initial cell area
   if ( c->getPin_fixed()  && c->CellType() == 0 && 
-      c->Area() > par->rel_cell_div_threshold * 80
+      c->Area() > par->rel_cell_div_threshold * 72
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});
 	}
 
   if ( c->getPin_fixed()  && c->CellType() == 1 && 
-      c->Area() > par->rel_cell_div_threshold * 65
+      c->Area() > par->rel_cell_div_threshold * 45
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});
 	}
 
   if ( c->getPin_fixed()  && c->CellType() == 2 && 
-      c->Area() > par->rel_cell_div_threshold * 100
+      c->Area() > par->rel_cell_div_threshold * 72
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});
 	}
 
   if ( c->getPin_fixed()  && c->CellType() == 3 && 
-      c->Area() > par->rel_cell_div_threshold * 100
+      c->Area() > par->rel_cell_div_threshold * 80
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});

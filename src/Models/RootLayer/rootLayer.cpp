@@ -82,6 +82,9 @@ void TwoCells::SetCellColor(CellBase *c, QColor *color)
 
 void TwoCells::initializeTriangles(CellBase *c){
   // initialize cell properties depending on cell type
+
+  c->EnlargeTargetArea(c->getTargetArea() * par->d);
+
   if( c->Index() != -1 && c->CellType() == 0 ) 
   {
     double width {5}; //  width of the cell 
@@ -168,22 +171,34 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     //c->Fix();
   }
   
-  // enlarge target area
+   //update min and max cellcenter of tissue layout
+  double centerY { c->Centroid().y };  
+  // par->gamma = minimal cell center
+  if( centerY < par->gamma ){
+    par->gamma = centerY; 
+  }
+   // par->eps = maximal cell center
+  if(centerY > par->eps){
+    par->eps = centerY; 
+  }
+  double tissueDistance { par->eps - par->gamma };
+
+  double y { 1 / (1 + centerY - par->gamma) };
+  // enlarge target area depending on tissue location ( cell target length )
   // and only up to a certain pressure
-  if((c->CellType() == 0 || c->CellType() == 1) && c->TargetArea() < par->f * c->Area() 
-      && c->getTargetLength() < 4){
-    c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
+  if(par->cell_div_expansion_rate * y < par->tau){
+  if(c->getTargetLength() != 4 && c->TargetArea() <  c->Area() * par->f + par->c ){
+    c->EnlargeTargetArea(par->tau);
   }
-
-  if((c->CellType() == 3 || c->CellType() == 2) && c->TargetArea() < par->c * c->Area() 
-      && c->getTargetLength() < 4){
-    c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
+  }else{
+    if(c->getTargetLength() != 4 && c->TargetArea() <  c->Area() * par->f + par->c ){
+    c->EnlargeTargetArea(par->cell_expansion_rate * y );
+    }
   }
-
   // Allow only lowest row  of cells to devide. The parameter pin_fixed is used therefore. 
   // Allow Cell division if area is x times larger then initial cell area
   if ( c->getPin_fixed()  && c->CellType() == 0 && 
-      c->Area() > par->rel_cell_div_threshold * 75
+      c->Area() > par->rel_cell_div_threshold * 66
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});
@@ -265,9 +280,6 @@ void TwoCells::CellHouseKeeping(CellBase *c)
       }
     });
   }
-
-
-
 }
 
 void TwoCells::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2)

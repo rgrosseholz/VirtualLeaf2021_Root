@@ -55,7 +55,7 @@ public:
 	// return number of chemicals
 	virtual int NChem(void);
 	
-	virtual QString DefaultLeafML(void) { return QString("tutorial1_rectangle.xml"); }
+	virtual QString DefaultLeafML(void) { return QString("tutorial1_init.xml"); }
 	
 };
 

@@ -80,7 +80,7 @@ void Tutorial1A::SetCellColor(CellBase *c, QColor *color) {
 
 void Tutorial1A::initializeTriangles(CellBase *c){
   // initialize cell properties depending on cell type
-  if( c->Index() != -1 && c->CellType() == 0 ) 
+  if( c->Index() != -1 ) 
   {
     double width {6}; //  width of the cell 
     // set triangles
@@ -94,79 +94,14 @@ void Tutorial1A::initializeTriangles(CellBase *c){
     c->SetCellVeto(true);
 
   }
-
-  if( c->CellType() == 1 ) 
-  {
-    double width {6};
-    
-    c->PlaceTriangles();
-    c->setTargetVectorABofTriangle( Vector{width,0,0} );
-    c->setTriangles(width * par->rho1, par->c0);
-    // set mechanical properties
-   c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
-                   Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
-                  
-    c->SetCellVeto(true);
-
-  }
-
-  if( c->CellType() == 2 ) 
-  {
-    double width {10};
-    
-    c->PlaceTriangles();
-    c->setTargetVectorABofTriangle( Vector{width,0,0} );
-    c->setTriangles(width * par->rho1, par->c0);
-    // set mechanical properties
-    c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
-                   Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
-                  
-    c->SetCellVeto(true);
-    double centroidY { c->Centroid().y };
-
-  }
-
-
-  if( c->CellType() == 3 ) 
-  {
-    double width {10};
-    c->PlaceTriangles();
-    c->setTargetVectorABofTriangle( Vector{width,0,0} );
-    c->setTriangles(width * par->rho1, par->c0);
-    // set mechanical properties
-    c->setStiffnessMatrix( par->k[0] * Matrix { Vector { par->k[1],par->k[2],0},
-                   Vector { par->k[2],par->k[3],0}, Vector {0,0,par->k[4] }});
-
-    c->SetCellVeto(true);
-    double centroidY { c->Centroid().y };
-    
-  }
 }
 
 void Tutorial1A::CellHouseKeeping(CellBase *c) {
   // add cell behavioral rules here
- //fix cell if final size is reached and belongs to the upper part of the tissue ( = targetLength > 0)
-  if(c->CellType() == 0 &&  c->TargetArea() > 170 * par->nu ){
-    //c->SetTargetLength(4);//stop growth
-    c->Fix();
-  }
 
-  if(c->CellType() == 1 &&  c->TargetArea() > 115 * par->nu ){
-    c->SetTargetLength(4);//stop growth
-  }
-
-  if(c->CellType() == 2 &&  c->TargetArea() > 190 * par->nu ){
-    //c->SetTargetLength(4);//stop growth
-    c->Fix();
-  }
-
-  if(c->CellType() == 3 && c->TargetArea() > 280 * par->nu ){
-    //c->SetTargetLength(4);//stop growth
-    c->Fix();
-  }
 // enlarge target area, par f controls the maximum pressure difference 
   if(c->TargetArea() < par->f * c->Area()){
-    c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
+    c->EnlargeTargetArea(par->cell_expansion_rate  );
   }
 
   double base_element_length = 25;

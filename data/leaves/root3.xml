@@ -6,9 +6,7 @@
       
       
       <par val="yellow" name="arrowcolor"/>
-      
-    
-      
+
       <par val="10" name="arrowsize"/>
       
       
@@ -51,7 +49,7 @@
       <par val="1" name="T"/>
       
       
-      <par val="60" name="lambda_length"/>
+      <par val="70" name="lambda_length"/>
       
       
       <par val="12.5" name="yielding_threshold"/>
@@ -63,7 +61,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="10" name="cell_expansion_rate"/>
+      <par val="6" name="cell_expansion_rate"/>
       
       
       <par val="7" name="cell_div_expansion_rate"/>
@@ -90,7 +88,7 @@
       <par val="0" name="alignment_lambda"/>
       
       
-      <par val="2" name="rel_cell_div_threshold"/>
+      <par val="3." name="rel_cell_div_threshold"/>
       
       
       <par val="4" name="rel_perimeter_stiffness"/>
@@ -412,16 +410,16 @@
       <par val="0.25" name="vessel_expansion_rate"/>
       
       
-      <par name="d" val="0.2"/>
-      <par name="e" val="0"/>
+      <par name="d" val="0.3"/>
+      <par name="e" val="0.1"/>
 
       
       
-      <par name="f" val="4"/>
-      <par name="c" val="100"/> 
-      <par name="mu" val="0"/>
+      <par name="f" val="1.9"/>
+      <par name="c" val="150"/> 
+      <par name="mu" val="3"/>
       
-      <par val="1.2" name="nu"/>
+      <par val="1.3" name="nu"/>
       <par val="0.9" name="rho0"/>
       
       
@@ -429,15 +427,15 @@
       <par val="4" name="c0"/> 
       
       
-      <par val="94" name="gamma"/> 
+      <par val="90" name="gamma"/> 
       <par val="154" name="eps"/> 
       
       <par val="1.5" name="betaN"/>
       <par val="4" name="gammaN"/> 
       
       
-      <par val="0.3" name="betaD"/>
-      <par val="0.8" name="gammaD"/> 
+      <par val="0.33" name="betaD"/>
+      <par val="0.66" name="gammaD"/>  
       <par val="1.3" name="betaR"/> 
 
       <par val="1.5" name="gammaR"/>
@@ -460,25 +458,25 @@
               
          <valarray>
             
-            <val v="0.5e5"/>
-            <val v="500"/>
-            <val v="10"/>
+            <val v="1.3e6"/>
+            <val v="1.5"/>
+            <val v="0.6"/>
             <val v="1e-1"/>
-            <val v="50"/> 
+            <val v="0.7"/> 
 
         
-            <val v="2.5e5 "/>
-            <val v="500"/>
-            <val v="30"/>
+            <val v="2.6e6"/>
+            <val v="1.5"/>
+            <val v="0.6"/>
             <val v="1e-1"/>
-            <val v="50"/>  
+            <val v="0.7"/>  
 
          
-            <val v="5e5 "/>
-            <val v="500"/>
-            <val v="30"/>
+            <val v="5.2e6"/>
+            <val v="1.5"/>
+            <val v="0.6"/>
             <val v="1e-1"/>
-            <val v="50"/>   
+            <val v="0.7"/>   
                  
          </valarray>
          

@@ -203,14 +203,13 @@ void MainBase::Plot(int resize_stride)
       QDomElement settings=XMLSettingsTree();
       mesh.XMLSave(XMLname.str().c_str(), settings);
 
-      // add PDF
-      stringstream PDFname;
-      PDFname << par.datadir << "/leaf.";
-      PDFname.fill('0');
-      PDFname.width(6);
-      PDFname << count << ".pdf";
-      // Write PDF snapshot with every xml file
-      Save(PDFname.str().c_str(), "PDF", 1024, 768);
+      stringstream PNGname;
+      PNGname << par.datadir << "/leaf.";
+      PNGname.fill('0');
+      PNGname.width(6);
+      PNGname << count << ".png";
+      // Write high-res PNG snapshot every plot step
+      Save(PNGname.str().c_str(), "PNG", 1024, 768);
     }
   
 }

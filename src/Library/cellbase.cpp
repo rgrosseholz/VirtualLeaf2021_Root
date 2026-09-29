@@ -1035,16 +1035,16 @@ void CellBase::SetSpringsOnNodeIntoNetwork(Node* node, double spring_distributio
 
   Vector rel_node = *(node);
 
-  while(RANDOM() <= (exp(- (node->connected_to_spring)/3.0) - 0.1)){
+  //while(RANDOM() <= (exp(- (node->connected_to_spring)/3.0) - 0.1)){
     double cos_random_angle{fabs(d(gen))}; // draw of random angle
 
     for (vector<Node *>::const_iterator j = shuffled_nodes.begin(); j != shuffled_nodes.end(); j++)
     {
-      if((*j)->isConnected_to_spring()){
-        if(RANDOM() <= exp(- ((*j)->connected_to_spring)/6.0)){
-          continue;
-        }
-      }
+//      if((*j)->isConnected_to_spring()){
+//        if(RANDOM() <= exp(- ((*j)->connected_to_spring)/6.0)){
+//          continue;
+//        }
+//      }
       Vector connected_node = *(*j);
       if ((*j)->index == node->index) { continue; }; // check to not connect same nodes
       Vector pot_spring = rel_node - connected_node;
@@ -1061,7 +1061,7 @@ void CellBase::SetSpringsOnNodeIntoNetwork(Node* node, double spring_distributio
           continue;
       }
     }
-  }
+  //}
 }
 
 void CellBase::resetSpringNetwork(Node* newNode, double spring_distribution_mean, double sigma_springs)

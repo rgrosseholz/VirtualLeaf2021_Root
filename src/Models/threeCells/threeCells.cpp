@@ -60,16 +60,16 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   
 
   if(c->Index() == 1){
-  c->EnlargeTargetArea(par->cell_expansion_rate / 10); }
+  c->EnlargeTargetArea(par->cell_expansion_rate); }
 
   // cellulose spring activation
   if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k 
   {
     //c->setAnisotropicGrowth(true);
     c->PlaceSprings();
-    c->SetSigmaSprings( 0.15 ); 
+    c->SetSigmaSprings( par->e ); //sigma war 0.21
     c->SetSpringDistributionMean( 0 );
-    c->SetSpringNetwork(0.,0.21);
+    c->SetSpringNetwork(0.,par->e);
     c->setSpringBaseLength(17);      
     
   }
@@ -79,7 +79,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     for(auto node : c->getNodesList())
     {
       if(RANDOM() <= (exp(- (node->getConnected_to_spring()/3.0)) - 0.1))
-      c->SetSpringsOnNodeIntoNetwork(node, 0., 0.21);
+      c->SetSpringsOnNodeIntoNetwork(node, 0., par->e);//sigma war 0.21
     }
   }
   //cell wall weakening happens here

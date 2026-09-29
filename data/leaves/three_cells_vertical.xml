@@ -5,7 +5,7 @@
    <parameter>
       
       
-      <par val="yellow" name="arrowcolor"/>
+      <par val="white" name="arrowcolor"/>
       
     
       
@@ -45,7 +45,7 @@
       <par val="500" name="xml_storage_stride"/>
       
       
-      <par val="lateral_root" name="datadir"/>
+      <par val="threeCells" name="datadir"/>
       
       
       <par val="1" name="T"/>
@@ -63,10 +63,10 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="2" name="cell_expansion_rate"/>
+      <par val="0.5" name="cell_expansion_rate"/>
       
       
-      <par val="10" name="cell_div_expansion_rate"/>
+      <par val="1" name="cell_div_expansion_rate"/>
       
       
       <par val="true" name="auxin_dependent_growth"/>
@@ -412,10 +412,10 @@
       <par val="0.25" name="vessel_expansion_rate"/>
       
       
-      <par val="200" name="d"/>
+      <par val="400" name="d"/>
       
       
-      <par val="0.15" name="e"/>
+      <par val="0.01" name="e"/>
       
       
       <par val="0.8" name="f"/>
@@ -424,10 +424,10 @@
       <par val="0.4" name="c"/>
       
       
-      <par val="0.4" name="mu"/>
+      <par val="0.1" name="mu"/>
       
       
-      <par val="0.4" name="nu"/>
+      <par val="0.1" name="nu"/>
       
       
       <par val="0" name="rho0"/>

@@ -67,7 +67,7 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
   if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k 
   {
     c->PlaceSprings();
-    c->SetSigmaSprings( 0.1 ); 
+    c->SetSigmaSprings( par->e ); 
     c->SetSpringDistributionMean( 0 );
     c->SetSpringNetwork(0.,par->e);
     c->setSpringBaseLength(9);

@@ -831,7 +831,7 @@ double Mesh::ReconfigurationWallElements(vector<CellWallCurve> & curves) {
 	ReconfigurationCellWallElements(curves,boundary_polygon);
 	return 0.0;
 }
-
+/*
 void Mesh::InitializeCellSprings()
 {
   for (vector<Cell *>::iterator ii = cells.begin(); ii != cells.end(); ii++)
@@ -841,7 +841,7 @@ void Mesh::InitializeCellSprings()
     {
       c->SetRefVecSprings( Vector {0, 1, 0} );
       c->PlaceSprings();
-      c->SetSigmaSprings( 0.15 ); 
+      c->SetSigmaSprings( par.e ); 
       c->SetSpringDistributionMean( 0 );
       c->SetSprings();
       //c->SetSpringsNormalDistributed();
@@ -850,7 +850,7 @@ void Mesh::InitializeCellSprings()
     }
   }
 }
-
+*/
 double Mesh::DisplaceNodes(void)
 {
 
@@ -1205,7 +1205,12 @@ double Mesh::DisplaceNodes(void)
         double old_length { (oldSpringVec).Norm() };
         double new_length { (newSpringVec).Norm() };
         double springLength { c.getSpringBaseLength() };
-        double lambda_cellulose { par.d };
+        double lambda_cellulose;
+        if((*j)->checkSpringOrientation(0.17,0.17)){
+          lambda_cellulose =  par.d;
+        }else{
+          lambda_cellulose =  0.66*par.d;
+        }
         /* calculate energy with harmonic oszilator for spring length and spring orientation*/
         cellulose_spring_dh += lambda_cellulose  *
                                ( DSQR(new_length / springLength - 1)

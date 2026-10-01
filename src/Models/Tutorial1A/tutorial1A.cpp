@@ -73,7 +73,7 @@ void Tutorial1A::CellHouseKeeping(CellBase *c) {
     c->setSpringBaseLength(9);
   } 
 
-    if(c->isSpringPlaced()){
+  if(c->isSpringPlaced()){
     c->cleanUpNetwork(par->mu, par->nu, 3);
     for(auto node : c->getNodesList())
      { c->SetSpringsOnNodeIntoNetwork(node, 0., par->e);}

@@ -63,7 +63,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="0.5" name="cell_expansion_rate"/>
+      <par val="0.1" name="cell_expansion_rate"/>
       
       
       <par val="1" name="cell_div_expansion_rate"/>
@@ -75,7 +75,7 @@
       <par val="0.0001" name="ode_accuracy"/>
       
       
-      <par val="0.4" name="mc_stepsize"/>
+      <par val="0.2" name="mc_stepsize"/>
       
       
       <par val="0.2" name="mc_cell_stepsize"/>
@@ -412,10 +412,10 @@
       <par val="0.25" name="vessel_expansion_rate"/>
       
       
-      <par val="400" name="d"/>
+      <par val="50" name="d"/>
       
       
-      <par val="0.01" name="e"/>
+      <par val="0.21" name="e"/>
       
       
       <par val="0.8" name="f"/>
@@ -424,10 +424,10 @@
       <par val="0.4" name="c"/>
       
       
-      <par val="0.1" name="mu"/>
+      <par val="0.9" name="mu"/>
       
       
-      <par val="0.1" name="nu"/>
+      <par val="0.9" name="nu"/>
       
       
       <par val="0" name="rho0"/>
@@ -436,7 +436,7 @@
       <par val="0" name="rho1"/>
       
       
-      <par val="0" name="c0"/>
+      <par val="4" name="c0"/>
       
       
       <par val="0" name="gamma"/>
@@ -586,31 +586,25 @@
    
   
    
-   <nodes n="18">
-      <node nr="0" x="188.710476" y="225.25412" sam="false" boundary="true" fixed="false"/>
-      <node nr="1" x="188.676956" y="239.35492" sam="false" boundary="true" fixed="false"/>
-      <node nr="2" x="188.64067599999998" y="254.62116" sam="false" boundary="true" fixed="false"/>
-      <node nr="3" x="197.62745999999999" y="254.73516" sam="false" boundary="false" fixed="false"/>
-      <node nr="4" x="207.24483999999998" y="254.85716000000002" sam="false" boundary="true" fixed="false"/>
-      <node nr="5" x="207.25284" y="240.10336" sam="false" boundary="true" fixed="false"/>
-      <node nr="6" x="207.26084" y="225.56804" sam="false" boundary="true" fixed="false"/>
-      <node nr="7" x="198.158142" y="225.41404" sam="false" boundary="true" fixed="false"/>
-      <node nr="8" x="188.604866" y="268.9218" sam="false" boundary="true" fixed="false"/>
-      <node nr="9" x="188.56858599999998" y="284.18804" sam="false" boundary="true" fixed="false"/>
-      <node nr="10" x="197.55536399999997" y="284.30204" sam="false" boundary="false" fixed="false"/>
-      <node nr="11" x="207.17273999999998" y="284.42404" sam="false" boundary="true" fixed="false"/>
-      <node nr="12" x="207.18074" y="269.67024" sam="false" boundary="true" fixed="false"/>
-      <node nr="13" x="188.53871999999998" y="298.489" sam="false" boundary="true" fixed="false"/>
-      <node nr="14" x="188.50243999999998" y="313.75523999999996" sam="false" boundary="true" fixed="true"/>
-      <node nr="15" x="197.48922399999998" y="313.86923999999993" sam="false" boundary="true" fixed="true"/>
-      <node nr="16" x="207.1066" y="313.99123999999995" sam="false" boundary="true" fixed="true"/>
-      <node nr="17" x="207.1146" y="299.23743999999994" sam="false" boundary="true" fixed="false"/>
+   <nodes n="14">
+      <node nr="0" x="94.355238" y="112.62706" sam="false" boundary="true" fixed="false"/>
+      <node nr="1" x="94.338478" y="119.67746" sam="false" boundary="true" fixed="false"/>
+      <node nr="2" x="94.32033799999999" y="127.31058" sam="false" boundary="true" fixed="false"/>
+      <node nr="3" x="103.62241999999999" y="127.42858" sam="false" boundary="true" fixed="false"/>
+      <node nr="4" x="103.62642" y="120.05167999999999" sam="false" boundary="true" fixed="false"/>
+      <node nr="5" x="103.63042" y="112.78401999999998" sam="false" boundary="true" fixed="false"/>
+      <node nr="6" x="94.302433" y="134.4609" sam="false" boundary="true" fixed="false"/>
+      <node nr="7" x="94.28429299999999" y="142.09402" sam="false" boundary="true" fixed="false"/>
+      <node nr="8" x="103.58636999999999" y="142.21202" sam="false" boundary="true" fixed="false"/>
+      <node nr="9" x="103.59037" y="134.83512" sam="false" boundary="true" fixed="false"/>
+      <node nr="10" x="94.26935999999999" y="149.2445" sam="false" boundary="true" fixed="false"/>
+      <node nr="11" x="94.25121999999999" y="156.87761999999998" sam="false" boundary="true" fixed="true"/>
+      <node nr="12" x="103.5533" y="156.99561999999997" sam="false" boundary="true" fixed="true"/>
+      <node nr="13" x="103.5573" y="149.61871999999997" sam="false" boundary="true" fixed="false"/>
    </nodes>
-   <cells n="3" magnfication="1" nchem="0" offsetx="0" offsety="0" base_area="548.072573522293">
-      <cell boundary="0" cell_type="0" target_area="544.8460956934402" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="0" source="false" pin_fixed="false" area="544.8460956934402" fixed="false" div_counter="0">
+   <cells n="3" magnfication="1" nchem="0" offsetx="0" offsety="0" base_area="137.01817545074664">
+      <cell boundary="0" cell_type="0" target_area="236.21162007688008" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="0" source="false" pin_fixed="false" area="136.21162007688008" fixed="false" div_counter="0">
          <node n="0"/>
-         <node n="7"/>
-         <node n="6"/>
          <node n="5"/>
          <node n="4"/>
          <node n="3"/>
@@ -618,54 +612,48 @@
          <node n="1"/>
          <wall w="0"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="549.6842726595195" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="1" source="false" pin_fixed="false" area="549.6842726595195" fixed="false" div_counter="0">
+      <cell boundary="0" cell_type="0" target_area="237.42106813037998" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="1" source="false" pin_fixed="false" area="137.42106813037998" fixed="false" div_counter="0">
          <node n="2"/>
          <node n="3"/>
-         <node n="4"/>
-         <node n="12"/>
-         <node n="11"/>
-         <node n="10"/>
          <node n="9"/>
          <node n="8"/>
+         <node n="7"/>
+         <node n="6"/>
          <wall w="0"/>
          <wall w="1"/>
       </cell>
-      <cell boundary="0" cell_type="0" target_area="549.6873522139194" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="2" source="false" pin_fixed="false" area="549.6873522139194" fixed="false" div_counter="0">
-         <node n="9"/>
-         <node n="10"/>
-         <node n="11"/>
-         <node n="17"/>
-         <node n="16"/>
-         <node n="15"/>
-         <node n="14"/>
-         <node n="13"/>
-         <wall w="1"/>
-      </cell>
-      <boundary_polygon boundary="0" cell_type="0" target_area="1644.217720566879" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="-1" source="false" pin_fixed="false" area="1644.217720566879" fixed="false" div_counter="0">
-         <node n="0"/>
+      <cell boundary="0" cell_type="0" target_area="237.42183814497986" lambda_celllength="0" at_boundary="false" dead="false" target_length="0" stiffness="1" index="2" source="false" pin_fixed="false" area="137.42183814497986" fixed="false" div_counter="0">
          <node n="7"/>
-         <node n="6"/>
-         <node n="5"/>
-         <node n="4"/>
+         <node n="8"/>
+         <node n="13"/>
          <node n="12"/>
          <node n="11"/>
-         <node n="17"/>
-         <node n="16"/>
-         <node n="15"/>
-         <node n="14"/>
-         <node n="13"/>
+         <node n="10"/>
+         <wall w="1"/>
+      </cell>
+      <boundary_polygon boundary="0" cell_type="0" target_area="411.05452635224" lambda_celllength="0" at_boundary="true" dead="false" target_length="0" stiffness="1" index="-1" source="false" pin_fixed="false" area="411.05452635224" fixed="false" div_counter="0">
+         <node n="0"/>
+         <node n="5"/>
+         <node n="4"/>
+         <node n="3"/>
          <node n="9"/>
          <node n="8"/>
+         <node n="13"/>
+         <node n="12"/>
+         <node n="11"/>
+         <node n="10"/>
+         <node n="7"/>
+         <node n="6"/>
          <node n="2"/>
          <node n="1"/>
       </boundary_polygon>
    </cells>
-   <walls n="20">
-      <wall length="18.605660808982204" c1="0" c2="1" index="0" n1="2" n2="4" wall_type="normal" viz_flux="0">
+   <walls n="16">
+      <wall length="9.302830404491097" c1="0" c2="1" index="0" n1="2" n2="3" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>
-      <wall length="18.605650809786695" c1="1" c2="2" index="1" n1="9" n2="11" wall_type="normal" viz_flux="0">
+      <wall length="9.30282540489334" c1="1" c2="2" index="1" n1="7" n2="8" wall_type="normal" viz_flux="0">
          <transporters1/>
          <transporters2/>
       </wall>

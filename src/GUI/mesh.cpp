@@ -1206,7 +1206,7 @@ double Mesh::DisplaceNodes(void)
         double new_length { (newSpringVec).Norm() };
         double springLength { c.getSpringBaseLength() };
         double lambda_cellulose;
-        if((*j)->checkSpringOrientation(0.17,0.17)){
+        if((*j)->checkSpringOrientation(0.2,0.2)){
           lambda_cellulose =  par.d;
         }else{
           lambda_cellulose =  0.66*par.d;
@@ -1240,7 +1240,12 @@ double Mesh::DisplaceNodes(void)
         double old_length { (oldSpringVec).Norm() };
         double new_length { (newSpringVec).Norm() };
         double springLength { c.getSpringBaseLength() };
-        double lambda_cellulose { par.d };
+        double lambda_cellulose;
+        if((*j)->checkSpringOrientation(0.2,0.2)){
+          lambda_cellulose =  par.d;
+        }else{
+          lambda_cellulose =  0.66*par.d;
+        }
          cellulose_spring_dh += lambda_cellulose * 
                                ( DSQR(new_length / springLength - 1)
                               - DSQR(old_length / springLength - 1)) ;  
@@ -1540,7 +1545,7 @@ void Mesh::InsertNode(Edge &e) {
     {
       Cell* c { owner.getCell() };
       if(c->Index() == -1 || !(c->place_springs)) {continue;}
-      c->cleanUpNetwork(par.mu, par.nu, 3);
+      c->cleanUpNetwork(par.mu, par.nu, par.c0);
       c->resetSpringNetwork(new_node, 0., par.e);
     }
   }

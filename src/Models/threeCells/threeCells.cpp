@@ -70,12 +70,12 @@ void TwoCells::CellHouseKeeping(CellBase *c)
     c->SetSigmaSprings( par->e ); //sigma war 0.21
     c->SetSpringDistributionMean( 0 );
     c->SetSpringNetwork(0.,par->e);
-    c->setSpringBaseLength(17);      
+    c->setSpringBaseLength(10);      
     
   }
 
   if(c->isSpringPlaced()){
-    c->cleanUpNetwork(par->mu, par->nu, 3);
+    c->cleanUpNetwork(par->mu, par->nu, par->c0);
     for(auto node : c->getNodesList())
     {
       if(RANDOM() <= (exp(- (node->getConnected_to_spring()/3.0)) - 0.1))

@@ -110,14 +110,25 @@ class Mesh {
   };
 
   void Clean(void);
+
+  Vector elastic_stretch (Vector &wall_vector, Vector &baselength_vector)
+  {
+  return (wall_vector - baselength_vector)/baselength_vector.Norm();
+  }
+
   Cell &EllipticCell(double xc, double yc, double ra, double rb, int nnodes=10, double rotation=0);
   Cell &CircularCell(double xc, double yc, double r, int nnodes=10) {
     return EllipticCell(xc, yc, r, r, nnodes, 0);
   }
+  
   Cell &LeafPrimordium(int n, double pet_length);
+  
   Cell &LeafPrimordium2(int n);
+  
   Cell *RectangularCell(const Vector ll, const Vector ur, double rotation = 0);
+ 
   void CellFiles(const Vector ll, const Vector ur);
+
   double plasticLimit();
 
   inline Cell &getCell(int i) {
@@ -224,8 +235,9 @@ class Mesh {
     for (vector<Cell *>::iterator i = current_cells.begin();
     		i != current_cells.end();
     		i ++) {
-    	plugin->CellHouseKeeping(*i);
+    	plugin->CellHouseKeeping(*i); // cellhouse keeping of model
     }
+    //cell wall reconfiguration
     sort(curves.begin(), curves.end(), [](CellWallCurve lhs, CellWallCurve rhs) {return lhs.getThreshold() > rhs.getThreshold();});
     CellWallCurve * array = &(curves[0]);
     double count = curves.size();
@@ -283,6 +295,7 @@ class Mesh {
   void CompatibilityLevel(int compatibility_level) {this->compatibility_level=compatibility_level;}
   bool activateWallStiffnessHamiltonian() {return (this->compatibility_level & WALL_STIFFNESS_HAMILTONIAN) != 0;}
   bool activateWallReconfigurationing() {return (this->compatibility_level & WALL_SLIDING) != 0;}
+  void InitializeCellSprings();
 
   void BoundingBox(Vector &LowerLeft, Vector &UpperRight);
   int NEqs(void) {     int nwalls = walls.size();
@@ -446,6 +459,8 @@ class Mesh {
   void CSVExportMeshData(QTextStream &csv_stream);
   
   Node* findNextBoundaryNode(Node*);
+
+  vector<Node *> getShuffledNodes() { return shuffled_nodes;};
 
  private:
   list<Node *>* cellNodes(Cell * cell) ;

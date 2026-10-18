@@ -148,10 +148,26 @@ class Node : public NodeBase {
 
   inline bool Marked(void) const { return marked; }
 
+  void setConnected_to_spring(int connections) { connected_to_spring = connections;}
+  int getConnected_to_spring() { return connected_to_spring;}
+  void incrementConnected_to_spring() { connected_to_spring++;}
+  void decrementConnected_to_spring() { if( connected_to_spring > 0 )  connected_to_spring--;}
+  // returns true if node has spring connection
+  bool isConnected_to_spring(){
+    if( connected_to_spring == 0) { return false;
+    }else{
+      return true;
+    }
+  }
+
   inline void setPos( Vector p ) { 
     x = p.x;
     y = p.y;
     z = p.z;
+  }
+
+  Vector getPos() { 
+    return { x, y, z};
   }
 
   inline bool SamP(void) const { return sam; }
@@ -175,6 +191,7 @@ class Node : public NodeBase {
 
   // "owners" lists the cells to which this cell belong
   // and the two neighboring nodes relative to each cell
+  // ( ist denke ich falsch geschrieben mit cells und nodes) lasse
   list< Neighbor > owners;
 
   Mesh *m;
@@ -189,6 +206,7 @@ class Node : public NodeBase {
   bool sam; // true if node is connected to the shoot
   bool dead;
   bool marked;
+  int connected_to_spring { 0 };
 };
 
 ostream &operator<<(ostream &os, const Node &n);

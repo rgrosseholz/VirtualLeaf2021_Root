@@ -115,6 +115,9 @@ public:
 	  if (m.ShowMeshP()) {
 		  c->DrawNodes(&canvas);
 	  }
+    if (m.ShowSprings()){
+      c->DrawSprings(&canvas);
+    }
     if (m.ShowBorderCellsP() || c->Boundary()==Cell::None) {
       if (!m.ShowBoundaryOnlyP() && !m.HideCellsP()) {
 	if (m.ShowToolTipsP()) {
@@ -161,6 +164,8 @@ void MainBase::Plot(int resize_stride)
   }
   
   mesh.LoopCells(DrawCell(),canvas,*this);
+  if (ShowSprings())
+    mesh.LoopCells([this](auto cell){cell->DrawSprings(&canvas);});
   if (ShowNodeNumbersP()) 
     mesh.LoopNodes([this](auto node){node->DrawIndex(&canvas);});
   if (ShowCellNumbersP()) 
@@ -199,13 +204,13 @@ void MainBase::Plot(int resize_stride)
       mesh.XMLSave(XMLname.str().c_str(), settings);
 
       // add PDF
-      stringstream PDFname;
-      PDFname << par.datadir << "/leaf.";
-      PDFname.fill('0');
-      PDFname.width(6);
-      PDFname << count << ".pdf";
+      stringstream PNGname;
+      PNGname << par.datadir << "/leaf.";
+      PNGname.fill('0');
+      PNGname.width(6);
+      PNGname << count << ".png";
       // Write PDF snapshot with every xml file
-      Save(PDFname.str().c_str(), "PDF", 1024, 768);
+      Save(PNGname.str().c_str(), "PNG", 1024, 768);
     }
   
 }
@@ -266,6 +271,8 @@ TIMESTEP {
 		mesh.ElasticModulus(par.elastic_modulus);
 		mesh.setElasticLimit(par.elastic_limit);
 		mesh.WallRelaxation();
+    //mesh.InitializeCellSprings();
+
 
 		dh = mesh.DisplaceNodes();
 

@@ -69,6 +69,7 @@ class MainBase  {
     removep = false;
     showtooltipsp = false;
     hidecellsp = false;
+    showSprings = true;
   }
   virtual ~MainBase() {};
 
@@ -104,6 +105,7 @@ class MainBase  {
   virtual void FitCanvasToWindow() {};
   virtual void FitLeafToCanvas() {};
   virtual bool HideCellsP(void) { return hidecellsp; }
+  virtual bool ShowSprings(void) {return showSprings;}
   virtual void clear(void) {
     QList<QGraphicsItem *> list = canvas.items();
     QList<QGraphicsItem *>::Iterator it = list.begin();
@@ -164,7 +166,7 @@ class MainBase  {
   bool removep;
   bool showtooltipsp;
   bool hidecellsp;
-
+  bool showSprings;
 };
 
 //#include <qapplication.h>

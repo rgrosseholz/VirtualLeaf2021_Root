@@ -53,7 +53,48 @@ void Tutorial1A::SetCellColor(CellBase *c, QColor *color) {
 
 void Tutorial1A::CellHouseKeeping(CellBase *c) {
   // add cell behavioral rules here
-	c->EnlargeTargetArea(par->cell_expansion_rate);
+  c->EnlargeTargetArea(par->cell_expansion_rate);
+
+  double base_element_length = 25;
+  c->LoopWallElements([base_element_length](auto wallElementInfo)
+                      {
+        if(std::isnan(wallElementInfo->getWallElement()->getBaseLength())){
+        wallElementInfo->getWallElement()->setBaseLength(base_element_length);
+        } });
+
+
+    // cellulose spring activation
+  if(par->k[0] == 0 && !(c->isSpringPlaced()) && c->Index()!=-1 ) // instead of celltype use k 
+  {
+    c->PlaceSprings();
+    c->SetSigmaSprings( 0.1 ); 
+    c->SetSpringDistributionMean( 0 );
+    c->SetSpringNetwork(0.,par->e);
+    c->setSpringBaseLength(9);
+  } 
+
+    if(c->isSpringPlaced()){
+    c->cleanUpNetwork(par->mu, par->nu, 3);
+    for(auto node : c->getNodesList())
+     { c->SetSpringsOnNodeIntoNetwork(node, 0., par->e);}
+  }
+  //cell wall weakening happens here
+  if(par->k[0] == 0){
+
+    c->LoopWallElements([](auto wallElementInfo){
+      Vector from { *(wallElementInfo->getFrom()) };
+      Vector to { *(wallElementInfo->getTo()) };
+      Vector wallVector { to - from };
+      Vector growthDirection { 0, 1};
+      // if angle is between 75 - 105 degree return true
+      if ( 1.3 < wallVector.Angle(growthDirection) &&  1.9 > wallVector.Angle(growthDirection) ) 
+      { 
+        wallElementInfo->getWallElement()->setStiffness(1);
+      } else { 
+        wallElementInfo->getWallElement()->setStiffness(0.65);
+      }
+    });
+  }
 }
 
 void Tutorial1A::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2) {

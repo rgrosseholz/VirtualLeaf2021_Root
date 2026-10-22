@@ -13,7 +13,7 @@
     <par name="export_interval" val="0"/>
     <par name="export_fn_prefix" val="cell."/>
     <par name="storage_stride" val="100"/>
-    <par name="xml_storage_stride" val="300"/>
+    <par name="xml_storage_stride" val="10"/>
     <par name="datadir" val="tutorial1_data"/>
     <par name="T" val="1"/>
     <par name="lambda_length" val="40"/>

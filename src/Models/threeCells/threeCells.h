@@ -34,7 +34,7 @@ class TwoCells : public QObject, SimPluginInterface {
 
 public:
 	virtual QString ModelID(void);
-	
+	virtual void initializeTriangles (CellBase *c);
 	// Executed after the cellular mechanics steps have equillibrized
 	virtual void CellHouseKeeping (CellBase *c);
 	// Differential equations describing transport of chemicals from cell to cell
@@ -55,7 +55,7 @@ public:
 	// return number of chemicals
 	virtual int NChem(void);
 	
-	virtual QString DefaultLeafML(void) { return QString("three_cells_wild.xml"); }
+	virtual QString DefaultLeafML(void) { return QString("three_cells_vertical.xml"); }
 	
 };
 

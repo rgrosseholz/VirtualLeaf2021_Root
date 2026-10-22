@@ -182,7 +182,7 @@ void MainBase::Plot(int resize_stride)
     mesh.DrawBoundary(&canvas);
 
   if ( ( batch || MovieFramesP() )) {
-    //if (!(count%par.storage_stride) ) {
+    if (!(count%par.storage_stride) ) {
       stringstream PNGname;
       PNGname << par.datadir << "/leaf.";
       PNGname.fill('0');
@@ -190,7 +190,7 @@ void MainBase::Plot(int resize_stride)
       PNGname << count << ".png";
       // Write high-res PNG snapshot every plot step
       Save(PNGname.str().c_str(), "PNG", 1024, 768);
-    //}
+    }
     }
 
     if (!(count%par.xml_storage_stride)) {

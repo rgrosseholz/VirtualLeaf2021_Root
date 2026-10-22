@@ -183,17 +183,12 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   }
   double tissueDistance { par->eps - par->gamma };
 
-  double y { 1 / (1 + centerY - par->gamma) };
+  double y { 0.5 + 1 / (1 + centerY - par->gamma) }; 
+  double y2 { tissueDistance - centerY }; // unten 0
   // enlarge target area depending on tissue location ( cell target length )
   // and only up to a certain pressure
-  if(par->cell_div_expansion_rate * y < par->tau){
-  if(c->getTargetLength() != 4 && c->TargetArea() <  c->Area() * par->f + par->c ){
-    c->EnlargeTargetArea(par->tau);
-  }
-  }else{
-    if(c->getTargetLength() != 4 && c->TargetArea() <  c->Area() * par->f + par->c ){
-    c->EnlargeTargetArea(par->cell_expansion_rate * y );
-    }
+  if(c->getTargetLength() != 4 ){ //&& c->TargetArea() < c->Area() * par->f + par->c
+    c->EnlargeTargetArea( par->cell_expansion_rate );
   }
   // Allow only lowest row  of cells to devide. The parameter pin_fixed is used therefore. 
   // Allow Cell division if area is x times larger then initial cell area
@@ -226,7 +221,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
 	}
   //cell wall weakening happens here
   if(c->CellType() == 0 || c->CellType() == 1 ){
-    double stiffness {par->betaD};
+    double stiffness {par->betaD * y};
     double scaling {par->gammaR};
     c->LoopWallElements([stiffness, scaling](auto wallElementInfo){
       Vector from { *(wallElementInfo->getFrom()) };
@@ -245,7 +240,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   }
 
   if(c->CellType() == 2){
-    double stiffness {(par->gammaD)};
+    double stiffness {(par->gammaD * y)};
     double scaling {par->gammaR};
     c->LoopWallElements([stiffness, scaling](auto wallElementInfo){
       Vector from { *(wallElementInfo->getFrom()) };
@@ -264,7 +259,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   }
 
   if(c->CellType() == 3 ){
-    double stiffness {par->betaR};
+    double stiffness {par->betaR * y};
     double scaling {par->gammaR};
     c->LoopWallElements([stiffness, scaling](auto wallElementInfo){
       Vector from { *(wallElementInfo->getFrom()) };

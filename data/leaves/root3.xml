@@ -31,16 +31,16 @@
       <par val="1000" name="resize_stride"/>
       
       
-      <par val="0" name="export_interval"/>
+      <par val="1000000" name="export_interval"/>
       
       
       <par val="cell." name="export_fn_prefix"/>
       
       
-      <par val="1000" name="storage_stride"/>
+      <par val="10000" name="storage_stride"/>
       
       
-      <par val="200" name="xml_storage_stride"/>
+      <par val="1000" name="xml_storage_stride"/>
       
       
       <par val="transRoot" name="datadir"/>
@@ -49,10 +49,10 @@
       <par val="1" name="T"/>
       
       
-      <par val="70" name="lambda_length"/>
+      <par val="60" name="lambda_length"/>
       
       
-      <par val="12.5" name="yielding_threshold"/>
+      <par val="12" name="yielding_threshold"/>
       
       
       <par val="0" name="lambda_celllength"/>
@@ -61,7 +61,7 @@
       <par val="60" name="target_length"/>
       
       
-      <par val="6" name="cell_expansion_rate"/>
+      <par val="0.05" name="cell_expansion_rate"/>
       
       
       <par val="7" name="cell_div_expansion_rate"/>
@@ -88,7 +88,7 @@
       <par val="0" name="alignment_lambda"/>
       
       
-      <par val="3." name="rel_cell_div_threshold"/>
+      <par val="2." name="rel_cell_div_threshold"/>
       
       
       <par val="4" name="rel_perimeter_stiffness"/>
@@ -110,91 +110,40 @@
       
       
       <par name="D">
-         
               
          <valarray>
             
+            <val v="57"/>
             
+            <val v="48"/>
         
+            <val v="72"/>
             
-            <val v="1e-06"/>
-            
-            
-        
+            <val v="75"/>
             
             <val v="0"/>
             
-            
-        
+            <val v="0"/>
             
             <val v="0"/>
             
-            
-        
+            <val v="0"/>
             
             <val v="0"/>
             
-            
-        
+            <val v="0"/>
             
             <val v="0"/>
             
-            
-        
+            <val v="0"/>
             
             <val v="0"/>
             
-            
-        
-            
             <val v="0"/>
             
-            
-        
-            
             <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
-            
-        
-            
-            <val v="0"/>
-            
                  
          </valarray>
-         
-         
-    
-      
       </par>
       
       
@@ -395,7 +344,7 @@
       <par val="1" name="compatibility_level"/>
       
       
-      <par val="1e+06" name="maxt"/>
+      <par val="5e4" name="maxt"/>
       
       
       <par val="1" name="rseed"/>
@@ -416,7 +365,7 @@
       
       
       <par name="f" val="1.9"/>
-      <par name="c" val="150"/> 
+      <par name="c" val="105"/> 
       <par name="mu" val="3"/>
       
       <par val="1.3" name="nu"/>
@@ -441,7 +390,7 @@
       <par val="1.5" name="gammaR"/>
       
       
-      <par val="4" name="tau"/>
+      <par val="0.1" name="tau"/>
       
       
       <par val="0" name="kt"/>

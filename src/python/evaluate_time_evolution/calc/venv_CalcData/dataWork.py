@@ -5,15 +5,24 @@ import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 import xml.etree.ElementTree as ET
 
-DEFAULT_DATA_DIR = Path("/home/lasse/rootLayer")
+DEFAULT_DATA_DIR = Path("/home/lasse/transRoot_grad_1.3-5.2_f_4.2_c_20_GR_10+Div")
 XML_PATTERN = 'leaf.*.xml'
 TIMESTEP_RE = re.compile(r'\.(\d+)$')
 LENGTH_HISTOGRAM_BIN_WIDTH = 1
 WIDTH_HISTOGRAM_BIN_WIDTH = 2
 TIME_SCALE_FACTOR = 360
-GROWTH_RATE_SMOOTHING_WINDOW = 11
+GROWTH_RATE_SMOOTHING_WINDOW = 1
+CELL_TYPE_COLORS = {0: 'red', 1: 'green', 2: 'blue', 3: 'yellow'}
+CELL_TYPE_MARKERS = {0: 'o', 1: 's', 2: '*', 3: 'D'}
+CELL_TYPE_LABELS = {
+    0: 'Epidermis',
+    1: 'Cortex',
+    2: 'Pericycle',
+    3: 'Vascular',
+}
 
 def load_root(xml_path):
     tree = ET.parse(xml_path)
@@ -67,6 +76,8 @@ def parse_cell_metrics(xml_path):
             'cell_index': cell_index,
             'cell_type': cell_type,
             'center': center,
+            'highest_y': max(y for _, y in point_list),
+            'lowest_y': min(y for _, y in point_list),
             'length': length,
             'length2': length2,
             'width': width,
@@ -246,6 +257,22 @@ def smooth_growth_rate_series(growth_rates, window=GROWTH_RATE_SMOOTHING_WINDOW)
     return smoothed_rates
 
 
+def _distances_from_mean_lowest_y(metrics):
+    if not metrics:
+        return {}
+
+    cell_types = {item['cell_type'] for item in metrics}
+    type_lowest_y = [
+        min(item['lowest_y'] for item in metrics if item['cell_type'] == cell_type)
+        for cell_type in cell_types
+    ]
+    reference_y = sum(type_lowest_y) / len(type_lowest_y)
+    return {
+        (item['cell_type'], item['cell_index']): item['center'][1] - reference_y
+        for item in metrics
+    }
+
+
 def _build_bin_edges(values, bin_width):
     if not values:
         return None
@@ -401,25 +428,40 @@ def plot_growth_rate(evolution, output_dir=DEFAULT_DATA_DIR):
                      float('nan'))
                 for _, metrics in evolution
             ]
+            distance_series = [
+                _distances_from_mean_lowest_y(metrics).get((cell_type, cell_id), float('nan'))
+                for _, metrics in evolution
+            ]
             growth_rates = calculate_growth_rate_series(times, length_series)
             growth_rates = smooth_growth_rate_series(growth_rates)
-            ax.plot(times, growth_rates, marker='o', linewidth=1.5, label=f'Cell {cell_id}')
+            ax.scatter(distance_series, growth_rates, label=f'Cell {cell_id}')
 
         average_growth_rates = calculate_growth_rate_series(
             times, type_averages[cell_type]['avg_length']
         )
         average_growth_rates = smooth_growth_rate_series(average_growth_rates)
-        ax.plot(
-            times,
+        average_distances = []
+        for _, metrics in evolution:
+            distance_by_cell = _distances_from_mean_lowest_y(metrics)
+            type_distances = [
+                distance_by_cell[(cell_type, item['cell_index'])]
+                for item in metrics
+                if item['cell_type'] == cell_type
+            ]
+            average_distances.append(
+                sum(type_distances) / len(type_distances) if type_distances else float('nan')
+            )
+        ax.scatter(
+            average_distances,
             average_growth_rates,
             color='black',
-            linestyle='--',
-            linewidth=2.5,
+            marker='D',
+            s=50,
             label='Average growth rate',
         )
 
-        ax.set_title(f'Cell length growth rate over time for cell type {cell_type}')
-        ax.set_xlabel('Time (h)')
+        ax.set_title(f'Cell length growth rate by distance for cell type {cell_type}')
+        ax.set_xlabel('Distance above mean lowest y coordinate')
         ax.set_ylabel('Growth rate (length per second)')
         ax.grid(True, alpha=0.3)
         ax.legend(loc='best', fontsize=8)
@@ -432,37 +474,47 @@ def plot_growth_rate(evolution, output_dir=DEFAULT_DATA_DIR):
     return plot_paths
 
 
-def plot_length_by_center(evolution, output_dir=DEFAULT_DATA_DIR):
+def plot_length_by_center(evolution, output_dir='l(y)'):
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     if not evolution:
         return []
 
-    selected_timesteps = [evolution[0]]
-    if len(evolution) > 1:
-        selected_timesteps.append(evolution[-1])
-
     plot_paths = []
     cell_types = sorted({item['cell_type'] for _, metrics in evolution for item in metrics})
 
-    for cell_type in cell_types:
+    for timestep, metrics in evolution:
         fig, ax = plt.subplots(figsize=(8, 5))
-        for timestep, metrics in selected_timesteps:
-            type_metrics = [item for item in metrics if item['cell_type'] == cell_type]
-            centers = [item['center'][1] for item in type_metrics]
-            lengths = [item['length'] for item in type_metrics]
-            if centers:
-                ax.scatter(centers, lengths, alpha=0.8, label=f'Timestep {timestep}')
+        if metrics:
+            distance_by_cell = _distances_from_mean_lowest_y(metrics)
+            for cell_type in cell_types:
+                type_metrics = [item for item in metrics if item['cell_type'] == cell_type]
+                distances = [distance_by_cell[(cell_type, item['cell_index'])] for item in type_metrics]
+                lengths = [item['length'] for item in type_metrics]
+                if distances:
+                    ax.scatter(
+                        distances,
+                        lengths,
+                        color=CELL_TYPE_COLORS.get(cell_type),
+                        marker=CELL_TYPE_MARKERS.get(cell_type, 'o'),
+                        s=110,
+                        alpha=0.5,
+                        label=CELL_TYPE_LABELS.get(cell_type, f'Cell type {cell_type}'),
+                    )
 
-        ax.set_title(f'Cell length by center coordinate for cell type {cell_type}')
-        ax.set_xlabel('Cell center y coordinate')
-        ax.set_ylabel('Cell length')
-        ax.grid(True, alpha=0.3)
-        ax.legend(loc='best')
+        ax.set_title(' ', fontsize=1)
+        ax.set_xlabel('y [µm]', fontsize=25)
+        ax.set_ylabel('L(y) [µm]', fontsize=25)
+        ax.xaxis.set_major_locator(MaxNLocator(nbins=3))
+        ax.yaxis.set_major_locator(MaxNLocator(nbins=3))
+        ax.tick_params(axis='both', which='major', labelsize=22)
+        ax.grid(True, which='major', color='gray', linewidth=1.5, alpha=0.5)
+#        if ax.collections:
+#            ax.legend(loc='best', fontsize=20)
         fig.tight_layout()
-        out_path = output_dir / f'cell_length_by_center_type_{cell_type}.png'
-        fig.savefig(out_path, dpi=150)
+        out_path = output_dir / f'l(y)_{timestep}.png'
+        fig.savefig(out_path, dpi=300)
         plt.close(fig)
         plot_paths.append(out_path)
 
@@ -496,7 +548,7 @@ if __name__ == '__main__':
 
     time_plot_paths = plot_time_evolution(evolution, output_dir=output_dir)
     growth_rate_plot_paths = plot_growth_rate(evolution, output_dir=output_dir)
-    center_plot_paths = plot_length_by_center(evolution, output_dir=output_dir)
+    center_plot_paths = plot_length_by_center(evolution, output_dir=data_dir / 'l(y)')
     hist_plot_paths = plot_histograms(
         evolution,
         output_dir=output_dir,
@@ -504,7 +556,7 @@ if __name__ == '__main__':
         width_bin_width=WIDTH_HISTOGRAM_BIN_WIDTH,
     )
     plot_paths = time_plot_paths + growth_rate_plot_paths + center_plot_paths + hist_plot_paths
-    print(f'Wrote {len(plot_paths)} plot(s) to {output_dir}')
+    print(f'Wrote {len(plot_paths)} plot(s)')
     for plot_path in plot_paths:
         print(f'  {plot_path}')
 

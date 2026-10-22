@@ -53,7 +53,7 @@ void TwoCells::SetCellColor(CellBase *c, QColor *color)
   // add cell coloring rules here
   double targetArea = c->getTargetArea();
   double currentArea = c->Area();
-  double maxLogDeviation = log10(par->tau);
+  double maxLogDeviation = log10(par->mu);
   double areaDiff = log10(currentArea/targetArea);
 
   areaDiff = clamp(
@@ -116,7 +116,7 @@ void TwoCells::initializeTriangles(CellBase *c){
 
   if( c->CellType() == 2 ) 
   {
-    double width {10};
+    double width {9};
     
     c->PlaceTriangles();
     c->setTargetVectorABofTriangle( Vector{width,0,0} );
@@ -133,7 +133,7 @@ void TwoCells::initializeTriangles(CellBase *c){
 
   if( c->CellType() == 3 ) 
   {
-    double width {10};
+    double width {9.5};
     c->PlaceTriangles();
     c->setTargetVectorABofTriangle( Vector{width,0,0} );
     c->setTriangles(width * par->rho1, par->c0);
@@ -197,13 +197,15 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   if( centerY < par->gamma + 0.4 * tissueDistance && c->getTargetLength() < 4){
     c->SetTargetLength(2);
   }
-  double y { 1 / (1 + centerY - par->gamma) + par->e }; // par.e gives base growth rate
+  double y {0.5 + 1 / (1 + centerY - par->gamma) }; 
+  double y2 { tissueDistance - centerY }; // des is doch a quatsch hier
   // enlarge target area depending on tissue location ( cell target length )
   // and only up to a certain pressure
-  if(c->getTargetLength() != 4 && c->TargetArea() <  c->Area() * par->f  + par->c ){
-    c->EnlargeTargetArea(par->cell_expansion_rate * y );
+
+  if(c->getTargetLength() != 4 ){ //&& c->TargetArea() <  c->Area() * par->f + par->c 
+    c->EnlargeTargetArea(par->cell_expansion_rate );
   }
-    
+  
   /*if(c->getTargetLength() == 0 && c->TargetArea() < par->f * c->Area()){
     c->EnlargeTargetArea(par->cell_expansion_rate * c->Area() );
   }
@@ -217,35 +219,35 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   // Allow only lowest row  of cells to devide. The parameter pin_fixed is used therefore. 
   // Allow Cell division if area is x times larger then initial cell area
   if ( c->getPin_fixed()  && c->CellType() == 0 && 
-      c->Area() > par->rel_cell_div_threshold * 72
+      c->Area() > par->rel_cell_div_threshold * par->D[0]
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});
 	}
 
   if ( c->getPin_fixed()  && c->CellType() == 1 && 
-      c->Area() > par->rel_cell_div_threshold * 45
+      c->Area() > par->rel_cell_div_threshold * par->D[1]
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});
 	}
 
   if ( c->getPin_fixed()  && c->CellType() == 2 && 
-      c->Area() > par->rel_cell_div_threshold * 72
+      c->Area() > par->rel_cell_div_threshold * par->D[2]
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});
 	}
 
   if ( c->getPin_fixed()  && c->CellType() == 3 && 
-      c->Area() > par->rel_cell_div_threshold * 80
+      c->Area() > par->rel_cell_div_threshold * par->D[3]
       )
   {
 		  c->DivideOverAxis(Vector {1,0,0});
 	}
   //cell wall weakening happens here
   if(c->CellType() == 0 || c->CellType() == 1 ){
-    double stiffness {par->betaD};
+    double stiffness {par->betaD * y};
     double scaling {par->gammaR};
     c->LoopWallElements([stiffness, scaling](auto wallElementInfo){
       Vector from { *(wallElementInfo->getFrom()) };
@@ -264,7 +266,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   }
 
   if(c->CellType() == 2){
-    double stiffness {par->gammaD};
+    double stiffness {(par->gammaD * y)};
     double scaling {par->gammaR};
     c->LoopWallElements([stiffness, scaling](auto wallElementInfo){
       Vector from { *(wallElementInfo->getFrom()) };
@@ -283,7 +285,7 @@ void TwoCells::CellHouseKeeping(CellBase *c)
   }
 
   if(c->CellType() == 3 ){
-    double stiffness {par->betaR};
+    double stiffness {par->betaR * y};
     double scaling {par->gammaR};
     c->LoopWallElements([stiffness, scaling](auto wallElementInfo){
       Vector from { *(wallElementInfo->getFrom()) };
@@ -299,7 +301,6 @@ void TwoCells::CellHouseKeeping(CellBase *c)
       }
     });
   }
-
 
 }
 

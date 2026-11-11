@@ -851,10 +851,10 @@ double Mesh::getStrainEnergy( Triangle* triangle, Cell& cell, Matrix& Y, Vector 
   Vector target_A { triangle->getTargetA( cell.getTargetVectorABofTriangle()) };
   Vector deltaP { (target_A - A) };
   double area { fabs((B.y-C.y)*(A.x-C.x)+(C.x-B.x)*(A.y-C.y)) };
-  Vector strain { ((B.y-C.y)*deltaP.x)/(6*area),
-                  (C.x-B.x)*deltaP.y/(6*area),
-                  ((B.y-C.y)*deltaP.y + (C.x-B.x)*deltaP.x)/(12*area) } ;
-  double energy { InnerProduct((Y*strain),strain) };
+  Vector strain { ((B.y-C.y)*deltaP.x)/(2*area),
+                  (C.x-B.x)*deltaP.y/(2*area),
+                  ((B.y-C.y)*deltaP.y + (C.x-B.x)*deltaP.x)/(4*area) } ;
+  double energy { area * InnerProduct((Y*strain),strain) };
   return energy;
 }
 /**
